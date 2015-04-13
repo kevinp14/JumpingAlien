@@ -15,7 +15,7 @@ import jumpingalien.util.Sprite;
 /**
  * 
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
  * @version 2.0
  */
 public class Facade implements IFacadePart2 {
@@ -39,28 +39,28 @@ public class Facade implements IFacadePart2 {
 	}
 	
 	public int[] getBottomLeftPixelOfTile(World world, int tileX, int tileY){
-		
+		return world.getBottomLeftPixelOfTile(tileX, tileY);
 	}
 	
 	public int getTileLength(World world){
-		
+		return world.getTileLength();
 	}
 	
 	public int[][] getTilePositionsIn(World world, int pixelLeft, int pixelBottom,
 			int pixelRight, int pixelTop){
-		
+		return world.getTilePositionsIn(pixelLeft, pixelBottom, pixelRight, pixelTop);
 	}
 	
 	public int[] getVisibleWindow(World world){
-		
+		return world.getVisibleWindow();
 	}
 	
 	public int[] getWorldSizeInPixels(World world){
-		
+		return world.getWorldSize();
 	}
 	
 	public void startGame(World world){
-		
+		world.startGame();
 	}
 	
 	/**
@@ -85,7 +85,7 @@ public class Facade implements IFacadePart2 {
 	}
 	
 	public boolean isGameOver(World world){
-		
+		return world.isGameOver();
 	}
 	
 	public Slime createSlime(int pixelLeftX, int pixelBottomY, Sprite[] sprites, School school){
@@ -98,7 +98,7 @@ public class Facade implements IFacadePart2 {
 	}
 	
 	public Collection<Slime> getSlimes(World world){
-		
+		return world.getSlimes();
 	}
 	
 	public Sprite getCurrentSprite(Slime slime){
@@ -130,7 +130,7 @@ public class Facade implements IFacadePart2 {
 	}
 	
 	public Collection<Shark> getSharks(World world){
-		
+		return world.getSharks();
 	}
 	
 	public Sprite getCurrentSprite(Shark shark){
@@ -153,7 +153,7 @@ public class Facade implements IFacadePart2 {
 	}
 	
 	public Collection<Plant> getPlants(World world){
-		
+		return world.getPlants();
 	}
 	
 	public Sprite getCurrentSprite(Plant plant){
@@ -184,7 +184,7 @@ public class Facade implements IFacadePart2 {
 	}
 	
 	public void setMazub(World world, Mazub alien){
-		
+		world.setMazub();
 	}
 	
 	/**
@@ -333,7 +333,8 @@ public class Facade implements IFacadePart2 {
 	public void startJump(Mazub alien) throws ModelException { 
 		if (alien.isJumping())
 			throw new ModelException("The alien can not jump while in the air!");
-		alien.startJump();}
+		alien.startJump();
+	}
 	
 	/**
 	 * End the given alien's jump.
@@ -352,6 +353,6 @@ public class Facade implements IFacadePart2 {
 	}
 	
 	public boolean isImmune(Mazub alien){
-		
+		return alien.isImmune();
 	}
 }
