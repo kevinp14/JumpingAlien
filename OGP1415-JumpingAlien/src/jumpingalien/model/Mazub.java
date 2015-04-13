@@ -15,7 +15,7 @@ import jumpingalien.util.*;
  * 
  * @invar	
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
  * @version 5.0
  *
  */
@@ -37,7 +37,9 @@ public class Mazub {
 	private double timeStalled;
 	private double timeMoving;
 	private Direction lastDirection;
-	private int hitPoints = 100;
+	private int hitPoints;
+	private boolean isImmune;
+	private World world;
 	
 	/**
 	 * Initialize the Mazub alien at the given position in x- and y-direction with the given list of
@@ -60,12 +62,15 @@ public class Mazub {
 		this.setHorizontalVelocity(0);
 		this.setHorizontalAcceleration(0);
 		this.setMaxHorizontalVelocity(this.maxRunningVelocity);
-	    this.setVerticalVelocity(0);
-	    this.setVerticalAcceleration(0);
-	    this.spriteList = spriteList;
-	    this.timeStalled = 0;
-	    this.timeMoving = 0;
-	    this.lastDirection = Direction.STALLED;
+	    	this.setVerticalVelocity(0);
+		this.setVerticalAcceleration(0);
+	    	this.spriteList = spriteList;
+	    	this.timeStalled = 0;
+	    	this.timeMoving = 0;
+	    	this.lastDirection = Direction.STALLED;
+	    	this.hitPoints = 100;
+		this.isImmune = false;
+		this.world = null;
 	}
 	
 	/**
@@ -96,6 +101,22 @@ public class Mazub {
 	private int[] getMaxPosition() {
 		int[] maxPosition = { (int)this.maxPositionX, (int)this.maxPositionY };
 	    return maxPosition;
+	}
+	
+	/**
+	*@return
+	*/
+	public int getHitPoints(){
+		return this.hitPoints;
+	}
+	
+	public boolean isImmune(){
+		if (this.isImmune){
+			return true;
+		}
+		else{
+			return false;
+		}
 	}
 
 	/**
@@ -279,19 +300,12 @@ public class Mazub {
 		this.verticalAcceleration = verticalAcceleration;
 	}
 	
-	/**
-	 * 
-	 * @return
-	 */
-	public int getNbHitPoints() {
-		return this.hitPoints;
-	}
 	
 	/**
 	 * 
 	 * @param hitPointsDifference
 	 */
-	private void setNbHitPoints(int hitPointsDifference) {
+	private void setHitPoints(int hitPointsDifference) {
 		this.hitPoints += hitPointsDifference;
 	}
 	
@@ -356,7 +370,7 @@ public class Mazub {
 	 * @return
 	 */
 	public boolean isJumping() {
-		if (this.getPosition()[1] == 0){
+		if (this.getVerticalVelocity() == 0){
 			return false;
 		}
 		else{
@@ -588,6 +602,17 @@ public class Mazub {
 			this.setVerticalAcceleration(0);
 			this.setVerticalVelocity(0);
 		}
+		if (this.getVerticalVelocity() <= 0){
+			int geologicalFeature = this.world.getGeologicalFeature((int)this.positionX, 
+					(int)this.positionY);
+			if (this.world.isNotPassable(geologicalFeature)){
+				this.setVerticalVelocity(0);
+				this.setVerticalAcceleration(0);
+				this.setPosition(this.getPosition()[0], 
+						this.world.getBottomLeftPixelOfTile((int)this.positionX, 
+						(int)this.positionY)[1] + this.world.getTileLength());
+			}
+		}	
 		if ((this.getPosition()[1] >= this.getMaxPosition()[1]) && (this.getVerticalVelocity() > 0)) {
 			this.setVerticalAcceleration(-10);
 			this.setVerticalVelocity(0.0D);
@@ -626,6 +651,10 @@ public class Mazub {
 			this.timeStalled = 0;
 			this.timeMoving += 1;
 		}
+	}
+	
+	public void setWorld(World world){
+		this.world = world;
 	}
 }
 
