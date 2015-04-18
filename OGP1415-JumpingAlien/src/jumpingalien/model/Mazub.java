@@ -62,6 +62,19 @@ public class Mazub {
 		this.setHorizontalVelocity(0);
 		this.setHorizontalAcceleration(0);
 		this.setMaxHorizontalVelocity(this.maxRunningVelocity);
+	    this.setVerticalVelocity(0);
+		this.setVerticalAcceleration(0);
+	    this.spriteList = spriteList;
+	    this.timeStalled = 0;
+	    this.timeMoving = 0;
+	    this.lastDirection = Direction.STALLED;
+	    this.hitPoints = 100;
+		this.isImmune = false;
+		this.world = null;
+	}
+	
+	public void setWorld(World world){
+		this.world = world;
 	    	this.setVerticalVelocity(0);
 		this.setVerticalAcceleration(0);
 	    	this.spriteList = spriteList;
@@ -110,19 +123,19 @@ public class Mazub {
 		return this.hitPoints;
 	}
 	
-	public boolean isImmune(){
-		if (this.isImmune){
-			return true;
-		}
-		else{
-			return false;
-		}
+	/**
+	 * 
+	 * @param hitPointsDifference
+	 */
+	private void setHitPoints(int hitPointsDifference) {
+		this.hitPoints += hitPointsDifference;
 	}
 
 	/**
 	 * @return	The current sprite of the Mazub alien.
 	 */
-	@Basic @Immutable
+	@Basic 
+	@Immutable
 	public Sprite getCurrentSprite() {
 		if (this.isMovingHorizontally()) {
 			if (this.isMovingLeft()) {
@@ -299,16 +312,7 @@ public class Mazub {
 	private void setVerticalAcceleration(double verticalAcceleration) {
 		this.verticalAcceleration = verticalAcceleration;
 	}
-	
-	
-	/**
-	 * 
-	 * @param hitPointsDifference
-	 */
-	private void setHitPoints(int hitPointsDifference) {
-		this.hitPoints += hitPointsDifference;
-	}
-	
+
 	/**
 	 * 
 	 * @param direction
@@ -351,8 +355,8 @@ public class Mazub {
 	 * @param dt
 	 * @return
 	 */
-	public boolean isValidDt(double dt) {
-		return (dt > 0.0D) && (dt < 0.2D);
+	protected boolean isValidDt(double dt) {
+		return (dt > 0) && (dt < 0.2);
 	}
 	
 	/**
@@ -430,6 +434,15 @@ public class Mazub {
 			return true;
 		}
 		else {
+			return false;
+		}
+	}
+	
+	public boolean isImmune(){
+		if (this.isImmune){
+			return true;
+		}
+		else{
 			return false;
 		}
 	}
@@ -651,18 +664,11 @@ public class Mazub {
 			this.timeStalled = 0;
 			this.timeMoving += 1;
 		}
-	}
-	
-	public void setWorld(World world){
-		this.world = world;
+		if (/*botsing*/)
+			this.setHitPoints(-50);
+		if (/*in water*/)
+			this.setHitPoints((int)(-2 * (dt % (0.2))));
+		if (/*in lava*/)
+			this.setHitPoints((int)(-50 *((dt + 1) % (0.2))));
 	}
 }
-
-
-
-
-
-
-
-
-
