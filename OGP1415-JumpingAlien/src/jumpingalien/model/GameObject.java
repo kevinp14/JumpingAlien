@@ -230,4 +230,12 @@ public abstract class GameObject {
 	
 	public abstract void advanceTime(double dt);
 	
+	protected Direction getLastDirection() {
+		return lastDirection;
+	}
+	
+	protected void setLastDirection(Direction direction){
+		this.setLastDirection(direction);
+	}
+	
 }
