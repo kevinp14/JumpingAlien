@@ -43,16 +43,41 @@ public class World {
 		this.gameState = GameState.INITIATED;
 	}
 	
+	private boolean canAddMore(){
+		int amountOfObjects = 0;
+		if (plants != null){
+			amountOfObjects += plants.size();
+		}
+		if  (sharks != null){
+			amountOfObjects += sharks.size();
+		}
+		if (slimes != null){
+			amountOfObjects += slimes.size();
+		}
+		if (amountOfObjects == 100){
+			return false;
+		}
+		else{
+			return true;
+		}
+	}
+	
 	public void addPlant(Plant plant){
-		this.plants.add(plant);
+		if (this.canAddMore()){
+			this.plants.add(plant);
+		}
 	}
 	
 	public void addShark(Shark shark){
-		this.sharks.add(shark);
+		if (this.canAddMore()){
+			this.sharks.add(shark);
+		}
 	}
 	
 	public void addSlime(Slime slime){
-		this.slimes.add(slime);
+		if (this.canAddMore()){
+			this.slimes.add(slime);
+		}
 	}
 	
 	//hoe zit het met die dt? zelf berekenen of meegegeven?
@@ -119,22 +144,31 @@ public class World {
 		return this.tileSize;
 	}
 	
-	//nog fout, eerst getVisibleWindow fixen
 	@Basic
 	public int[][] getTilePositionsIn(int pixelLeft, int pixelBottom,
 			int pixelRight, int pixelTop){
-		this.getVisibleWindow();
-		int [] a = new int[]{0,0};
-		int [] c = new int[]{this.tileSize, 0};
-		int[][] b = new int[][]{a,c};
-		return b;
+		int dimension = 0;
+		for (int x = (int)(pixelLeft/this.tileSize); x < pixelRight; x += this.tileSize ){
+			for (int y = (int)(pixelBottom/this.tileSize); y < pixelTop; y += this.tileSize){
+				dimension += 1;
+			}
+		}
+		positions = new int[dimension][2];
+		int placeInPositions = 0;
+		for (int x = (int)(pixelLeft/this.tileSize); x < pixelRight; x += this.tileSize ){
+			for (int y = (int)(pixelBottom/this.tileSize); y < pixelTop; y += this.tileSize){
+				positions[placeInPositions][0] = x;
+				positions[placeInPositions][1] = y;
+				placeInPositions += 1;
+			}
+		}
+		
+		return positions ;
 	}
 	
-	//nog fout
 	@Basic
 	public int[] getVisibleWindow() {
-		this.alien.getPosition();
-		return new int[]{0,0};
+		return new int[]{this.visibleWindowWidth, this.visibleWindowHeight};
 	}
 	
 	@Basic
