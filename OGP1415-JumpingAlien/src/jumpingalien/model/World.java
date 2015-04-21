@@ -2,6 +2,7 @@ package jumpingalien.model;
 
 import java.util.Collection;
 import java.util.Hashtable;
+import java.util.ArrayList;
 import be.kuleuven.cs.som.annotate.Basic;
 
 public class World {
@@ -13,9 +14,9 @@ public class World {
 	private int targetTileX;
 	private int targetTileY;
 	private boolean won;
-	private Collection<Plant> plants;
-	private Collection<Shark> sharks;
-	private Collection<Slime> slimes;
+	private ArrayList<Plant> plants = new ArrayList<>();
+	private ArrayList<Shark> sharks = new ArrayList<>();
+	private	ArrayList<Slime> slimes = new ArrayList<>();
 	private Mazub alien;
 	private double dt;
 	Hashtable<int[], Integer> tiles
@@ -33,13 +34,9 @@ public class World {
 		this.targetTileX = targetTileX;
 		this.targetTileY = targetTileY;
 		this.won = false;
-		this.plants = null;
-		this.sharks = null;
-		this.slimes = null;
-		this.alien = null;
 		this.dt = 0;
-		for (int x  = 0; x<nbTilesX; x++){
-			for (int y = 0; y<nbTilesY; y++){
+		for (int x  = 0; x < nbTilesX; x++){
+			for (int y = 0; y < nbTilesY; y++){
 				this.tiles.put(new int[]{x*tileSize, y*tileSize, 0}, 0);
 			}
 		}
@@ -103,17 +100,17 @@ public class World {
 	}
 	
 	@Basic
-	public Collection<Plant> getPlants(){
+	public ArrayList<Plant> getPlants(){
 		return this.plants;
 	}
 	
 	@Basic
-	public Collection<Shark> getSharks(){
+	public ArrayList<Shark> getSharks(){
 		return this.sharks;
 	}
 	
 	@Basic
-	public Collection<Slime> getSlimes(){
+	public ArrayList<Slime> getSlimes(){
 		return this.slimes;
 	}
 	

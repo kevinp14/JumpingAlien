@@ -1,9 +1,9 @@
 package jumpingalien.model;
 
-import java.util.Collection;
+import java.util.ArrayList;
 
 public class School {
-	private Collection<Slime> slimes;
+	private ArrayList<Slime> slimes = new ArrayList<>();
 	
 	public School(){
 		this.slimes = null;

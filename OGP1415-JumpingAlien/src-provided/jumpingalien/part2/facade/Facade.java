@@ -184,7 +184,7 @@ public class Facade implements IFacadePart2 {
 	}
 	
 	public void setMazub(World world, Mazub alien){
-		world.setMazub();
+		world.setMazub(alien);
 	}
 	
 	/**

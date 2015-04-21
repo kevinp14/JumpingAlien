@@ -19,16 +19,12 @@ import jumpingalien.util.*;
  * @version 5.0
  *
  */
-public class Mazub {
-	
-	private double horizontalVelocity;
-	private double horizontalAcceleration;
-	private double initialVelocity = 1;
+public class Mazub extends GameObject {
+	private double normalHorizontalVelocity = 1;
+	private double normalHorizontalAcceleration = 0.9;
 	private double maxHorizontalVelocity;
 	private double maxRunningVelocity = 3;
 	private double maxDuckingVelocity = 1;
-	private double verticalVelocity;
-	private double verticalAcceleration;
 	private double positionX;
 	private double positionY;
 	private double maxPositionX = 1023;
@@ -36,9 +32,7 @@ public class Mazub {
 	private Sprite[] spriteList;
 	private double timeStalled;
 	private double timeMoving;
-	private Direction lastDirection;
-	private int hitPoints;
-	private boolean isImmune;
+	private int hitPoints = 100;
 	private World world;
 	
 	/**
@@ -55,80 +49,11 @@ public class Mazub {
 	 * 			The list of sprites displaying how the alien should look depending on its behavior.
 	 */
 	public Mazub(double positionX, double positionY, Sprite[] spriteList) {
-		int[] position = { (int)(positionX/100), (int)(positionY/100) };
-		assert (isValidPosition(position));
+		super(positionX, positionY);
 		assert (isValidSpriteList(spriteList));
-		this.setPosition(positionX, positionY);
-		this.setHorizontalVelocity(0);
-		this.setHorizontalAcceleration(0);
+		this.spriteList = spriteList;
 		this.setMaxHorizontalVelocity(this.maxRunningVelocity);
-	    this.setVerticalVelocity(0);
-		this.setVerticalAcceleration(0);
-	    this.spriteList = spriteList;
-	    this.timeStalled = 0;
 	    this.timeMoving = 0;
-	    this.lastDirection = Direction.STALLED;
-	    this.hitPoints = 100;
-		this.isImmune = false;
-		this.world = null;
-	}
-	
-	public void setWorld(World world){
-		this.world = world;
-	    	this.setVerticalVelocity(0);
-		this.setVerticalAcceleration(0);
-	    	this.spriteList = spriteList;
-	    	this.timeStalled = 0;
-	    	this.timeMoving = 0;
-	    	this.lastDirection = Direction.STALLED;
-	    	this.hitPoints = 100;
-		this.isImmune = false;
-		this.world = null;
-	}
-	
-	/**
-	 * @return	An array consisting of the position of the alien in x- and y-direction.
-	 * 
-	 */
-	@Basic
-	public int[] getPosition() {
-		int[] position = new int[]{ (int)this.positionX, (int)this.positionY };
-		return position;
-	}
-	
-	/**
-	 * Set the position of the alien to the given position in x- an y-direction.
-	 * 
-	 * @param 	positionX
-	 * 			The position in the x-direction of the alien.
-	 * @param 	positionY
-	 * 			The position in the y-direction of the alien.
-	 * 
-	 */
-	@Basic
-	private void setPosition(double positionX, double positionY) {
-		this.positionX = positionX;
-		this.positionY = positionY;
-	}
-	
-	private int[] getMaxPosition() {
-		int[] maxPosition = { (int)this.maxPositionX, (int)this.maxPositionY };
-	    return maxPosition;
-	}
-	
-	/**
-	*@return
-	*/
-	public int getHitPoints(){
-		return this.hitPoints;
-	}
-	
-	/**
-	 * 
-	 * @param hitPointsDifference
-	 */
-	private void setHitPoints(int hitPointsDifference) {
-		this.hitPoints += hitPointsDifference;
 	}
 
 	/**
@@ -186,69 +111,6 @@ public class Mazub {
 	}
 	
 	/**
-	 * @return The velocity of the alien in the x-direction.
-	 *
-	 */
-	@Basic
-	public double getHorizontalVelocity() {
-		return this.horizontalVelocity;
-	}
-	
-	/**
-	 * Set the velocity of the alien in the x-direction to the given horizontal velocity.
-	 * @param	horizontalVelocity
-	 * 			The horizontal velocity for the alien.
-	 * @post	If the given horizontal velocity is smaller than the maximum horizontal velocity, the new
-	 * 			horizontal velocity is set to the given one. If the given horizontal velocity is bigger
-	 * 			or equal to the maximum horizontal velocity, the new velocity is set to the maximum.
-	 * 			| if (Math.abs(horizontalVelocity) < this.getMaxHorizontalVelocity())
-	 * 			|	(new this).horizontalVelocity = horizontalVelocity;
-	 * 			| else
-	 * 			|	(new this).horizontalVelocity = this.getMaxHorizontalVelocity();
-	 */
-	@Basic
-	private void setHorizontalVelocity(double horizontalVelocity) {
-		if (Math.abs(horizontalVelocity) < this.getMaxHorizontalVelocity())
-			this.horizontalVelocity = horizontalVelocity;
-		else {
-			if (horizontalVelocity > 0)
-				this.horizontalVelocity = this.getMaxHorizontalVelocity();
-			else
-				this.horizontalVelocity = -(this.getMaxHorizontalVelocity());
-		}
-	}
-	
-	/**
-	 * @return	The acceleration of the alien in the x-direction.
-	 *
-	 */
-	@Basic
-	public double getHorizontalAcceleration() {
-		return this.horizontalAcceleration;
-	}
-	
-	/**
-	 * Set the acceleration of the alien in the x-direction to the given vertical acceleration.
-	 * @param	horizontalAcceleration
-	 * 			The horizontal acceleration for the alien.
-	 * @post	The new horizontal acceleration is set to the given one.
-	 * 			| (new this).horizontalAcceleration = horizontalAcceleration
-	 */
-	@Basic
-	public void setHorizontalAcceleration(double horizontalAcceleration) {
-		this.horizontalAcceleration = horizontalAcceleration;
-	}
-	
-	/**
-	 * @return	The maximum of the velocity of the alien in the x-direction.
-	 * 
-	 */
-	@Basic
-	public double getMaxHorizontalVelocity() {
-		return this.maxHorizontalVelocity;
-	}
-	
-	/**
 	 * Set the maximum of the velocity of the alien in the x-direction to the given maximum for the 
 	 * horizontal velocity.
 	 * @param	maxHorizontalVelocity
@@ -271,101 +133,8 @@ public class Mazub {
 		return this.maxDuckingVelocity;
 	}
 	
-	/**
-	 * @return	The velocity of the alien in the y-direction.
-	 * 
-	 */
-	@Basic
-	public double getVerticalVelocity() {
-		return this.verticalVelocity;
-	}
-	
-	/**
-	 * Set the velocity of the alien in the y-direction to the given vertical velocity.
-	 * @param	verticalVelocity
-	 * 			The vertical velocity for the alien.
-	 * @post	The new vertical velocity is set to the given one.
-	 * 			| (new this).verticalVelocity = verticalVelocity
-	 */
-	@Basic
-	private void setVerticalVelocity(double verticalVelocity) {
-		this.verticalVelocity = verticalVelocity;
-	}
-	
-	/**
-	 * @return	The acceleration of the alien in the y-direction.
-	 * 
-	 */
-	@Basic
-	public double getVerticalAcceleration() {
-		return this.verticalAcceleration;
-	}
-	
-	/**
-	 * Set the acceleration of the alien in the y-direction to the given vertical acceleration.
-	 * @param 	verticalAcceleration
-	 * 			The vertical acceleration for the alien.
-	 * @post	The new vertical acceleration is set to the given one.
-	 * 			| (new this).verticalAcceleration = verticalAcceleration
-	 */
-	@Basic
-	private void setVerticalAcceleration(double verticalAcceleration) {
-		this.verticalAcceleration = verticalAcceleration;
-	}
-
-	/**
-	 * 
-	 * @param direction
-	 * @return
-	 */
-	private boolean isValidMovingDirection(Direction direction) {
-		return (direction == Direction.RIGHT) || (direction == Direction.LEFT);
-	}
-	
-	/**
-	 * 
-	 * @param position
-	 * @return
-	 */
-	private boolean isValidPosition(int[] position) {
-		return (position[0] <= this.getMaxPosition()[0]) && (position[0] >= 0) && 
-				(position[1] <= this.getMaxPosition()[1]) && (position[1] >= 0);
-	}
-	
-	/**
-	 * 
-	 * @param position
-	 * @return
-	 */
 	public boolean isValidJumpingPosition(int[] position) {
 		return position[1] < this.getMaxPosition()[1];
-	}
-	
-	/**
-	 * 
-	 * @param spriteList
-	 * @return
-	 */
-	public boolean isValidSpriteList(Sprite[] spriteList) {
-		return (spriteList != null) && (spriteList.length == 30);
-	}
-	
-	/**
-	 * 
-	 * @param dt
-	 * @return
-	 */
-	protected boolean isValidDt(double dt) {
-		return (dt > 0) && (dt < 0.2);
-	}
-	
-	/**
-	 * 
-	 * @param hitpoints
-	 * @return
-	 */
-	private boolean isValidNbHitpoints(int hitpoints) {
-		return (hitpoints >= 0) && (hitpoints <= 500);
 	}
 	
 	/**
@@ -374,10 +143,10 @@ public class Mazub {
 	 * @return
 	 */
 	public boolean isJumping() {
-		if (this.getVerticalVelocity() == 0){
+		if (this.getVerticalVelocity() == 0) {
 			return false;
 		}
-		else{
+		else {
 			return true;
 		}
 	}
@@ -387,109 +156,12 @@ public class Mazub {
 	 * 
 	 * @return
 	 */
-	public boolean isDucking(){
+	public boolean isDucking() {
 		if (this.getMaxHorizontalVelocity() == this.getMaxDuckingVelocity()) {
 			return true;
 		}
 		else {
 			return false;
-		}
-	}
-	
-	/**
-	 * Check whether the alien is moving in the x-direction or not.
-	 * 
-	 * @return
-	 */
-	public boolean isMovingHorizontally() {
-		if (this.getHorizontalVelocity() != 0){
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-	
-	/**
-	 * Check whether the alien has just moved in the x-direction or not.
-	 * 
-	 * @return
-	 */
-	public boolean hasJustMovedHorizontally() {
-		if (this.timeStalled > 30){
-			return false;
-		}
-		else{
-			return true;
-		}
-	}
-	
-	/**
-	 * Check whether the alien is moving or has just moved to the left (negative x-direction) or not.
-	 * 
-	 * @return
-	 */
-	public boolean isMovingLeft(){
-		if (this.lastDirection == Direction.LEFT){
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-	
-	public boolean isImmune(){
-		if (this.isImmune){
-			return true;
-		}
-		else{
-			return false;
-		}
-	}
-	
-	/**
-	 * Make the alien begin to move in the x-direction to the left (negative x-direction) or to the right 
-	 * (positive x-direction) depending on the given direction. Also limit the velocity in the 
-	 * x-direction to its maximum.
-	 */
-	public void startMoveHorizontally(Direction direction) {
-		assert (isValidMovingDirection(direction));
-		if (direction == Direction.RIGHT){
-			this.lastDirection = Direction.RIGHT;
-			if (this.getHorizontalVelocity() < this.getMaxHorizontalVelocity()) { 
-				this.setHorizontalVelocity(this.initialVelocity);
-				this.setHorizontalAcceleration(0.9);
-			}
-			else {
-				this.setHorizontalAcceleration(0);
-				this.setHorizontalVelocity(this.getMaxHorizontalVelocity());
-			}
-		}
-		else{
-			this.lastDirection = Direction.LEFT;
-			if (this.getHorizontalVelocity() > -this.getMaxHorizontalVelocity()) { 
-				this.setHorizontalVelocity(-this.initialVelocity);
-				this.setHorizontalAcceleration(-0.9);
-			}
-			else {
-				this.setHorizontalAcceleration(0);
-				this.setHorizontalVelocity(-(this.getMaxHorizontalVelocity()));
-			}
-		}
-	}
-	
-	/**
-	 * Make the alien stop moving in the given direction.
-	 */
-	public void endMoveHorizontally(Direction direction) {
-		assert (isValidMovingDirection(direction));
-		if ((direction == Direction.RIGHT) && (this.getHorizontalVelocity() > 0)) {
-			this.setHorizontalAcceleration(0);
-			this.setHorizontalVelocity(0);
-		}
-		if ((direction == Direction.LEFT) && (this.getHorizontalVelocity() < 0)) {
-			this.setHorizontalAcceleration(0);
-			this.setHorizontalVelocity(0);
 		}
 	}
 	
@@ -524,66 +196,7 @@ public class Mazub {
 	public void endDuck() {
 		this.setMaxHorizontalVelocity(this.maxRunningVelocity);
 	}
-	
-	/**
-	 * Return the new x-position in the game world of the alien after it moved horizontally. Also limit 
-	 * the x-position to its maximum.
-	 * @param	dt
-	 * 			The time passed dt.
-	 * @post	If the horizontal velocity is bigger than or equal to the maximum, the new horizontal 
-	 * 			acceleration is set to 0 and the velocity to the maximum in the positive of negative 
-	 * 			direction, depending on the direction the alien was going in.
-	 * 			| if (Math.abs(this.getHorizontalVelocity()) >= this.getMaxHorizontalVelocity())
-	 * 			|	this.setHorizontalAcceleration(0)
-	 * 			|	if (this.getHorizontalVelocity() < 0)
-	 * 			|		(new this).setHorizontalVelocity(-this.getMaxHorizontalVelocity())
-	* 			|	else
-	 * 			|		(new this).setHorizontalVelocity(this.getMaxHorizontalVelocity())
-	 * @post	If the given x-position is the smaller than or equal to the minimum and the alien is 
-	 * 			trying to move in the negative x-direction, the new horizontal velocity and acceleration 
-	  * 			are set to 0 and the new x-position is set to the minimum.
-	 * 			| if ((this.getPosition()[0] <= 0) && (this.getHorizontalVelocity() < 0)) 
-	 * 			|	(new this).setHorizontalAcceleration(0) 
-	 * 			|	(new this).setHorizontalVelocity(0) 
-	 * 			|	(new this).setPosition(0, this.getPosition()[1])
-	 * @post	If the given x-position is the bigger than or equal to the maximum and the alien is 
-	 * 			trying to move in the positive x-direction, the horizontal velocity and acceleration are
-	 * 			set to 0 and the x-position is set to the maximum.
-	 * 			| if ((this.getPosition()[0] >= (this.maxPositionX)) && 
-	 * 			|		(this.getHorizontalVelocity() > 0)) 
-	 * 			|	(new this).setHorizontalAcceleration(0) 
-	 * 			|	(new this).setHorizontalVelocity(0) 
-	 * 			|	(new this).setPosition(0, this.getPosition()[1])
-	 * @post	The new horizontal velocity is set to the sum of the current horizontal velocity and the 
-	 * 			product of the current horizontal acceleration and dt.
-	 * 			| (new this).setHorizontalVelocity(this.getHorizontalVelocity() + 
-	 * 			|	this.getHorizontalAcceleration()*dt)
-	 */
-	private double horizontalMovement(double dt) throws IllegalArgumentException {
-		if (! isValidDt(dt))
-			throw new IllegalArgumentException("The given period of time dt is invalid!");
-		if (Math.abs(this.getHorizontalVelocity()) >= this.getMaxHorizontalVelocity()) {
-			this.setHorizontalAcceleration(0);
-			if (this.getHorizontalVelocity() < 0) {
-				this.setHorizontalVelocity(-this.getMaxHorizontalVelocity());
-			} else
-				this.setHorizontalVelocity(this.getMaxHorizontalVelocity());
-		}
-		if ((this.getPosition()[0] <= 0) && (this.getHorizontalVelocity() < 0)) {
-			this.setHorizontalAcceleration(0);
-			this.setHorizontalVelocity(0);
-		}
-		if ((this.getPosition()[0] >= this.getMaxPosition()[0]) && (this.getHorizontalVelocity() > 0)) {
-			this.setHorizontalAcceleration(0);
-			this.setHorizontalVelocity(0);
-		}
-		this.setHorizontalVelocity(this.getHorizontalVelocity() + this.getHorizontalAcceleration() * dt);
-		double newPositionX = this.getHorizontalVelocity() * dt - 
-				this.getHorizontalAcceleration() * Math.pow(dt, 2) + 
-				this.getHorizontalAcceleration() * Math.pow(dt, 2) / 2;
-		return newPositionX;
-	}
-	
+
 	/**
 	 * Return the new y-position in the game world of the alien after it moved vertically. Also limit 
 	 * the y-position to its maximum.
@@ -665,10 +278,10 @@ public class Mazub {
 			this.timeMoving += 1;
 		}
 		if (/*botsing*/)
-			this.setHitPoints(-50);
+			this.setNbHitPoints(-50);
 		if (/*in water*/)
-			this.setHitPoints((int)(-2 * (dt % (0.2))));
+			this.setNbHitPoints((int)(-2 * (dt % (0.2))));
 		if (/*in lava*/)
-			this.setHitPoints((int)(-50 *((dt + 1) % (0.2))));
+			this.setNbHitPoints((int)(-50 *((dt + 1) % (0.2))));
 	}
 }
