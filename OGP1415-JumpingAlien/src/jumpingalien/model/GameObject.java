@@ -38,16 +38,6 @@ public abstract class GameObject {
 	
 	public void setWorld(World world){
 		this.world = world;
-/*		this.setVerticalVelocity(0);
-		this.setVerticalAcceleration(0);
-	    this.spriteList = spriteList;
-	    this.timeStalled = 0;
-	    this.lastDirection = Direction.STALLED;
-	    this.hitPoints = 100;
-		this.isImmune = false;
-		this.world = null;
-		
-		Waarom deze dingen nog? Die staan erboven toch al?*/
 	}
 
 	public int[] getPosition() {
