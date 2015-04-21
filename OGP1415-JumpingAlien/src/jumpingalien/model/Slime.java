@@ -28,8 +28,10 @@ public class Slime extends GameObject {
 		return this.school;
 	}
 	
-	public void setSchool(School school){
-		this.school = school;
+	public void setSchool(School newSchool){
+		this.school.removeSlimeFromSchool(this);
+		this.school = newSchool;
+		newSchool.addSlimeToSchool(this);
 	}
 	
 	public void advanceTime(double dt) throws IllegalArgumentException {
