@@ -221,33 +221,40 @@ public class Mazub extends GameObject {
 	 * 			| (new this).setVerticalVelocity(this.getVerticalVelocity() + 
 	 * 			|	this.getVerticalAcceleration()*dt)
 	 */ 
-	private double verticalMovement(double dt) throws IllegalArgumentException {
-		if (! isValidDt(dt))
-			throw new IllegalArgumentException("The given period of time dt is invalid!");
-		if ((this.getPosition()[1] <= 0) && (this.getVerticalVelocity() < 0)) {
-			this.setVerticalAcceleration(0);
+	private double verticalMovement(double dt){
+		if ((this.getPosition()[1] <= 0) && (this.getVerticalVelocity() < 0)){
 			this.setVerticalVelocity(0);
+			this.setVerticalAcceleration(0);
 		}
-		if (this.getVerticalVelocity() <= 0){
-			int geologicalFeature = this.world.getGeologicalFeature((int)this.positionX, 
-					(int)this.positionY);
-			if (this.world.isNotPassable(geologicalFeature)){
-				this.setVerticalVelocity(0);
-				this.setVerticalAcceleration(0);
-				this.setPosition(this.getPosition()[0], 
-						this.world.getBottomLeftPixelOfTile((int)this.positionX, 
-						(int)this.positionY)[1] + this.world.getTileLength());
-			}
-		}	
-		if ((this.getPosition()[1] >= this.getMaxPosition()[1]) && (this.getVerticalVelocity() > 0)) {
-			this.setVerticalAcceleration(-10);
-			this.setVerticalVelocity(0.0D);
+		if ((this.getVerticalVelocity() <= 0) && (this.world.isNotPassable(this.world.getGeologicalFeature((int)this.getPosition()[0], 
+			(int)this.getPosition()[1])))){
+			this.setVerticalVelocity(0);
+			this.setVerticalAcceleration(0);
+			this.setPosition(this.getPosition()[0], 
+					this.world.getBottomLeftPixelOfTile((int)this.getPosition()[0], 
+					(int)this.getPosition()[1])[1] + this.world.getTileLength());
+		}			
+		if (this.getPosition()[1] >= this.maxPositionY){
+			this.setVerticalVelocity(this.getVerticalAcceleration()*dt);
 		}
-		this.setVerticalVelocity(this.getVerticalVelocity() + this.getVerticalAcceleration()*dt);
-		double newPositionY = this.getVerticalVelocity() * dt - 
-				this.getVerticalAcceleration() * Math.pow(dt, 2) + 
-				this.getVerticalAcceleration() * Math.pow(dt, 2) / 2;
-		return newPositionY;
+		if ((this.getVerticalVelocity() >= 0) && 
+				(this.world.isNotPassable(this.world.getGeologicalFeature((int)this.getPosition()[0], 
+				(int)this.getPosition()[1] + this.getCurrentSprite().getHeight())))){
+			this.setVerticalVelocity(0);
+			this.setPosition(this.getPosition()[0], 
+					this.world.getBottomLeftPixelOfTile((int)this.getPosition()[0],
+					(int)this.getPosition()[1])[1] - this.world.getTileLength());
+		}
+		if ((this.getVerticalVelocity() == 0) && (!(this.world.isNotPassable(this.world.getGeologicalFeature((int)this.getPosition()[0], 
+			(int)this.getPosition()[1]-1))))){
+			this.setVerticalAcceleration(getVerticalAcceleration());
+		}
+		else{
+			this.setVerticalVelocity(this.getVerticalVelocity() + this.getVerticalAcceleration()*dt);
+		}
+		return (this.getVerticalVelocity()*dt 
+				- this.getVerticalAcceleration()*Math.pow(dt, 2)
+				+ this.getVerticalAcceleration()*Math.pow(dt, 2)/2);
 	}
 	
 	/**
