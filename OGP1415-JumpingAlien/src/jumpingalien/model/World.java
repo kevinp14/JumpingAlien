@@ -153,7 +153,7 @@ public class World {
 				dimension += 1;
 			}
 		}
-		positions = new int[dimension][2];
+		/*Hier moet nog iets voor van type, ik veronderstel int[]*/positions = new int[dimension][2];
 		int placeInPositions = 0;
 		for (int x = (int)(pixelLeft/this.tileSize); x < pixelRight; x += this.tileSize ){
 			for (int y = (int)(pixelBottom/this.tileSize); y < pixelTop; y += this.tileSize){
@@ -166,6 +166,7 @@ public class World {
 		return positions ;
 	}
 	
+	//Hier moeten links, onder, rechts en bovenste 'pixel' gegeven worden
 	@Basic
 	public int[] getVisibleWindow() {
 		return new int[]{this.visibleWindowWidth, this.visibleWindowHeight};
@@ -178,7 +179,7 @@ public class World {
 	}
 	
 	public boolean isGameOver(){
-		if (this.alien.getHitPoints() <= 0){
+		if (this.alien.getNbHitPoints() <= 0){
 			return true;
 		}
 		else{
