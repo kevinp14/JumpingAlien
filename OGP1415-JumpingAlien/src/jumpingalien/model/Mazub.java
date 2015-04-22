@@ -25,13 +25,9 @@ public class Mazub extends GameObject {
 	private double maxHorizontalVelocity;
 	private double maxRunningVelocity = 3;
 	private double maxDuckingVelocity = 1;
-	private double positionX;
-	private double positionY;
-	private double maxPositionX = 1023;
-	private double maxPositionY = 767;
 	private Sprite[] spriteList;
 	private double timeStalled;
-	private double timeMoving;
+	private double timeMovingHorizontally;
 	private int hitPoints = 100;
 	private World world;
 	
@@ -53,7 +49,7 @@ public class Mazub extends GameObject {
 		assert (isValidSpriteList(spriteList));
 		this.spriteList = spriteList;
 		this.setMaxHorizontalVelocity(this.maxRunningVelocity);
-	    this.timeMoving = 0;
+	    this.timeMovingHorizontally = 0;
 	}
 
 	/**
@@ -69,22 +65,22 @@ public class Mazub extends GameObject {
 				if (this.isJumping())
 					return spriteList[5];
 				else {
-					if ((this.timeMoving % 75) <= 11)
-						return spriteList[(int) (18 + (this.timeMoving % 75))];
+					if ((this.timeMovingHorizontally % 75) <= 11)
+						return spriteList[(int) (18 + (this.timeMovingHorizontally % 75))];
 					else
-						this.timeMoving = 0;
+						this.timeMovingHorizontally = 0;
 				}
 			}
-			else {
+			if (this.isMovingRight()){
 				if (this.isDucking())
 					return spriteList[6];
 				if (this.isJumping())
 					return spriteList[4];
 				else {
-					if ((this.timeMoving % 75) <= 11)
-						return spriteList[(int) (7 + (this.timeMoving % 75))];
+					if ((this.timeMovingHorizontally % 75) <= 11)
+						return spriteList[(int) (7 + (this.timeMovingHorizontally % 75))];
 					else 
-						this.timeMoving = 0;
+						this.timeMovingHorizontally = 0;
 				}
 			}
 		}
@@ -95,7 +91,7 @@ public class Mazub extends GameObject {
 				else
 					return spriteList[3];
 			}
-			else {
+			if (this.isMovingRight()) {
 				if (this.isDucking())
 					return spriteList[6];
 				else
@@ -196,6 +192,31 @@ public class Mazub extends GameObject {
 	public void endDuck() {
 		this.setMaxHorizontalVelocity(this.maxRunningVelocity);
 	}
+	
+	protected double horizontalMovement(double dt) throws IllegalArgumentException {
+		if (! isValidDt(dt))
+			throw new IllegalArgumentException("The given period of time dt is invalid!");
+		if (Math.abs(this.getHorizontalVelocity()) >= this.getMaxHorizontalVelocity()) {
+			this.setHorizontalAcceleration(0);
+			if (this.getHorizontalVelocity() < 0) {
+				this.setHorizontalVelocity(-this.getMaxHorizontalVelocity());
+			} else
+				this.setHorizontalVelocity(this.getMaxHorizontalVelocity());
+		}
+		if ((this.getPosition()[0] <= 0) && (this.getHorizontalVelocity() < 0)) {
+			this.setHorizontalAcceleration(0);
+			this.setHorizontalVelocity(0);
+		}
+		if ((this.getPosition()[0] >= this.getMaxPosition()[0]) && (this.getHorizontalVelocity() > 0)) {
+			this.setHorizontalAcceleration(0);
+			this.setHorizontalVelocity(0);
+		}
+		this.setHorizontalVelocity(this.getHorizontalVelocity() + this.getHorizontalAcceleration() * dt);
+		double newPositionX = this.getHorizontalVelocity() * dt - 
+				this.getHorizontalAcceleration() * Math.pow(dt, 2) + 
+				this.getHorizontalAcceleration() * Math.pow(dt, 2) / 2;
+		return newPositionX;
+	}
 
 	/**
 	 * Return the new y-position in the game world of the alien after it moved vertically. Also limit 
@@ -221,32 +242,36 @@ public class Mazub extends GameObject {
 	 * 			| (new this).setVerticalVelocity(this.getVerticalVelocity() + 
 	 * 			|	this.getVerticalAcceleration()*dt)
 	 */ 
-	private double verticalMovement(double dt){
-		if ((this.getPosition()[1] <= 0) && (this.getVerticalVelocity() < 0)){
-			this.setVerticalVelocity(0);
+	private double verticalMovement(double dt) throws IllegalArgumentException {
+		if (! isValidDt(dt))
+			throw new IllegalArgumentException("The given period of time dt is invalid!");
+		if ((this.getPosition()[1] <= 0) && (this.getVerticalVelocity() < 0)) {
 			this.setVerticalAcceleration(0);
+			this.setVerticalVelocity(0);
 		}
-		if ((this.getVerticalVelocity() <= 0) && (this.world.isNotPassable(this.world.getGeologicalFeature((int)this.getPosition()[0], 
-			(int)this.getPosition()[1])))){
-			this.setVerticalVelocity(0);
+		if ((this.getVerticalVelocity() <= 0) && (this.world.isNotPassable(
+				this.world.getGeologicalFeature((int)this.getPosition()[0], 
+						(int)this.getPosition()[1])))) {
 			this.setVerticalAcceleration(0);
+			this.setVerticalVelocity(0);
 			this.setPosition(this.getPosition()[0], 
 					this.world.getBottomLeftPixelOfTile((int)this.getPosition()[0], 
 					(int)this.getPosition()[1])[1] + this.world.getTileLength());
 		}			
-		if (this.getPosition()[1] >= this.maxPositionY){
+		if (this.getPosition()[1] >= this.getMaxPosition()[1]) {
 			this.setVerticalVelocity(this.getVerticalAcceleration()*dt);
 		}
 		if ((this.getVerticalVelocity() >= 0) && 
 				(this.world.isNotPassable(this.world.getGeologicalFeature((int)this.getPosition()[0], 
-				(int)this.getPosition()[1] + this.getCurrentSprite().getHeight())))){
+				(int)this.getPosition()[1] + this.getCurrentSprite().getHeight())))) {
 			this.setVerticalVelocity(0);
 			this.setPosition(this.getPosition()[0], 
 					this.world.getBottomLeftPixelOfTile((int)this.getPosition()[0],
 					(int)this.getPosition()[1])[1] - this.world.getTileLength());
 		}
-		if ((this.getVerticalVelocity() == 0) && (!(this.world.isNotPassable(this.world.getGeologicalFeature((int)this.getPosition()[0], 
-			(int)this.getPosition()[1]-1))))){
+		if ((this.getVerticalVelocity() == 0) && (!(this.world.isNotPassable(
+				this.world.getGeologicalFeature((int)this.getPosition()[0], 
+						(int)this.getPosition()[1]-1))))) {
 			this.setVerticalAcceleration(getVerticalAcceleration());
 		}
 		else{
@@ -278,17 +303,17 @@ public class Mazub extends GameObject {
 			this.setPosition(this.getPosition()[0], this.getMaxPosition()[1]);
 		if (this.getHorizontalVelocity() == 0) {
 		    this.timeStalled += 1;
-			this.timeMoving = 0;
+			this.timeMovingHorizontally = 0;
 		}
 		else {
 			this.timeStalled = 0;
-			this.timeMoving += 1;
+			this.timeMovingHorizontally += 1;
 		}
 		if (/*botsing*/)
 			this.setNbHitPoints(-50);
 		if (/*in water*/)
-			this.setNbHitPoints((int)(-2 * (dt % (0.2))));
+			this.setNbHitPoints((int)(-2 * (dt % (20))));
 		if (/*in lava*/)
-			this.setNbHitPoints((int)(-50 *((dt + 1) % (0.2))));
+			this.setNbHitPoints((int)(-50 *((dt + 1) % (20))));
 	}
 }

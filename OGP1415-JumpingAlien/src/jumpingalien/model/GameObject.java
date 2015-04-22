@@ -3,7 +3,7 @@ import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 import jumpingalien.util.*;
 
-public abstract class GameObject {
+public class GameObject {
 		
 	private double horizontalVelocity;
 	private double horizontalAcceleration;
@@ -62,9 +62,7 @@ public abstract class GameObject {
 	protected void setNbHitPoints(int hitPointsDifference) {
 		this.hitPoints += hitPointsDifference;
 	}
-
-	public abstract Sprite getCurrentSprite();
-
+	
 	public double getHorizontalVelocity() {
 		return this.horizontalVelocity;
 	}
@@ -107,6 +105,14 @@ public abstract class GameObject {
 	protected void setVerticalAcceleration(double verticalAcceleration) {
 		this.verticalAcceleration = verticalAcceleration;
 	}
+	
+	protected Direction getLastDirection() {
+		return lastDirection;
+	}
+	
+	protected void setLastDirection(Direction direction){
+		this.setLastDirection(direction);
+	}
 
 	protected boolean isValidMovingDirection(Direction direction) {
 		return (direction == Direction.RIGHT) || (direction == Direction.LEFT);
@@ -148,12 +154,19 @@ public abstract class GameObject {
 	}
 
 	public boolean isMovingLeft(){
-		if (this.lastDirection == Direction.LEFT){
+		if (this.getLastDirection() == Direction.LEFT){
 			return true;
 		}
 		else {
 			return false;
 		}
+	}
+	
+	public boolean isMovingRight() {
+		if (this.getLastDirection() == Direction.RIGHT)
+			return true;
+		else 
+			return false;
 	}
 	
 	public boolean isImmune(){
@@ -168,7 +181,7 @@ public abstract class GameObject {
 	public void startMoveHorizontally(Direction direction) {
 		assert (isValidMovingDirection(direction));
 		if (direction == Direction.RIGHT){
-			this.lastDirection = Direction.RIGHT;
+			this.setLastDirection(Direction.RIGHT);
 			if (this.getHorizontalVelocity() < this.getMaxHorizontalVelocity()) { 
 				this.setHorizontalVelocity(this.normalHorizontalVelocity);
 				this.setHorizontalAcceleration(this.normalHorizontalAcceleration);
@@ -179,7 +192,7 @@ public abstract class GameObject {
 			}
 		}
 		else{
-			this.lastDirection = Direction.LEFT;
+			this.setLastDirection(Direction.LEFT);
 			if (this.getHorizontalVelocity() > -this.getMaxHorizontalVelocity()) { 
 				this.setHorizontalVelocity(-this.normalHorizontalVelocity);
 				this.setHorizontalAcceleration(-this.normalHorizontalAcceleration);
@@ -202,40 +215,4 @@ public abstract class GameObject {
 			this.setHorizontalVelocity(0);
 			}
 	}
-	
-	protected double horizontalMovement(double dt) throws IllegalArgumentException {
-		if (! isValidDt(dt))
-			throw new IllegalArgumentException("The given period of time dt is invalid!");
-		if (Math.abs(this.getHorizontalVelocity()) >= this.getMaxHorizontalVelocity()) {
-			this.setHorizontalAcceleration(0);
-			if (this.getHorizontalVelocity() < 0) {
-				this.setHorizontalVelocity(-this.getMaxHorizontalVelocity());
-			} else
-				this.setHorizontalVelocity(this.getMaxHorizontalVelocity());
-		}
-		if ((this.getPosition()[0] <= 0) && (this.getHorizontalVelocity() < 0)) {
-			this.setHorizontalAcceleration(0);
-			this.setHorizontalVelocity(0);
-		}
-		if ((this.getPosition()[0] >= this.getMaxPosition()[0]) && (this.getHorizontalVelocity() > 0)) {
-			this.setHorizontalAcceleration(0);
-			this.setHorizontalVelocity(0);
-		}
-		this.setHorizontalVelocity(this.getHorizontalVelocity() + this.getHorizontalAcceleration() * dt);
-		double newPositionX = this.getHorizontalVelocity() * dt - 
-				this.getHorizontalAcceleration() * Math.pow(dt, 2) + 
-				this.getHorizontalAcceleration() * Math.pow(dt, 2) / 2;
-		return newPositionX;
-	}
-	
-	public abstract void advanceTime(double dt);
-	
-	protected Direction getLastDirection() {
-		return lastDirection;
-	}
-	
-	protected void setLastDirection(Direction direction){
-		this.setLastDirection(direction);
-	}
-	
 }

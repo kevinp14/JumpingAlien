@@ -1,6 +1,5 @@
 package jumpingalien.model;
 
-import java.util.Collection;
 import java.util.Hashtable;
 import java.util.ArrayList;
 import be.kuleuven.cs.som.annotate.Basic;
