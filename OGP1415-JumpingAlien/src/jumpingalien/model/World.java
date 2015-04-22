@@ -152,7 +152,7 @@ public class World {
 				dimension += 1;
 			}
 		}
-		/*Hier moet nog iets voor van type, ik veronderstel int[]*/positions = new int[dimension][2];
+		int[] positions = new int[dimension][2];
 		int placeInPositions = 0;
 		for (int x = (int)(pixelLeft/this.tileSize); x < pixelRight; x += this.tileSize ){
 			for (int y = (int)(pixelBottom/this.tileSize); y < pixelTop; y += this.tileSize){
