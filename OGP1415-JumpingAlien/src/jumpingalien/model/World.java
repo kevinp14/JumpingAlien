@@ -201,10 +201,54 @@ public class World {
 		return positions ;
 	}
 	
-	//Hier moeten links, onder, rechts en bovenste 'pixel' gegeven worden
 	@Basic
 	public int[] getVisibleWindow() {
-		return new int[]{this.visibleWindowWidth, this.visibleWindowHeight};
+		if (this.alien.getLastDirection() == Direction.LEFT){
+			if (this.alien.getPosition()[0] < 200){
+				if (this.alien.getPosition()[1] < 200){
+					return new int[]{0,0,this.visibleWindowWidth, this.visibleWindowHeight};
+				}
+				else{
+					return new int[]{0, this.alien.getPosition()[1] - 200, this.visibleWindowWidth, 
+							this.alien.getPosition()[1] - 200 + this.visibleWindowHeight};
+				}
+			}
+			else{
+				if (this.alien.getPosition()[1] < 200){
+					return new int[]{this.alien.getPosition()[0] + 200 - this.visibleWindowWidth,
+							0, this.alien.getPosition()[0] + 200, this.visibleWindowHeight};
+				}
+				else{
+					return new int[]{this.alien.getPosition()[0] + 200 - this.visibleWindowWidth,
+							this.alien.getPosition()[1] - 200, this.alien.getPosition()[0] + 200,
+							this.alien.getPosition()[1] - 200 + this.visibleWindowHeight};
+				}
+			}
+		}
+		else {
+			if (this.alien.getPosition()[0] < 200){
+				if (this.alien.getPosition()[1] < 200){
+					return new int[]{0,0,this.visibleWindowWidth, this.visibleWindowHeight};
+				}
+				else{
+					return new int[]{0, this.alien.getPosition()[1] - 200, this.visibleWindowWidth, 
+							this.alien.getPosition()[1] - 200 + this.visibleWindowHeight};
+				}
+			}
+			else{
+				if (this.alien.getPosition()[1] < 200){
+					return new int[]{this.alien.getPosition()[0] - 200,
+							0, this.alien.getPosition()[0] - 200 + this.visibleWindowWidth, 
+							this.visibleWindowHeight};
+				}
+				else{
+					return new int[]{this.alien.getPosition()[0] - 200,
+							this.alien.getPosition()[1] - 200, this.alien.getPosition()[0] - 200 + 
+							this.visibleWindowWidth, this.alien.getPosition()[1] - 200 + 
+							this.visibleWindowHeight};
+				}
+			}
+		}
 	}
 	
 	@Basic
