@@ -309,7 +309,7 @@ public class Mazub extends GameObject {
 			this.timeStalled = 0;
 			this.timeMovingHorizontally += 1;
 		}
-		if (/*botsing*/){
+		if (this.world.mazubCollidesWithEnemy()){
 			this.setNbHitPoints(-50);
 		}
 		if (this.isInWater()){
@@ -317,6 +317,9 @@ public class Mazub extends GameObject {
 		}
 		if (this.isInLava()){
 			this.setNbHitPoints((int)(-50 *((dt + 1) % (0.2))));
+		}
+		if (this.world.mazubCollidesWithPlant()){
+			this.setNbHitPoints(50);
 		}
 	}
 	
