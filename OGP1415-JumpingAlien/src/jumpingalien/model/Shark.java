@@ -1,3 +1,12 @@
+//package jumpingalien.model;
+//
+//public enum SharkMovement {
+//	JUMPINGLEFT, JUMPINGRIGHT, RIGHT, LEFT, JUMPING;
+//}
+
+//-> fix aparte enum
+
+
 package jumpingalien.model;
 
 import be.kuleuven.cs.som.annotate.Basic;
@@ -37,5 +46,32 @@ public class Shark extends GameObject {
 			this.setNbHitPoints((int)(-6 * (dt % (0.2))));
 		if (/*in lava*/)
 			this.setNbHitPoints((int)(-50 *((dt + 1) % (0.2))));
+	}
+	
+	/*
+	 * 1 = JUMPINGLEFT, 
+	 * 2 = JUMPINGRIGHT, 
+	 * 3 = RIGHT, 
+	 * 4 = LEFT
+	 * 5 = JUMPING, 
+	 */
+	public SharkMovement getNextMove(){
+		Random rand = new Random();
+	    int movementNumber = rand.nextInt(5) + 1;
+	    if (movementNumber == 1){
+	    	return SharkMovement.JUMPINGLEFT;
+	    }
+	    if (movementNumber == 2){
+	    	return SharkMovement.JUMPINGRIGHT;
+	    }
+	    if (movementNumber == 3){
+	    	return SharkMovement.RIGHT; 			
+	    }
+	    if (movementNumber == 4){
+	    	return SharkMovement.LEFT;
+	    }
+	    else{
+	    	return SharkMovement.JUMPING;
+	    }
 	}
 }
