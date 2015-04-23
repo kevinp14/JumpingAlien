@@ -309,11 +309,32 @@ public class Mazub extends GameObject {
 			this.timeStalled = 0;
 			this.timeMovingHorizontally += 1;
 		}
-		if (/*botsing*/)
+		if (/*botsing*/){
 			this.setNbHitPoints(-50);
-		if (/*in water*/)
-			this.setNbHitPoints((int)(-2 * (dt % (20))));
-		if (/*in lava*/)
-			this.setNbHitPoints((int)(-50 *((dt + 1) % (20))));
+		}
+		if (this.isInWater()){
+			this.setNbHitPoints((int)(-2 * (dt % (0.2))));
+		}
+		if (this.isInLava()){
+			this.setNbHitPoints((int)(-50 *((dt + 1) % (0.2))));
+		}
+	}
+	
+	private boolean isInWater(){
+		if (this.world.getGeologicalFeature(this.getPosition()[0], this.getPosition()[1]) == 2){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+	
+	private boolean isInLava(){
+		if (this.world.getGeologicalFeature(this.getPosition()[0], this.getPosition()[1]) == 3){
+			return true;
+		}
+		else{
+			return false;
+		}
 	}
 }
