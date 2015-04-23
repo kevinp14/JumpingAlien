@@ -143,6 +143,42 @@ public class World {
 		return this.tileSize;
 	}
 	
+	public boolean mazubCollidesWithEnemy(){
+		for (Shark shark: sharks){
+			if ((shark.getPosition()[0] <= this.alien.getPosition()[0] + this.alien.getCurrentSprite().getWidth())
+				&& (shark.getPosition()[0] + shark.getCurrentSprite().getWidth() >= this.alien.getPosition()[0])){
+				if ((shark.getPosition()[1] <= this.alien.getPosition()[1] + this.alien.getCurrentSprite().getHeight())
+						&& (shark.getPosition()[1] + shark.getCurrentSprite().getHeight() >= this.alien.getPosition()[1])){
+					return true;
+				}
+			}
+		}
+		for (Slime slime: slimes){
+			if ((slime.getPosition()[0] <= this.alien.getPosition()[0] + this.alien.getCurrentSprite().getWidth())
+					&& (slime.getPosition()[0] + slime.getCurrentSprite().getWidth() >= this.alien.getPosition()[0])){
+					if ((slime.getPosition()[1] <= this.alien.getPosition()[1] + this.alien.getCurrentSprite().getHeight())
+							&& (slime.getPosition()[1] + slime.getCurrentSprite().getHeight() >= this.alien.getPosition()[1])){
+						return true;
+					}
+			}
+		}
+		return false;
+	}
+	
+	public boolean mazubCollidesWithPlant(){
+		for (Plant plant: plants){
+			if ((plant.getPosition()[0] <= this.alien.getPosition()[0] + this.alien.getCurrentSprite().getWidth())
+					&& (plant.getPosition()[0] + plant.getCurrentSprite().getWidth() >= this.alien.getPosition()[0])){
+					if ((plant.getPosition()[1] <= this.alien.getPosition()[1] + this.alien.getCurrentSprite().getHeight())
+							&& (plant.getPosition()[1] + plant.getCurrentSprite().getHeight() >= this.alien.getPosition()[1])){
+						plants.remove(plant);
+						return true;
+					}
+			}
+		}
+		return false;
+	}
+	
 	@Basic
 	public int[][] getTilePositionsIn(int pixelLeft, int pixelBottom,
 			int pixelRight, int pixelTop){
