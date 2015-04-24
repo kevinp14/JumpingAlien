@@ -1,4 +1,5 @@
 package jumpingalien.model;
+
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 import jumpingalien.util.*;
@@ -12,32 +13,45 @@ public class GameObject {
 	private double maxHorizontalVelocity;
 	private double verticalVelocity;
 	private double verticalAcceleration;
+	protected double normalVerticalAcceleration = -10;
 	private double positionX;
 	private double positionY;
 	private double maxPositionX = 1023;
 	private double maxPositionY = 767;
+	private Sprite[] spriteList;
 	private double timeStalled;
 	private Direction lastDirection;
+	private Direction nextDirection;
 	private int hitPoints;
 	private boolean isImmune;
-	private World world;
+	protected World world;
 
-	public GameObject(double positionX, double positionY) {
+	public GameObject(double positionX, double positionY, Sprite[] spriteList) {
 		int[] position = { (int)(positionX/100), (int)(positionY/100) };
 		assert (isValidPosition(position));
+		assert (isValidSpriteList(spriteList));
 		this.setPosition(positionX, positionY);
 		this.setHorizontalVelocity(0);
 		this.setHorizontalAcceleration(0);
 	    this.setVerticalVelocity(0);
 		this.setVerticalAcceleration(0);
+		this.spriteList = spriteList;
 	    this.timeStalled = 0;
 	    this.lastDirection = Direction.STALLED;
+	    this.nextDirection = Direction.STALLED;
 		this.isImmune = false;
 		this.world = null;
 	}
 	
 	public void setWorld(World world){
 		this.world = world;
+	}
+	
+	public Sprite getCurrentSprite() {
+		if (this.isMovingLeft())
+			return spriteList[0];
+		else
+			return spriteList[1];
 	}
 
 	public int[] getPosition() {
@@ -59,7 +73,7 @@ public class GameObject {
 		return this.hitPoints;
 	}
 
-	protected void setNbHitPoints(int hitPointsDifference) {
+	protected void changeNbHitPoints(int hitPointsDifference) {
 		this.hitPoints += hitPointsDifference;
 	}
 	
@@ -111,7 +125,15 @@ public class GameObject {
 	}
 	
 	protected void setLastDirection(Direction direction){
-		this.setLastDirection(direction);
+		this.lastDirection = direction;
+	}
+	
+	protected Direction getNextDirection() {
+		return nextDirection;
+	}
+	
+	protected void setNextDirection(Direction direction){
+		this.nextDirection = direction;
 	}
 
 	protected boolean isValidMovingDirection(Direction direction) {
@@ -178,10 +200,56 @@ public class GameObject {
 		}
 	}
 	
+	protected boolean isInAir() {
+		if (this.world.getGeologicalFeature(this.getPosition()[0], this.getPosition()[1]) == 0)
+			return true;
+		else
+			return false;
+	}
+	
+	protected boolean isInWater(){
+		if (this.world.getGeologicalFeature(this.getPosition()[0], this.getPosition()[1]) == 2){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+	
+	protected boolean isInLava(){
+		if (this.world.getGeologicalFeature(this.getPosition()[0], this.getPosition()[1]) == 3){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+	
+	protected boolean collidesWith(GameObject object){
+		if ((this.getPosition()[0] + (this.getCurrentSprite().getWidth() - 1) < object.getPosition()[0])
+				|| (object.getPosition()[0] + (object.getCurrentSprite().getWidth() - 1) 
+						< this.getPosition()[0]) 
+				|| (this.getPosition()[1] + (this.getCurrentSprite().getHeight() - 1) 
+						< object.getPosition()[1])
+				|| (object.getPosition()[1] + (object.getCurrentSprite().getHeight() - 1) 
+						< this.getPosition()[1]))
+			return false;
+		else
+			return true;
+	}
+	
+	protected boolean bottomCollidesWithTopOfObject(GameObject object) {
+		if ((this.collidesWith(object)) && (this.getPosition()[1] == (object.getPosition()[1] - 1)))
+			return true;
+		else
+			return false;
+	}
+	
 	public void startMoveHorizontally(Direction direction) {
 		assert (isValidMovingDirection(direction));
 		if (direction == Direction.RIGHT){
 			this.setLastDirection(Direction.RIGHT);
+			this.setNextDirection(Direction.LEFT);
 			if (this.getHorizontalVelocity() < this.getMaxHorizontalVelocity()) { 
 				this.setHorizontalVelocity(this.normalHorizontalVelocity);
 				this.setHorizontalAcceleration(this.normalHorizontalAcceleration);
@@ -193,6 +261,7 @@ public class GameObject {
 		}
 		else{
 			this.setLastDirection(Direction.LEFT);
+			this.setNextDirection(Direction.RIGHT);
 			if (this.getHorizontalVelocity() > -this.getMaxHorizontalVelocity()) { 
 				this.setHorizontalVelocity(-this.normalHorizontalVelocity);
 				this.setHorizontalAcceleration(-this.normalHorizontalAcceleration);

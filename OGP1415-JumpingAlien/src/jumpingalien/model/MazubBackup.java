@@ -19,7 +19,7 @@ import jumpingalien.util.*;
  * @version 5.0
  *
  */
-public class Mazub {
+public class MazubBackUp {
 	
 	private double horizontalVelocity;
 	private double horizontalAcceleration;

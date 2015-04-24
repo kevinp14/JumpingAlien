@@ -17,7 +17,6 @@ public class World {
 	private ArrayList<Shark> sharks = new ArrayList<>();
 	private	ArrayList<Slime> slimes = new ArrayList<>();
 	private Mazub alien;
-	private double dt;
 	Hashtable<int[], Integer> tiles
 	= new Hashtable<int[], Integer>();
 	private GameState gameState;
@@ -33,7 +32,6 @@ public class World {
 		this.targetTileX = targetTileX;
 		this.targetTileY = targetTileY;
 		this.won = false;
-		this.dt = 0;
 		for (int x  = 0; x < nbTilesX; x++){
 			for (int y = 0; y < nbTilesY; y++){
 				this.tiles.put(new int[]{x*tileSize, y*tileSize, 0}, 0);
@@ -79,7 +77,6 @@ public class World {
 		}
 	}
 	
-	//hoe zit het met die dt? zelf berekenen of meegegeven?
 	public void advanceTime(double dt){
 		this.alien.advanceTime(dt);
 		for (Shark shark: sharks){
@@ -94,13 +91,20 @@ public class World {
 	}
 	
 	public int[] getBottomLeftPixelOfTile(int tileX, int tileY){
-		int tilePositionX = (tileX%this.tileSize)*this.tileSize;
-		int tilePositionY = (tileY%this.tileSize)*this.tileSize;
+		int tilePositionX = tileX*this.tileSize;
+		int tilePositionY = tileY*this.tileSize;
 		int[] positionBottomLeftPixelOfTile = new int[]{tilePositionX, tilePositionY};
 		return positionBottomLeftPixelOfTile;
 	}
 	
-	private double getNextDt(double dt){
+	protected int[] getTopRightPixelOfTile(int tileX, int tileY) {
+		int tilePositionX = (tileX + 1)*this.tileSize;
+		int tilePositionY = (tileY + 1)*this.tileSize;
+		int[] positionTopRightPixelOfTile = new int[]{tilePositionX, tilePositionY};
+		return positionTopRightPixelOfTile;
+	}
+	
+	protected double getNextDt(double dt){
 		double velocity = Math.pow((Math.pow(this.alien.getHorizontalVelocity(), 2) + 
 				Math.pow(this.alien.getVerticalVelocity(),2)), 1/2);
 		double acceleration = Math.pow((Math.pow(this.alien.getHorizontalAcceleration(), 2) + 
@@ -123,6 +127,10 @@ public class World {
 		return this.tiles.get(this.getBottomLeftPixelOfTile(pixelX, pixelY));
 	}
 	
+	public Mazub getMazub() {
+		return this.alien;
+	}
+	
 	@Basic
 	public ArrayList<Plant> getPlants(){
 		return this.plants;
@@ -141,42 +149,6 @@ public class World {
 	@Basic
 	public int getTileLength(){
 		return this.tileSize;
-	}
-	
-	public boolean mazubCollidesWithEnemy(){
-		for (Shark shark: sharks){
-			if ((shark.getPosition()[0] <= this.alien.getPosition()[0] + this.alien.getCurrentSprite().getWidth())
-				&& (shark.getPosition()[0] + shark.getCurrentSprite().getWidth() >= this.alien.getPosition()[0])){
-				if ((shark.getPosition()[1] <= this.alien.getPosition()[1] + this.alien.getCurrentSprite().getHeight())
-						&& (shark.getPosition()[1] + shark.getCurrentSprite().getHeight() >= this.alien.getPosition()[1])){
-					return true;
-				}
-			}
-		}
-		for (Slime slime: slimes){
-			if ((slime.getPosition()[0] <= this.alien.getPosition()[0] + this.alien.getCurrentSprite().getWidth())
-					&& (slime.getPosition()[0] + slime.getCurrentSprite().getWidth() >= this.alien.getPosition()[0])){
-					if ((slime.getPosition()[1] <= this.alien.getPosition()[1] + this.alien.getCurrentSprite().getHeight())
-							&& (slime.getPosition()[1] + slime.getCurrentSprite().getHeight() >= this.alien.getPosition()[1])){
-						return true;
-					}
-			}
-		}
-		return false;
-	}
-	
-	public boolean mazubCollidesWithPlant(){
-		for (Plant plant: plants){
-			if ((plant.getPosition()[0] <= this.alien.getPosition()[0] + this.alien.getCurrentSprite().getWidth())
-					&& (plant.getPosition()[0] + plant.getCurrentSprite().getWidth() >= this.alien.getPosition()[0])){
-					if ((plant.getPosition()[1] <= this.alien.getPosition()[1] + this.alien.getCurrentSprite().getHeight())
-							&& (plant.getPosition()[1] + plant.getCurrentSprite().getHeight() >= this.alien.getPosition()[1])){
-						plants.remove(plant);
-						return true;
-					}
-			}
-		}
-		return false;
 	}
 	
 	@Basic
@@ -295,7 +267,5 @@ public class World {
 	
 	public void startGame(){
 		this.gameState = GameState.STARTED;
-	}
-
-	
+	}	
 }

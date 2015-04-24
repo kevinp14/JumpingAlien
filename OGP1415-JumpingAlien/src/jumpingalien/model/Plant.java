@@ -1,10 +1,11 @@
 package jumpingalien.model;
 
+import java.util.Random;
+
 import be.kuleuven.cs.som.annotate.Basic;
 import jumpingalien.util.Sprite;
 
 public class Plant extends GameObject {
-	private Sprite[] spriteList;
 	private double normalHorizontalVelocity = 0.5;
 	private double normalHorizontalAcceleration = 0;
 	private double maxHorizontalVelocity = 0.5;
@@ -12,21 +13,21 @@ public class Plant extends GameObject {
 	private int hitPoints = 1;
 	
 	public Plant(int positionX, int positionY, Sprite[] spriteList){
-		super(positionX, positionY);
-		this.spriteList = spriteList;
-		this.timeMovingHorizontally = 0;
-		this.setLastDirection(Direction.STALLED);
+		super(positionX, positionY, spriteList);
+	    this.timeMovingHorizontally = 0;
 	}
 	
-	public Sprite getCurrentSprite() {
-		return spriteList[0];
-	}
-	
-	private boolean isMoving() {
-		if (this.timeMovingHorizontally > 0)
-			return true;
-		else
-			return false;
+	/*
+	 * 0 = LEFT
+	 * 1 = RIGHT
+	 */
+	private Direction getRandomMove(){
+		Random rand = new Random();
+	    int directionNumber = rand.nextInt(2);
+	    if (directionNumber == 0)
+	    	return Direction.LEFT;
+	    else
+	    	return Direction.RIGHT;
 	}
 	
 	protected double horizontalMovement(double dt) throws IllegalArgumentException {
@@ -39,16 +40,13 @@ public class Plant extends GameObject {
 			this.setHorizontalVelocity(0);
 		}
 		else {
-			if (this.isMoving()) {
+			if (this.isMovingHorizontally()) {
 				if (!(this.timeMovingHorizontally < 50)) {
-					if (this.isMovingLeft())
-						this.startMoveHorizontally(Direction.RIGHT);
-					if (this.isMovingRight())
-						this.startMoveHorizontally(Direction.LEFT);
+					this.startMoveHorizontally(this.getNextDirection());
 				}
 			}
 			else {
-				// Hoe een random richting kiezen om in te bewegen?
+				this.startMoveHorizontally(this.getRandomMove());
 			}
 		}
 		double newPositionX = this.getHorizontalVelocity() * dt;
@@ -71,8 +69,7 @@ public class Plant extends GameObject {
 		if (!(this.getHorizontalVelocity() == 0)) {
 			this.timeMovingHorizontally += 1;
 		}
-		if (/*botsing met Mazub*/)
-			this.setNbHitPoints(-1);
-			
+		if (this.collidesWith(this.world.getMazub()))
+			this.changeNbHitPoints(-1);
 	}
 }

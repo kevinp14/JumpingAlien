@@ -15,7 +15,7 @@ import jumpingalien.util.*;
  * 
  * @invar	
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
+ * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
  * @version 5.0
  *
  */
@@ -25,11 +25,11 @@ public class Mazub extends GameObject {
 	private double maxHorizontalVelocity;
 	private double maxRunningVelocity = 3;
 	private double maxDuckingVelocity = 1;
+	private double normalVerticalVelocity = 8;
 	private Sprite[] spriteList;
 	private double timeStalled;
 	private double timeMovingHorizontally;
 	private int hitPoints = 100;
-	private World world;
 	
 	/**
 	 * Initialize the Mazub alien at the given position in x- and y-direction with the given list of
@@ -45,10 +45,9 @@ public class Mazub extends GameObject {
 	 * 			The list of sprites displaying how the alien should look depending on its behavior.
 	 */
 	public Mazub(double positionX, double positionY, Sprite[] spriteList) {
-		super(positionX, positionY);
+		super(positionX, positionY, spriteList);
 		assert (isValidSpriteList(spriteList));
 		this.spriteList = spriteList;
-		this.setMaxHorizontalVelocity(this.maxRunningVelocity);
 	    this.timeMovingHorizontally = 0;
 	}
 
@@ -57,12 +56,13 @@ public class Mazub extends GameObject {
 	 */
 	@Basic 
 	@Immutable
+	@Override
 	public Sprite getCurrentSprite() {
 		if (this.isMovingHorizontally()) {
 			if (this.isMovingLeft()) {
 				if (this.isDucking())
 					return spriteList[7];
-				if (this.isJumping())
+				if (this.isAirborne())
 					return spriteList[5];
 				else {
 					if ((this.timeMovingHorizontally % 75) <= 11)
@@ -71,10 +71,10 @@ public class Mazub extends GameObject {
 						this.timeMovingHorizontally = 0;
 				}
 			}
-			if (this.isMovingRight()){
+			else {
 				if (this.isDucking())
 					return spriteList[6];
-				if (this.isJumping())
+				if (this.isAirborne())
 					return spriteList[4];
 				else {
 					if ((this.timeMovingHorizontally % 75) <= 11)
@@ -91,7 +91,7 @@ public class Mazub extends GameObject {
 				else
 					return spriteList[3];
 			}
-			if (this.isMovingRight()) {
+			else {
 				if (this.isDucking())
 					return spriteList[6];
 				else
@@ -139,12 +139,26 @@ public class Mazub extends GameObject {
 	 * @return
 	 */
 	public boolean isJumping() {
-		if (this.getVerticalVelocity() == 0) {
-			return false;
-		}
-		else {
+		if (this.getVerticalVelocity() > 0) {
 			return true;
 		}
+		else {
+			return false;
+		}
+	}
+	
+	public boolean isFalling() {
+		if (this.getVerticalVelocity() < 0)
+			return true;
+		else 
+			return false;
+	}
+	
+	public boolean isAirborne() {
+		if (this.getVerticalVelocity() == 0)
+			return false;
+		else
+			return true;
 	}
 	
 	/**
@@ -165,8 +179,8 @@ public class Mazub extends GameObject {
 	 * Make the alien begin to jump (move in the positive y-direction).
 	 */
 	public void startJump() {
-		this.setVerticalVelocity(8);
-		this.setVerticalAcceleration(-10);
+		this.setVerticalVelocity(this.normalVerticalVelocity);
+		this.setVerticalAcceleration(this.normalVerticalAcceleration);
 	}
 	
 	/**
@@ -259,7 +273,7 @@ public class Mazub extends GameObject {
 					(int)this.getPosition()[1])[1] + this.world.getTileLength());
 		}			
 		if (this.getPosition()[1] >= this.getMaxPosition()[1]) {
-			this.setVerticalVelocity(this.getVerticalAcceleration()*dt);
+			this.setVerticalVelocity(this.normalVerticalAcceleration*dt);
 		}
 		if ((this.getVerticalVelocity() >= 0) && 
 				(this.world.isNotPassable(this.world.getGeologicalFeature((int)this.getPosition()[0], 
@@ -272,14 +286,13 @@ public class Mazub extends GameObject {
 		if ((this.getVerticalVelocity() == 0) && (!(this.world.isNotPassable(
 				this.world.getGeologicalFeature((int)this.getPosition()[0], 
 						(int)this.getPosition()[1]-1))))) {
-			this.setVerticalAcceleration(getVerticalAcceleration());
+			this.setVerticalAcceleration(this.normalVerticalAcceleration);
 		}
-		else{
-			this.setVerticalVelocity(this.getVerticalVelocity() + this.getVerticalAcceleration()*dt);
-		}
-		return (this.getVerticalVelocity()*dt 
-				- this.getVerticalAcceleration()*Math.pow(dt, 2)
-				+ this.getVerticalAcceleration()*Math.pow(dt, 2)/2);
+		this.setVerticalVelocity(this.getVerticalVelocity() + this.normalVerticalAcceleration*dt);
+		double newPositionY = this.getVerticalVelocity() * dt 
+				- this.getVerticalAcceleration() * Math.pow(dt, 2)
+				+ this.getVerticalAcceleration() * Math.pow(dt, 2)/2;
+		return newPositionY;
 	}
 	
 	/**
@@ -309,35 +322,31 @@ public class Mazub extends GameObject {
 			this.timeStalled = 0;
 			this.timeMovingHorizontally += 1;
 		}
-		if (this.world.mazubCollidesWithEnemy()){
-			this.setNbHitPoints(-50);
+		for (Plant plant: this.world.getPlants()) {
+			if (this.collidesWith(plant))
+				this.changeNbHitPoints(50);
 		}
-		if (this.isInWater()){
-			this.setNbHitPoints((int)(-2 * (dt % (0.2))));
+		for (Shark shark: this.world.getSharks()) {
+			if ((this.collidesWith(shark)) && (!this.bottomCollidesWithTopOfObject(shark))) {
+				this.setHorizontalAcceleration(0);
+				this.setHorizontalVelocity(0); /*Is dit goed om beweging te blokkeren? Want in de opgave
+				staat: "Properties of the ongoing movement of the colliding game, e.g. direction, velocity 
+				and acceleration, may not change directly as a result of the collision."*/
+				this.changeNbHitPoints(-50);
+			}
 		}
-		if (this.isInLava()){
-			this.setNbHitPoints((int)(-50 *((dt + 1) % (0.2))));
+		for (Slime slime: this.world.getSlimes()) {
+			if ((this.collidesWith(slime)) && (!this.bottomCollidesWithTopOfObject(slime))) {
+				this.setHorizontalAcceleration(0);
+				this.setHorizontalVelocity(0); /*Is dit goed om beweging te blokkeren? Want in de opgave
+				staat: "Properties of the ongoing movement of the colliding game, e.g. direction, velocity 
+				and acceleration, may not change directly as a result of the collision."*/
+				this.changeNbHitPoints(-50);
+			}
 		}
-		if (this.world.mazubCollidesWithPlant()){
-			this.setNbHitPoints(50);
-		}
-	}
-	
-	private boolean isInWater(){
-		if (this.world.getGeologicalFeature(this.getPosition()[0], this.getPosition()[1]) == 2){
-			return true;
-		}
-		else{
-			return false;
-		}
-	}
-	
-	private boolean isInLava(){
-		if (this.world.getGeologicalFeature(this.getPosition()[0], this.getPosition()[1]) == 3){
-			return true;
-		}
-		else{
-			return false;
-		}
+		if (this.isInWater())
+			this.changeNbHitPoints((int)(-2 * (dt % (20))));
+		if (this.isInLava())
+			this.changeNbHitPoints((int)(-50 *((dt + 1) % (20))));
 	}
 }
