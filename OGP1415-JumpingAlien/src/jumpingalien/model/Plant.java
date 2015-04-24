@@ -30,13 +30,19 @@ public class Plant extends GameObject {
 	    	return Direction.RIGHT;
 	}
 	
-	protected double horizontalMovement(double dt) throws IllegalArgumentException {
+	private double horizontalMovement(double dt) throws IllegalArgumentException {
 		if (! isValidDt(dt))
 			throw new IllegalArgumentException("The given period of time dt is invalid!");
-		if ((this.getPosition()[0] <= 0) && (this.getHorizontalVelocity() < 0)) {
+		if ((this.world.isNotPassable(this.world.getGeologicalFeature(
+				this.getPosition()[0], this.getPosition()[1])))
+				&& (this.getHorizontalVelocity() < 0)) {
+			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 		}
-		if ((this.getPosition()[0] >= this.getMaxPosition()[0]) && (this.getHorizontalVelocity() > 0)) {
+		if ((this.world.isNotPassable(this.world.getGeologicalFeature(
+				this.getPosition()[0] + this.getCurrentSprite().getWidth(), this.getPosition()[1]))) 
+				&& (this.getHorizontalVelocity() > 0)) {
+			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 		}
 		else {
@@ -58,14 +64,18 @@ public class Plant extends GameObject {
 			throw new IllegalArgumentException("The given period of time dt is invalid!");
 		this.setPosition(this.getPosition()[0] + (int)(100 * this.horizontalMovement(dt)),
 				this.getPosition()[1]);
-		if (this.getPosition()[0] < 0)
-			this.setPosition(0, this.getPosition()[1]);
-		if (this.getPosition()[0] > this.getMaxPosition()[0])
-			this.setPosition(this.getMaxPosition()[0], this.getPosition()[1]);
-		if (this.getPosition()[1] < 0)
-			this.setPosition(this.getPosition()[0], 0);
-		if (getPosition()[1] > getMaxPosition()[1])
-			this.setPosition(this.getPosition()[0], this.getMaxPosition()[1]);
+		if ((this.world.isNotPassable(this.world.getGeologicalFeature(
+				this.getPosition()[0], this.getPosition()[1])))
+				&& (this.getHorizontalVelocity() < 0)) {
+			this.setPosition(this.world.getBottomLeftPixelOfTile(this.getPosition()[0], 
+					this.getPosition()[1])[0] + this.world.getTileLength(), this.getPosition()[1]);
+		}
+		if ((this.world.isNotPassable(this.world.getGeologicalFeature(
+				this.getPosition()[0] + this.getCurrentSprite().getWidth(), this.getPosition()[1]))) 
+				&& (this.getHorizontalVelocity() > 0)) {
+			this.setPosition(this.world.getBottomLeftPixelOfTile(this.getPosition()[0], 
+					this.getPosition()[1])[0] - this.world.getTileLength(), this.getPosition()[1]);
+		}
 		if (!(this.getHorizontalVelocity() == 0)) {
 			this.timeMovingHorizontally += 1;
 		}

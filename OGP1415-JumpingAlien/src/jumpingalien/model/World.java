@@ -239,7 +239,7 @@ public class World {
 	}
 	
 	public boolean isNotPassable(int geologicalFeature){
-		if (geologicalFeature == 1){
+		if (geologicalFeature == 1) {
 			return true;
 		}
 		else{

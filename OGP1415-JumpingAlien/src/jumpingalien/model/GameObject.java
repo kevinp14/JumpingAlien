@@ -191,6 +191,13 @@ public class GameObject {
 			return false;
 	}
 	
+	protected boolean isFalling() {
+		if ((this.getVerticalVelocity() < 0) && (this.getVerticalAcceleration() == -10))
+			return true;
+		else
+			return false;
+	}
+	
 	public boolean isImmune(){
 		if (this.isImmune){
 			return true;
@@ -282,6 +289,6 @@ public class GameObject {
 		if ((direction == Direction.LEFT) && (this.getHorizontalVelocity() < 0)) {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
-			}
+		}
 	}
 }

@@ -62,11 +62,15 @@ public class Slime extends GameObject {
 			} else
 				this.setHorizontalVelocity(this.getMaxHorizontalVelocity());
 		}
-		if ((this.getPosition()[0] <= 0) && (this.getHorizontalVelocity() < 0)) {
+		if ((this.world.isNotPassable(this.world.getGeologicalFeature(
+				this.getPosition()[0], this.getPosition()[1])))
+				&& (this.getHorizontalVelocity() < 0)) {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 		}
-		if ((this.getPosition()[0] >= this.getMaxPosition()[0]) && (this.getHorizontalVelocity() > 0)) {
+		if ((this.world.isNotPassable(this.world.getGeologicalFeature(
+				this.getPosition()[0] + this.getCurrentSprite().getWidth(), this.getPosition()[1]))) 
+				&& (this.getHorizontalVelocity() > 0)) {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 		}
@@ -88,34 +92,16 @@ public class Slime extends GameObject {
 	private double verticalMovement(double dt) throws IllegalArgumentException {
 		if (! isValidDt(dt))
 			throw new IllegalArgumentException("The given period of time dt is invalid!");
-		if ((this.getPosition()[1] <= 0) && (this.getVerticalVelocity() < 0)) {
-			this.setVerticalAcceleration(0);
-			this.setVerticalVelocity(0);
-		}
-		if ((this.getVerticalVelocity() <= 0) && (this.world.isNotPassable(
+		if ((this.getVerticalVelocity() < 0) && (this.world.isNotPassable(
 				this.world.getGeologicalFeature((int)this.getPosition()[0], 
 						(int)this.getPosition()[1])))) {
 			this.setVerticalAcceleration(0);
 			this.setVerticalVelocity(0);
-			this.setPosition(this.getPosition()[0], 
-					this.world.getBottomLeftPixelOfTile((int)this.getPosition()[0], 
-					(int)this.getPosition()[1])[1] + this.world.getTileLength());
-		}			
-		if (this.getPosition()[1] >= this.getMaxPosition()[1]) {
-			this.setVerticalVelocity(this.normalVerticalAcceleration*dt);
 		}
-		if ((this.getVerticalVelocity() >= 0) && 
-				(this.world.isNotPassable(this.world.getGeologicalFeature((int)this.getPosition()[0], 
+		if ((this.getVerticalVelocity() > 0) && (this.world.isNotPassable(
+				this.world.getGeologicalFeature((int)this.getPosition()[0], 
 				(int)this.getPosition()[1] + this.getCurrentSprite().getHeight())))) {
 			this.setVerticalVelocity(0);
-			this.setPosition(this.getPosition()[0], 
-					this.world.getBottomLeftPixelOfTile((int)this.getPosition()[0],
-					(int)this.getPosition()[1])[1] - this.world.getTileLength());
-		}
-		if ((this.getVerticalVelocity() == 0) && (!(this.world.isNotPassable(
-				this.world.getGeologicalFeature((int)this.getPosition()[0], 
-						(int)this.getPosition()[1]-1))))) {
-			this.setVerticalAcceleration(this.normalVerticalAcceleration);
 		}
 		this.setVerticalVelocity(this.getVerticalVelocity() + this.normalVerticalAcceleration*dt);
 		double newPositionY = this.getVerticalVelocity() * dt 
@@ -129,14 +115,32 @@ public class Slime extends GameObject {
 			throw new IllegalArgumentException("The given period of time dt is invalid!");
 		this.setPosition(this.getPosition()[0] + (int)(100 * this.horizontalMovement(dt)),
 				this.getPosition()[1] + (int)(100 * this.verticalMovement(dt)));
-		if (this.getPosition()[0] < 0)
-			this.setPosition(0, this.getPosition()[1]);
-		if (this.getPosition()[0] > this.getMaxPosition()[0])
-			this.setPosition(this.getMaxPosition()[0], this.getPosition()[1]);
-		if (this.getPosition()[1] < 0)
-			this.setPosition(this.getPosition()[0], 0);
-		if (getPosition()[1] > getMaxPosition()[1])
-			this.setPosition(this.getPosition()[0], this.getMaxPosition()[1]);
+		if ((this.world.isNotPassable(this.world.getGeologicalFeature(
+				this.getPosition()[0], this.getPosition()[1])))
+				&& (this.getHorizontalVelocity() < 0)) {
+			this.setPosition(this.world.getBottomLeftPixelOfTile(this.getPosition()[0], 
+					this.getPosition()[1])[0] + this.world.getTileLength(), this.getPosition()[1]);
+		}
+		if ((this.world.isNotPassable(this.world.getGeologicalFeature(
+				this.getPosition()[0] + this.getCurrentSprite().getWidth(), this.getPosition()[1]))) 
+				&& (this.getHorizontalVelocity() > 0)) {
+			this.setPosition(this.world.getBottomLeftPixelOfTile(this.getPosition()[0], 
+					this.getPosition()[1])[0] - this.world.getTileLength(), this.getPosition()[1]);
+		}
+		if ((this.getVerticalVelocity() < 0) && (this.world.isNotPassable(
+				this.world.getGeologicalFeature((int)this.getPosition()[0], 
+						(int)this.getPosition()[1])))) {
+			this.setPosition(this.getPosition()[0], 
+					this.world.getBottomLeftPixelOfTile((int)this.getPosition()[0], 
+					(int)this.getPosition()[1])[1] + this.world.getTileLength());
+		}			
+		if ((this.getVerticalVelocity() > 0) && 
+				(this.world.isNotPassable(this.world.getGeologicalFeature((int)this.getPosition()[0], 
+				(int)this.getPosition()[1] + this.getCurrentSprite().getHeight())))) {
+			this.setPosition(this.getPosition()[0], 
+					this.world.getBottomLeftPixelOfTile((int)this.getPosition()[0],
+					(int)this.getPosition()[1])[1] - this.world.getTileLength());
+		}
 		if (!(this.getHorizontalVelocity() == 0)) {
 			this.timeMovingHorizontally += 1;
 		}
