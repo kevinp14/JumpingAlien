@@ -77,16 +77,23 @@ public class World {
 		}
 	}
 	
-	public void advanceTime(double dt){
-		this.alien.advanceTime(dt);
+	public void advanceTime(double dt) {
+		double nextDt = this.getNextDt(dt);
+		this.alien.advanceTime(nextDt);
 		for (Shark shark: sharks){
-			shark.advanceTime(dt);
+			shark.advanceTime(nextDt);
+			if (shark.getNbHitPoints() <= 0)
+				this.sharks.remove(shark);
 		}
 		for (Slime slime: slimes){
-			slime.advanceTime(dt);
+			slime.advanceTime(nextDt);
+			if (slime.getNbHitPoints() <= 0)
+				this.sharks.remove(slime);
 		}
 		for(Plant plant: plants){
-			plant.advanceTime(dt);
+			plant.advanceTime(nextDt);
+			if (plant.getNbHitPoints() <= 0)
+				this.sharks.remove(plant);
 		}
 	}
 	
@@ -104,7 +111,7 @@ public class World {
 		return positionTopRightPixelOfTile;
 	}
 	
-	protected double getNextDt(double dt){
+	private double getNextDt(double dt){
 		double velocity = Math.pow((Math.pow(this.alien.getHorizontalVelocity(), 2) + 
 				Math.pow(this.alien.getVerticalVelocity(),2)), 1/2);
 		double acceleration = Math.pow((Math.pow(this.alien.getHorizontalAcceleration(), 2) + 

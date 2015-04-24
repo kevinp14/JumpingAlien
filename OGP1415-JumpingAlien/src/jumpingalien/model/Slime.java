@@ -173,22 +173,32 @@ public class Slime extends GameObject {
 				this.setHorizontalVelocity(0); /*Is dit goed om beweging te blokkeren? Want in de opgave
 				staat: "Properties of the ongoing movement of the colliding game, e.g. direction, velocity 
 				and acceleration, may not change directly as a result of the collision."*/
-				this.changeNbHitPoints(-50);
+				if (!this.isImmune()) {
+					this.changeNbHitPoints(-50);
+					this.makeImmune();
+				}
+				else
+					this.timeImmune += 1;
 			}
 		}
 		if ((this.collidesWith(this.world.getMazub())) 
 				&& (!this.bottomCollidesWithTopOfObject(this.world.getMazub()))) {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
-			this.changeNbHitPoints(-50);
-			for (Slime slime: this.getSchool().getSlimes()) {
-				if (!(slime == this))
-					slime.changeNbHitPoints(-1);
+			if (!this.isImmune()) {
+				this.changeNbHitPoints(-50);
+				for (Slime slime: this.getSchool().getSlimes()) {
+					if (!(slime == this))
+						slime.changeNbHitPoints(-1);
+				}
+				this.makeImmune();
 			}
+			else
+				this.timeImmune += 1;
 		}
 		if (this.isInWater())
-			this.changeNbHitPoints((int)(-2 * (dt % (20))));
+			this.changeNbHitPoints((int)(-2 * (dt / (0.2))));
 		if (this.isInLava())
-			this.changeNbHitPoints((int)(-50 *((dt + 20) % (20))));
+			this.changeNbHitPoints((int)(-50 *((dt + 0.2) / (0.2))));
 	}
 }

@@ -20,6 +20,7 @@ public class GameObject {
 	private double maxPositionY = 767;
 	private Sprite[] spriteList;
 	private double timeStalled;
+	protected double timeImmune;
 	private Direction lastDirection;
 	private Direction nextDirection;
 	private int hitPoints;
@@ -37,6 +38,7 @@ public class GameObject {
 		this.setVerticalAcceleration(0);
 		this.spriteList = spriteList;
 	    this.timeStalled = 0;
+	    this.timeImmune = 0;
 	    this.lastDirection = Direction.STALLED;
 	    this.nextDirection = Direction.STALLED;
 		this.isImmune = false;
@@ -198,7 +200,7 @@ public class GameObject {
 			return false;
 	}
 	
-	public boolean isImmune(){
+	protected boolean isImmune(){
 		if (this.isImmune){
 			return true;
 		}
@@ -229,6 +231,15 @@ public class GameObject {
 		}
 		else{
 			return false;
+		}
+	}
+	
+	protected void makeImmune() {
+		if (this.timeImmune <= 60) 
+			this.isImmune = true;
+		else {
+			this.isImmune = false;
+			this.timeImmune = 0;
 		}
 	}
 	

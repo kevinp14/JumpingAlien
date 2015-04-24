@@ -207,7 +207,7 @@ public class Mazub extends GameObject {
 	 */
 	public void endDuck() {
 		if (this.canEndDuck()){
-			this.setMaxHorizontalVelocity(3);
+			this.setMaxHorizontalVelocity(this.maxRunningVelocity);
 		}
 	}
 	
@@ -340,7 +340,12 @@ public class Mazub extends GameObject {
 				this.setHorizontalVelocity(0); /*Is dit goed om beweging te blokkeren? Want in de opgave
 				staat: "Properties of the ongoing movement of the colliding game, e.g. direction, velocity 
 				and acceleration, may not change directly as a result of the collision."*/
-				this.changeNbHitPoints(-50);
+				if (!this.isImmune()) {
+					this.changeNbHitPoints(-50);
+					this.makeImmune();
+				}
+				else
+					this.timeImmune += 1;
 			}
 		}
 		for (Slime slime: this.world.getSlimes()) {
@@ -349,12 +354,17 @@ public class Mazub extends GameObject {
 				this.setHorizontalVelocity(0); /*Is dit goed om beweging te blokkeren? Want in de opgave
 				staat: "Properties of the ongoing movement of the colliding game, e.g. direction, velocity 
 				and acceleration, may not change directly as a result of the collision."*/
-				this.changeNbHitPoints(-50);
+				if (!this.isImmune()) {
+					this.changeNbHitPoints(-50);
+					this.makeImmune();
+				}
+				else
+					this.timeImmune += 1;
 			}
 		}
 		if (this.isInWater())
-			this.changeNbHitPoints((int)(-2 * (dt % (20))));
+			this.changeNbHitPoints((int)(-2 * (dt / (0.2))));
 		if (this.isInLava())
-			this.changeNbHitPoints((int)(-50 *((dt + 1) % (20))));
+			this.changeNbHitPoints((int)(-50 *((dt + 1) / (0.2))));
 	}
 }

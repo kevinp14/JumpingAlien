@@ -305,7 +305,12 @@ public class Shark extends GameObject {
 				&& (!this.bottomCollidesWithTopOfObject(this.world.getMazub()))) {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
-			this.changeNbHitPoints(-50);
+			if (!this.isImmune()) {
+				this.changeNbHitPoints(-50);
+				this.makeImmune();
+			}
+			else
+				this.timeImmune += 1;
 		}
 		for (Shark shark: this.world.getSharks()) {
 			if ((this.collidesWith(shark)) && (!this.bottomCollidesWithTopOfObject(shark))) {
@@ -313,7 +318,6 @@ public class Shark extends GameObject {
 				this.setHorizontalVelocity(0); /*Is dit goed om beweging te blokkeren? Want in de opgave
 				staat: "Properties of the ongoing movement of the colliding game, e.g. direction, velocity 
 				and acceleration, may not change directly as a result of the collision."*/
-				this.changeNbHitPoints(-50);
 			}
 		}
 		for (Slime slime: this.world.getSlimes()) {
@@ -322,12 +326,17 @@ public class Shark extends GameObject {
 				this.setHorizontalVelocity(0); /*Is dit goed om beweging te blokkeren? Want in de opgave
 				staat: "Properties of the ongoing movement of the colliding game, e.g. direction, velocity 
 				and acceleration, may not change directly as a result of the collision."*/
-				this.changeNbHitPoints(-50);
+				if (!this.isImmune()) {
+					this.changeNbHitPoints(-50);
+					this.makeImmune();
+				}
+				else
+					this.timeImmune += 1;
 			}
 		}
 		if (this.isInAir())
-			this.changeNbHitPoints((int)(-6 * (dt % (20))));
+			this.changeNbHitPoints((int)(-6 * (dt / (0.2))));
 		if (this.isInLava())
-			this.changeNbHitPoints((int)(-50 *((dt + 1) % (20))));
+			this.changeNbHitPoints((int)(-50 *((dt + 0.2) / (0.2))));
 	}
 }
