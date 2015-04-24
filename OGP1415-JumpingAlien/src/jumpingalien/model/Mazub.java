@@ -200,11 +200,22 @@ public class Mazub extends GameObject {
 		this.setMaxHorizontalVelocity(this.getMaxDuckingVelocity());
 	}
 	
+	private boolean canEndDuck(){
+		if (this.world.isNotPassable(this.world.getGeologicalFeature(this.getPosition()[0],
+				this.getPosition()[1] + this.spriteList[0].getHeight()))){
+			return false;
+		}
+		return true;
+	}
+	
 	/**
 	 * End the ducking of the alien.
+	 * moet nog defensief gemaakt worden
 	 */
 	public void endDuck() {
-		this.setMaxHorizontalVelocity(this.maxRunningVelocity);
+		if (this.canEndDuck()){
+			this.setMaxHorizontalVelocity(3);
+		}
 	}
 	
 	protected double horizontalMovement(double dt) throws IllegalArgumentException {
