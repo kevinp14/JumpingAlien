@@ -17,9 +17,14 @@ import be.kuleuven.cs.som.annotate.Basic;
  * won the game or not, a method to inspect whether a tile is passable or not, and a method to advance 
  * the time.
  * 
- * @invar //TODO
+ * @invar The world must be in a valid gameState
+ * 		  || isValidGameState(gameState)
+ * @invar Every tile in the world must have a valid type
+ * 		  || isValidTileType(tileType)
+ * @invar The world must have a valid ending point
+ * 		  || targetTileX <= this.getWorldSize()[0] && targetTileY <= this.getWorldSize()[1]
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
  * @version 5.0
  *
  */
@@ -75,6 +80,34 @@ public class World {
 		this.won = false;
 		this.gameOver = false;
 		this.gameState = GameState.INITIATED;
+	}
+	
+	/**
+	 * Check whether the given tileType is a valid one.
+	 * 
+	 * @param 	tileType
+	 * 			The tileType which has to be checked.
+	 * @return	True if and only if the direction is 0, 1, 2 or 3.
+	 */
+	private boolean isValidTileType(int tileType){
+		return ((tileType == 0)
+				|| (tileType == 1)
+				|| (tileType == 2)
+				|| (tileType == 3)
+				);
+	}
+	
+	/**
+	 * Check whether the given GameState is a valid one.
+	 * 
+	 * @param 	gameState
+	 * 			The GameState which has to be checked.
+	 * @return	True if and only if the direction is initiated, started, stopped.
+	 */
+	private boolean isValidGameState(GameState gameState){
+		return ((gameState == GameState.INITIATED)
+				|| (gameState == GameState.STARTED)
+				|| (gameState == GameState.STOPPED));
 	}
 	
 	/**
