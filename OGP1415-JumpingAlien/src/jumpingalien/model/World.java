@@ -25,8 +25,8 @@ import be.kuleuven.cs.som.annotate.Basic;
  */
 public class World {
 	private int tileSize;
-	private int nbTilesX;
-	private int nbTilesY;
+	protected int nbTilesX;
+	protected int nbTilesY;
 	private int visibleWindowWidth;
 	private int visibleWindowHeight;
 	private int targetTileX;
@@ -97,7 +97,7 @@ public class World {
 	/**
 	 * @return	The alien in this world
 	 */
-	protected Mazub getMazub() {
+	public Mazub getMazub() {
 		return this.alien;
 	}
 	
@@ -411,14 +411,14 @@ public class World {
 	 * @return	The new period of time dt based on the current velocity and acceleration of the alien
 	 * 			in this world. (used for accurate collision detection).
 	 */
-	private double getNewDt(double dt){
+/*	private double getNewDt(double dt){
 		double velocity = Math.pow((Math.pow(this.alien.getHorizontalVelocity(), 2) + 
 				Math.pow(this.alien.getVerticalVelocity(),2)), 1/2);
 		double acceleration = Math.pow((Math.pow(this.alien.getHorizontalAcceleration(), 2) + 
 				Math.pow(this.alien.getVerticalAcceleration(),2)), 1/2);
 		double newDt = 0.01 / (velocity + acceleration*dt);
 		return newDt;
-	}
+	}*/
 	
 	/**
 	 * Returns the geological feature of the tile with its bottom left pixel at
@@ -522,8 +522,7 @@ public class World {
 	}
 	
 	public void advanceTime(double dt) {
-		double newDt = this.getNewDt(dt);
-		this.getMazub().advanceTime(newDt);
+		this.getMazub().advanceTime(dt);
 		if ((this.getMazub().getNbHitPoints() == 0) 
 				|| (this.getMazub().getPosition()[1] < 0)) {
 			this.gameOver = true;
@@ -536,17 +535,17 @@ public class World {
 			this.gameState = GameState.STOPPED;
 		}
 		for (Shark shark: this.getSharks()){
-			shark.advanceTime(newDt);
+			shark.advanceTime(dt);
 			if ((shark.getNbHitPoints() == 0) || (!shark.isValidPosition(shark.getPosition())))
 				this.sharks.remove(shark);
 		}
 		for (Slime slime: this.getSlimes()){
-			slime.advanceTime(newDt);
+			slime.advanceTime(dt);
 			if ((slime.getNbHitPoints() == 0) || (!slime.isValidPosition(slime.getPosition())))
 				this.slimes.remove(slime);
 		}
 		for(Plant plant: this.getPlants()){
-			plant.advanceTime(newDt);
+			plant.advanceTime(dt);
 			if ((plant.getNbHitPoints() == 0) || (!plant.isValidPosition(plant.getPosition())))
 				this.plants.remove(plant);
 		}

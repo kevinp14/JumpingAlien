@@ -34,8 +34,6 @@ public class GameObject {
 	protected double normalVerticalAcceleration = -10;
 	private double positionX;
 	private double positionY;
-	private double maxPositionX;
-	private double maxPositionY;
 	private Sprite[] spriteList;
 	protected double timeStalled;
 	protected double timeImmune;
@@ -149,7 +147,9 @@ public class GameObject {
 	 */
 	@Basic
 	protected int[] getMaxPosition() {
-		int[] maxPosition = { (int)this.maxPositionX, (int)this.maxPositionY };
+		double maxPositionX = (this.getWorld().getTileLength() * this.getWorld().nbTilesX) - 1;
+		double maxPositionY = (this.getWorld().getTileLength() * this.getWorld().nbTilesY) - 1;
+		int[] maxPosition = { (int)maxPositionX, (int)maxPositionY };
 	    return maxPosition;
 	}
 
@@ -173,8 +173,8 @@ public class GameObject {
 		if (this.hitPoints < 0){
 			this.hitPoints = 0;
 		}
-		if (this.hitPoints > maxHitPoints){
-			this.hitPoints = maxHitPoints;
+		if (this.hitPoints > 500){
+			this.hitPoints = 500;
 		}
 	}
 	
@@ -524,7 +524,6 @@ public class GameObject {
 		assert (isValidMovingDirection(direction));
 		if (direction == Direction.RIGHT) {
 			this.setLastDirection(Direction.RIGHT);
-			this.setNextDirection(Direction.LEFT);
 			if (this.getHorizontalVelocity() < this.getMaxHorizontalVelocity()) { 
 				this.setHorizontalVelocity(this.normalHorizontalVelocity);
 				this.setHorizontalAcceleration(this.normalHorizontalAcceleration);
@@ -536,7 +535,6 @@ public class GameObject {
 		}
 		else{
 			this.setLastDirection(Direction.LEFT);
-			this.setNextDirection(Direction.RIGHT);
 			if (this.getHorizontalVelocity() > -this.getMaxHorizontalVelocity()) { 
 				this.setHorizontalVelocity(-this.normalHorizontalVelocity);
 				this.setHorizontalAcceleration(-this.normalHorizontalAcceleration);

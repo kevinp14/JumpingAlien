@@ -17,6 +17,7 @@ import jumpingalien.util.Sprite;
  *
  */
 public class Plant extends GameObject {
+	
 	private double timeMovingHorizontally;
 	
 	/**
@@ -32,9 +33,8 @@ public class Plant extends GameObject {
 	 */
 	public Plant(int positionX, int positionY, Sprite[] spriteList){
 		super(positionX, positionY, spriteList);
+		this.setLastDirection(this.getRandomDirection());
 		this.normalHorizontalVelocity = 0.5;
-		this.normalHorizontalAcceleration = 0;
-		this.maxHorizontalVelocity = 0.5;
 	    this.timeMovingHorizontally = 0;
 	    this.changeNbHitPoints(1);
 	}
@@ -49,6 +49,45 @@ public class Plant extends GameObject {
 	    	return Direction.LEFT;
 	    else
 	    	return Direction.RIGHT;
+	}
+	
+	/**
+	 * @param 	dt
+	 * 			The period of time dt for which the new period of time needs to be calculated.
+	 * @return	The new period of time dt based on the current velocity and acceleration of the alien
+	 * 			in this world. (used for accurate collision detection).
+	 */
+	private double getNewDt(double dt){
+		double velocity = Math.pow((Math.pow(this.getHorizontalVelocity(), 2) + 
+				Math.pow(this.getVerticalVelocity(),2)), 1/2);
+		double acceleration = Math.pow((Math.pow(this.getHorizontalAcceleration(), 2) + 
+				Math.pow(this.getVerticalAcceleration(),2)), 1/2);
+		double newDt = 0.01 / (velocity + acceleration*dt);
+		return newDt;
+	}
+	
+	@Override
+	public void startMoveHorizontally(Direction direction) {
+		assert (isValidMovingDirection(direction));
+		if (direction == Direction.RIGHT) {
+			this.setLastDirection(Direction.RIGHT);
+			this.setNextDirection(Direction.LEFT);
+			this.setHorizontalVelocity(this.normalHorizontalVelocity);
+		}
+		else {
+			this.setLastDirection(Direction.LEFT);
+			this.setNextDirection(Direction.RIGHT);
+			this.setHorizontalVelocity(-this.normalHorizontalVelocity);
+		}
+	}
+	
+	@Override
+	public void endMoveHorizontally(Direction direction) {
+		assert (isValidMovingDirection(direction));
+		if ((direction == Direction.RIGHT) && (this.getHorizontalVelocity() > 0))
+			this.setHorizontalVelocity(0);
+		if ((direction == Direction.LEFT) && (this.getHorizontalVelocity() < 0))
+			this.setHorizontalVelocity(0);
 	}
 	
 	/**
@@ -98,8 +137,6 @@ public class Plant extends GameObject {
 	 * 			| newPositionX = this.getHorizontalVelocity() * dt
 	 */
 	private double horizontalMovement(double dt) throws IllegalArgumentException {
-		if (! isValidDt(dt))
-			throw new IllegalArgumentException("The given period of time dt is invalid!");
 		if ((this.getPosition()[0] <= 0) && (this.getHorizontalVelocity() < 0)) {
 			this.setHorizontalAcceleration(0); 
 			this.setHorizontalVelocity(0);
@@ -121,14 +158,13 @@ public class Plant extends GameObject {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 		}
-		if (this.isMovingHorizontally()) {
-			if (!(this.timeMovingHorizontally <= 0.50)) {
-				this.endMoveHorizontally(this.getLastDirection());
-				this.startMoveHorizontally(this.getNextDirection());
-			}
+		if (this.timeMovingHorizontally >= 0.50) {
+			this.timeMovingHorizontally = 0;
+			this.endMoveHorizontally(this.getLastDirection());
+			this.startMoveHorizontally(this.getNextDirection());
 		}
-		else {
-			this.startMoveHorizontally(this.getRandomDirection());
+		if (this.timeMovingHorizontally < 0.50) {
+			this.timeMovingHorizontally += dt;
 		}
 		double newPositionX = this.getHorizontalVelocity() * dt;
 		return newPositionX;
@@ -146,9 +182,10 @@ public class Plant extends GameObject {
 	 * 			| !isValidDt(dt)
 	 */
 	public void advanceTime(double dt) throws IllegalArgumentException {
-		if (! isValidDt(dt))
+		double newDt = this.getNewDt(dt);
+		if (!this.isValidDt(newDt))
 			throw new IllegalArgumentException("The given period of time dt is invalid!");
-		this.setPosition(this.getPosition()[0] + (int)(100 * this.horizontalMovement(dt)),
+		this.setPosition(this.getPosition()[0] + (int)(100 * this.horizontalMovement(newDt)),
 				this.getPosition()[1]);
 		if ((this.getPosition()[0] <= 0) && (this.getHorizontalVelocity() < 0)) {
 			this.setPosition(0, this.getPosition()[1]);
@@ -157,26 +194,25 @@ public class Plant extends GameObject {
 				(this.getHorizontalVelocity() > 0)) {
 			this.setPosition(this.getMaxPosition()[0], this.getPosition()[1]);
 		}
-		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
-				this.getPosition()[0], this.getPosition()[1])))
-				&& (this.getHorizontalVelocity() < 0)) {
-			this.setPosition(this.getWorld().getBottomLeftPixelOfTile((this.getPosition()[0]
-					/this.getWorld().getTileLength()), 
-					(this.getPosition()[1]/this.getWorld().getTileLength()))[0] 
-							+ this.getWorld().getTileLength(), this.getPosition()[1]);
+		if ((this.getHorizontalVelocity() < 0) && (this.getWorld().isNotPassable(
+				this.getWorld().getGeologicalFeature(this.getPosition()[0], 
+						this.getPosition()[1] + 1)))) {
+			this.setPosition(this.getWorld().getBottomLeftPixelOfTile(
+					(this.getPosition()[0]/this.getWorld().getTileLength()), 
+					(this.getPosition()[1]/this.getWorld().getTileLength())
+					)[0] + this.getWorld().getTileLength(), this.getPosition()[1]);
 		}
-		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
-				this.getPosition()[0] + this.getCurrentSprite().getWidth(), this.getPosition()[1]))) 
-				&& (this.getHorizontalVelocity() > 0)) {
-			this.setPosition(this.getWorld().getBottomLeftPixelOfTile((this.getPosition()[0]
-					/this.getWorld().getTileLength()), 
-					(this.getPosition()[1]/this.getWorld().getTileLength()))[0]
-							- this.getWorld().getTileLength(), this.getPosition()[1]);
+		if ((this.getHorizontalVelocity() > 0) && (this.getWorld().isNotPassable(
+				this.getWorld().getGeologicalFeature(
+						this.getPosition()[0] + this.getCurrentSprite().getWidth(), 
+						this.getPosition()[1] + 1)))) {
+			this.setPosition(this.getWorld().getBottomLeftPixelOfTile(
+					(this.getPosition()[0]/this.getWorld().getTileLength()), 
+					(this.getPosition()[1]/this.getWorld().getTileLength())
+					)[0] - this.getWorld().getTileLength(), this.getPosition()[1]);
 		}
-		if (!(this.getHorizontalVelocity() == 0)) {
-			this.timeMovingHorizontally += dt;
-		}
-		if ((this.collidesWith(this.getWorld().getMazub())) && (this.getWorld().getMazub().getNbHitPoints() <= 500))
+		if ((this.collidesWith(this.getWorld().getMazub())) && 
+				(this.getWorld().getMazub().getNbHitPoints() <= 500))
 			this.changeNbHitPoints(-1);
 	}
 }

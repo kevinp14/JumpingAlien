@@ -5,8 +5,10 @@ import static jumpingalien.tests.util.TestUtils.intArray;
 import static jumpingalien.tests.util.TestUtils.spriteArrayForSize;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import jumpingalien.model.Mazub;
-import jumpingalien.model.World;
+
+import java.util.ArrayList;
+
+import jumpingalien.model.*;
 import jumpingalien.part2.facade.Facade;
 import jumpingalien.part2.facade.IFacadePart2;
 import jumpingalien.util.Sprite;
@@ -132,5 +134,87 @@ public class PartialFacadeTest {
 
 		assertEquals(sprites[8 + m], facade.getCurrentSprite(alien));
 	}
-
+	
+	@Test
+	public void testSetAndGetGeologicalFeature(){
+		IFacadePart2 facade = new Facade();
+		World world = facade.createWorld(5, 4, 3, 1, 1, 0, 1);
+		world.setGeologicalFeature(0, 0, 1);
+		assertEquals (world.getGeologicalFeature(0, 0), 1);
+	}
+	
+	@Test
+	public void testSetandGetWorld(){
+		IFacadePart2 facade = new Facade();
+		School school1 = facade.createSchool();
+		School school2 = facade.createSchool();
+		Slime slime = facade.createSlime(0, 0, spriteArrayForSize(3,3), school1);		
+		slime.setSchool(school2);
+		assertEquals(school2, slime.getSchool());
+	}
+	
+	@Test
+	public void testAddAndGetPlants(){
+		IFacadePart2 facade = new Facade();
+		World world = facade.createWorld(5, 4, 3, 1, 1, 0, 1);
+		Plant plant = facade.createPlant(0, 0, spriteArrayForSize(3,3));
+		facade.addPlant(world, plant);
+		ArrayList<Plant> plants = new ArrayList<Plant>();
+		plants.add(plant);
+		assertEquals(world.getPlants(), plants);
+	}
+	
+	@Test
+	public void testGetVisibleWindow(){
+		IFacadePart2 facade = new Facade();
+		World world = facade.createWorld(5, 4, 3, 1, 1, 0, 1);
+		Mazub alien = facade.createMazub(0, 0, spriteArrayForSize(3,3));
+		facade.setMazub(world, alien);
+		int[] visibleWindow = new int[]{0,0,1,1};
+		assertEquals(world.getVisibleWindow(), visibleWindow);
+	}
+	
+	@Test
+	public void testFallingWhenNotOnSolidGround(){
+		IFacadePart2 facade = new Facade();
+		World world = facade.createWorld(5, 4, 3, 1, 1, 0, 1);
+		Mazub alien = facade.createMazub(0, 10, spriteArrayForSize(3,3));
+		facade.setMazub(world, alien);
+		world.advanceTime(0.1);
+		assert (alien.getVerticalVelocity() != 0);
+	}
+	
+	@Test
+	public void testStartMoveHorizontallyMazub(){
+		IFacadePart2 facade = new Facade();
+		Mazub alien = facade.createMazub(0, 0, spriteArrayForSize(3,3));
+		facade.startMoveRight(alien);
+		assert (alien.getHorizontalAcceleration() == 0.9);
+	}
+	
+	@Test
+	public void testEndMoveHorizontallyMazub(){
+		IFacadePart2 facade = new Facade();
+		Mazub alien = facade.createMazub(0, 0, spriteArrayForSize(3,3));
+		facade.startMoveRight(alien);
+		facade.startMoveLeft(alien);
+		facade.endMoveRight(alien);
+		assert (alien.getHorizontalAcceleration() == -0.9);
+	}
+	
+	@Test
+	public void testGetAndSetMazub(){
+		IFacadePart2 facade = new Facade();
+		World world = facade.createWorld(5, 4, 3, 1, 1, 0, 1);
+		Mazub alien = facade.createMazub(0, 0, spriteArrayForSize(3,3));
+		facade.setMazub(world, alien);
+		assertEquals(world.getMazub(), alien);
+	}
+	
+	@Test 
+	public void testGetTileLength(){
+		IFacadePart2 facade = new Facade();
+		World world = facade.createWorld(5, 4, 3, 1, 1, 0, 1);
+		assert (world.getTileLength() == 4);
+	}
 }

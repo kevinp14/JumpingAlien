@@ -72,8 +72,8 @@ public class Mazub extends GameObject {
 				if (this.isAirborne())
 					return spriteList[5];
 				else {
-					if ((this.timeMovingHorizontally % 0.75) <= 11)
-						return spriteList[(int) (18 + (this.timeMovingHorizontally % 0.75))];
+					if (((10*this.timeMovingHorizontally) % 75) <= 11)
+						return spriteList[(int)(18 + ((10*this.timeMovingHorizontally) % 75))];
 					else
 						this.timeMovingHorizontally = 0;
 				}
@@ -84,8 +84,8 @@ public class Mazub extends GameObject {
 				if (this.isAirborne())
 					return spriteList[4];
 				else {
-					if ((this.timeMovingHorizontally % 0.75) <= 11)
-						return spriteList[(int) (7 + (this.timeMovingHorizontally % 0.75))];
+					if (((10*this.timeMovingHorizontally) % 75) <= 11)
+						return spriteList[(int) (7 + ((10*this.timeMovingHorizontally) % 75))];
 					else 
 						this.timeMovingHorizontally = 0;
 				}
@@ -152,6 +152,21 @@ public class Mazub extends GameObject {
 	 */
 	private void setSecondaryDirection(Direction direction){
 		this.secondaryDirection = direction;
+	}
+	
+	/**
+	 * @param 	dt
+	 * 			The period of time dt for which the new period of time needs to be calculated.
+	 * @return	The new period of time dt based on the current velocity and acceleration of the alien
+	 * 			in this world. (used for accurate collision detection).
+	 */
+	private double getNewDt(double dt){
+		double velocity = Math.pow((Math.pow(this.getHorizontalVelocity(), 2) + 
+				Math.pow(this.getVerticalVelocity(),2)), 1/2);
+		double acceleration = Math.pow((Math.pow(this.getHorizontalAcceleration(), 2) + 
+				Math.pow(this.getVerticalAcceleration(),2)), 1/2);
+		double newDt = 0.01 / (velocity + acceleration*dt);
+		return newDt;
 	}
 	
 	/**
@@ -363,8 +378,6 @@ public class Mazub extends GameObject {
 	 * 			| !isValidDt(dt)
 	 */
 	private double horizontalMovement(double dt) throws IllegalArgumentException {
-		if (! isValidDt(dt))
-			throw new IllegalArgumentException("The given period of time dt is invalid!");
 		if (Math.abs(this.getHorizontalVelocity()) >= this.getMaxHorizontalVelocity()) {
 			this.setHorizontalAcceleration(0);
 			if (this.getHorizontalVelocity() < 0) {
@@ -437,8 +450,6 @@ public class Mazub extends GameObject {
 	 * 			| !isValidDt(dt)
 	 */ 
 	private double verticalMovement(double dt) throws IllegalArgumentException {
-		if (! isValidDt(dt))
-			throw new IllegalArgumentException("The given period of time dt is invalid!");
 		if ((this.getPosition()[1] >= this.getMaxPosition()[1]) 
 				&& (this.getVerticalVelocity() > 0)) {
 			this.setVerticalVelocity(0);
@@ -477,10 +488,12 @@ public class Mazub extends GameObject {
 	 * 			| !isValidDt(dt)
 	 */
 	public void advanceTime(double dt) throws IllegalArgumentException {
-		if (! isValidDt(dt))
+		double newDt = this.getNewDt(dt);
+		int[] oldPosition = this.getPosition();
+		if (!this.isValidDt(newDt))
 			throw new IllegalArgumentException("The given period of time dt is invalid!");
-		this.setPosition(this.getPosition()[0] + (int)(100 * this.horizontalMovement(dt)),
-				this.getPosition()[1] + (int)(100 * this.verticalMovement(dt)));
+		this.setPosition(this.getPosition()[0] + (int)(100 * this.horizontalMovement(newDt)),
+				this.getPosition()[1] + (int)(100 * this.verticalMovement(newDt)));
 		if ((this.getPosition()[0] <= 0) && (this.getHorizontalVelocity() < 0)) {
 			this.setPosition(0, this.getPosition()[1]);
 		}
@@ -492,47 +505,51 @@ public class Mazub extends GameObject {
 				&& (this.getVerticalVelocity() > 0)) {
 			this.setPosition(this.getPosition()[0], this.getMaxPosition()[1]);
 		}
-		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
-				this.getPosition()[0], this.getPosition()[1])))
-				&& (this.getHorizontalVelocity() < 0)) {
-			this.setPosition(this.getWorld().getBottomLeftPixelOfTile((this.getPosition()[0]
-					/this.getWorld().getTileLength()), 
-					(this.getPosition()[1]/this.getWorld().getTileLength()))[0] 
-							+ this.getWorld().getTileLength(), this.getPosition()[1]);
+		if ((this.getHorizontalVelocity() < 0) && (this.getWorld().isNotPassable(
+				this.getWorld().getGeologicalFeature(this.getPosition()[0], 
+						this.getPosition()[1] + 1)))) {
+			this.setPosition(oldPosition[0], oldPosition[1]);
+					/*this.getWorld().getBottomLeftPixelOfTile(
+					(this.getPosition()[0]/this.getWorld().getTileLength()), 
+					(this.getPosition()[1]/this.getWorld().getTileLength())
+					)[0] + this.getWorld().getTileLength(), this.getPosition()[1]);*/
 		}
-		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
-				this.getPosition()[0] + this.getCurrentSprite().getWidth(), this.getPosition()[1]))) 
-				&& (this.getHorizontalVelocity() > 0)) {
-			this.setPosition(this.getWorld().getBottomLeftPixelOfTile((this.getPosition()[0]
-					/this.getWorld().getTileLength()), 
-					(this.getPosition()[1]/this.getWorld().getTileLength()))[0]
-							- this.getWorld().getTileLength(), this.getPosition()[1]);
+		if ((this.getHorizontalVelocity() > 0) && (this.getWorld().isNotPassable(
+				this.getWorld().getGeologicalFeature(
+						this.getPosition()[0] + this.getCurrentSprite().getWidth(), 
+						this.getPosition()[1] + 1)))) {
+			this.setPosition(oldPosition[0], oldPosition[1]);
+					/*this.getWorld().getBottomLeftPixelOfTile(
+					(this.getPosition()[0]/this.getWorld().getTileLength()), 
+					(this.getPosition()[1]/this.getWorld().getTileLength())
+					)[0] - this.getWorld().getTileLength(), this.getPosition()[1]);*/
 		}
 		if ((this.getVerticalVelocity() < 0) && (this.getWorld().isNotPassable(
-				this.getWorld().getGeologicalFeature((int)this.getPosition()[0], 
-						(int)this.getPosition()[1])))) {
-			this.setPosition(this.getPosition()[0], 
-					this.getWorld().getBottomLeftPixelOfTile(((int)this.getPosition()[0]
-							/this.getWorld().getTileLength()), 
-					((int)this.getPosition()[1]/this.getWorld().getTileLength()))[1] 
-							+ this.getWorld().getTileLength());
+				this.getWorld().getGeologicalFeature(this.getPosition()[0] + 1, 
+						this.getPosition()[1])))) {
+			this.setPosition(oldPosition[0], oldPosition[1]);
+					/*this.getPosition()[0], this.getWorld().getBottomLeftPixelOfTile(
+					(this.getPosition()[0]/this.getWorld().getTileLength()), 
+					(this.getPosition()[1]/this.getWorld().getTileLength())
+					)[1] + this.getWorld().getTileLength());*/
 		}
 		if ((this.getVerticalVelocity() > 0) && 
-				(this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature((int)this.getPosition()[0], 
-				(int)this.getPosition()[1] + this.getCurrentSprite().getHeight())))) {
-			this.setPosition(this.getPosition()[0], 
-					this.getWorld().getBottomLeftPixelOfTile((int)this.getPosition()[0]
-							/this.getWorld().getTileLength(),
-					(int)this.getPosition()[1]/this.getWorld().getTileLength())[1] 
-							- this.getWorld().getTileLength());
+				(this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
+						this.getPosition()[0] + 1, 
+						this.getPosition()[1] + this.getCurrentSprite().getHeight())))) {
+			this.setPosition(oldPosition[0], oldPosition[1]);
+					/*this.getPosition()[0], this.getWorld().getBottomLeftPixelOfTile(
+					(this.getPosition()[0]/this.getWorld().getTileLength()),
+					(this.getPosition()[1]/this.getWorld().getTileLength())
+					)[1] - this.getWorld().getTileLength());*/
 		}
-		if (this.getHorizontalVelocity() == 0) {
-		    this.timeStalled += dt;
+		if (!this.isMovingHorizontally()) {
+		    this.timeStalled += newDt;
 			this.timeMovingHorizontally = 0;
 		}
 		else {
 			this.timeStalled = 0;
-			this.timeMovingHorizontally += dt;
+			this.timeMovingHorizontally += newDt;
 		}
 		for (Plant plant: this.getWorld().getPlants()) {
 			if (this.collidesWith(plant)) {
@@ -543,7 +560,9 @@ public class Mazub extends GameObject {
 		for (Shark shark: this.getWorld().getSharks()) {
 			if ((this.collidesWith(shark)) && (!this.bottomCollidesWithTopOfObject(shark))) {
 				this.setHorizontalAcceleration(0);
-				this.setHorizontalVelocity(0); /*Is dit goed om beweging te blokkeren? Want in de opgave
+				this.setHorizontalVelocity(0);
+				this.setPosition(oldPosition[0], oldPosition[1]);
+				/*Is dit goed om beweging te blokkeren? Want in de opgave
 				staat: "Properties of the ongoing movement of the colliding game, e.g. direction, velocity 
 				and acceleration, may not change directly as a result of the collision."*/
 				if (!this.isImmune()) {
@@ -551,13 +570,15 @@ public class Mazub extends GameObject {
 					this.makeImmune();
 				}
 				else
-					this.timeImmune += dt;
+					this.timeImmune += newDt;
 			}
 		}
 		for (Slime slime: this.getWorld().getSlimes()) {
 			if ((this.collidesWith(slime)) && (!this.bottomCollidesWithTopOfObject(slime))) {
 				this.setHorizontalAcceleration(0);
-				this.setHorizontalVelocity(0); /*Is dit goed om beweging te blokkeren? Want in de opgave
+				this.setHorizontalVelocity(0);
+				this.setPosition(oldPosition[0], oldPosition[1]);
+				/*Is dit goed om beweging te blokkeren? Want in de opgave
 				staat: "Properties of the ongoing movement of the colliding game, e.g. direction, velocity 
 				and acceleration, may not change directly as a result of the collision."*/
 				if (!this.isImmune()) {
@@ -565,18 +586,18 @@ public class Mazub extends GameObject {
 					this.makeImmune();
 				}
 				else
-					this.timeImmune += dt;
+					this.timeImmune += newDt;
 			}
 		}
 		if (this.isInWater())
-			this.changeNbHitPoints((int)(-2 * (dt / (0.2))));
+			this.changeNbHitPoints((int)(-2 * ((10*newDt) / (20))));
 		if (this.isInMagma()) {
 			if (!this.isImmuneForMagma()) {
-				this.changeNbHitPoints((int)(-50 *((dt + 1) / (0.2))));
+				this.changeNbHitPoints((int)(-50 *((10*(newDt + 0.2)) / (20))));
 				this.makeImmuneForMagma();
 			}
 			else
-				this.timeImmuneForMagma += dt;
+				this.timeImmuneForMagma += newDt;
 		}
 	}
 }
