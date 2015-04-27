@@ -158,14 +158,6 @@ public class Plant extends GameObject {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 		}
-		if (this.timeMovingHorizontally >= 0.50) {
-			this.timeMovingHorizontally = 0;
-			this.endMoveHorizontally(this.getLastDirection());
-			this.startMoveHorizontally(this.getNextDirection());
-		}
-		if (this.timeMovingHorizontally < 0.50) {
-			this.timeMovingHorizontally += dt;
-		}
 		double newPositionX = this.getHorizontalVelocity() * dt;
 		return newPositionX;
 	}
@@ -214,5 +206,13 @@ public class Plant extends GameObject {
 		if ((this.collidesWith(this.getWorld().getMazub())) && 
 				(this.getWorld().getMazub().getNbHitPoints() <= 500))
 			this.changeNbHitPoints(-1);
+		if (this.timeMovingHorizontally >= 0.50) {
+			this.timeMovingHorizontally = 0;
+			this.endMoveHorizontally(this.getLastDirection());
+			this.startMoveHorizontally(this.getNextDirection());
+		}
+		if (this.timeMovingHorizontally < 0.50) {
+			this.timeMovingHorizontally += dt;
+		}
 	}
 }

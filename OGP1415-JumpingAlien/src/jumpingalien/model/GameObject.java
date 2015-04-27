@@ -17,15 +17,15 @@ import jumpingalien.util.*;
  * enemies and magma, methods to detect collisions and a method to move the game object horizontally.
  * 
  * @invar dt must be between 0 and 0.2
- * 		  ||isValidDt(dt)
- * @invar The position of the gameobject must be between the given boundries of the world
- * 		  ||isValidPosition(position)
- * @invar The amount of hitpoints of a gameobject must be between 0 and maxHitPoints
- * 		  ||0 <= hitPoints && hitPoints <= maxHitPoints
- * @invar The given spritelist may not be empty
- * 		  || isValidSpriteList()
- * @invar The direction in which a gameobject is ordered to move must be a possible direction to move in
- * 		  || isValidMovingDirection(direction)
+ * 		  | isValidDt(dt)
+ * @invar The position of the game object must be between the given boundaries of the world.
+ * 		  | isValidPosition(position)
+ * @invar The amount of hitpoints of a game object must be between 0 and 500.
+ * 		  | 0 <= hitPoints && hitPoints <= 500
+ * @invar The given list of sprites may not be empty.
+ * 		  | isValidSpriteList(spriteList)
+ * @invar The direction in which a game object is ordered to move must be a possible direction to move in.
+ * 		  | isValidMovingDirection(direction)
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
  * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
  * @version 4.0

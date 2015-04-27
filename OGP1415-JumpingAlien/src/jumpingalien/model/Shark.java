@@ -372,43 +372,6 @@ public class Shark extends GameObject {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 		}
-		int movingTime = this.getRandomMovingTime();
-		if (this.timeMovingHorizontally >= movingTime) {
-			this.timeMovingHorizontally = 0;
-			Direction direction = this.getRandomDirection();
-			if ((direction == Direction.RIGHT) || (direction == Direction.LEFT)) {
-				this.endMoveHorizontally(this.getLastDirection());
-				this.endMoveVertically();
-				this.startMoveHorizontally(direction);
-				this.timesNotJumped += 1;
-			}
-			if (direction == Direction.UPRIGHT) {
-				this.endMoveHorizontally(this.getLastDirection());
-				this.endMoveVertically();
-				this.startMoveHorizontally(Direction.RIGHT);
-				this.startMoveVertically(Direction.UP);
-			}
-			if (direction == Direction.UPLEFT) {
-				this.endMoveHorizontally(this.getLastDirection());
-				this.endMoveVertically();
-				this.startMoveHorizontally(Direction.LEFT);
-				this.startMoveVertically(Direction.UP);
-			}
-			if (direction == Direction.DOWNRIGHT) {
-				this.endMoveHorizontally(this.getLastDirection());
-				this.endMoveVertically();
-				this.startMoveHorizontally(Direction.RIGHT);
-				this.startMoveVertically(Direction.DOWN);
-			}
-			if (direction == Direction.DOWNLEFT) {
-				this.endMoveHorizontally(this.getLastDirection());
-				this.endMoveVertically();
-				this.startMoveHorizontally(Direction.LEFT);
-				this.startMoveVertically(Direction.DOWN);
-			}
-		}
-		if (this.timeMovingHorizontally < movingTime)
-			this.timeMovingHorizontally += dt;
 		this.setHorizontalVelocity(this.getHorizontalVelocity() + this.getHorizontalAcceleration() * dt);
 		double newPositionX = this.getHorizontalVelocity() * dt - 
 				this.getHorizontalAcceleration() * Math.pow(dt, 2) + 
@@ -503,8 +466,6 @@ public class Shark extends GameObject {
 		int[] oldPosition = this.getPosition();
 		if (!this.isValidDt(newDt)) 
 			throw new IllegalArgumentException("The given period of time dt is invalid!");
-		this.setPosition(this.getPosition()[0] + (int)(100 * this.horizontalMovement(newDt)),
-				this.getPosition()[1] + (int)(100 * this.verticalMovement(newDt)));
 		this.setPosition(this.getPosition()[0] + (int)(100 * this.horizontalMovement(newDt)),
 				this.getPosition()[1] + (int)(100 * this.verticalMovement(newDt)));
 		if ((this.getPosition()[0] <= 0) && (this.getHorizontalVelocity() < 0)) {
@@ -604,5 +565,42 @@ public class Shark extends GameObject {
 			else
 				this.timeImmuneForMagma += newDt;
 		}
+		int movingTime = this.getRandomMovingTime();
+		if (this.timeMovingHorizontally >= movingTime) {
+			this.timeMovingHorizontally = 0;
+			Direction direction = this.getRandomDirection();
+			if ((direction == Direction.RIGHT) || (direction == Direction.LEFT)) {
+				this.endMoveHorizontally(this.getLastDirection());
+				this.endMoveVertically();
+				this.startMoveHorizontally(direction);
+				this.timesNotJumped += 1;
+			}
+			if (direction == Direction.UPRIGHT) {
+				this.endMoveHorizontally(this.getLastDirection());
+				this.endMoveVertically();
+				this.startMoveHorizontally(Direction.RIGHT);
+				this.startMoveVertically(Direction.UP);
+			}
+			if (direction == Direction.UPLEFT) {
+				this.endMoveHorizontally(this.getLastDirection());
+				this.endMoveVertically();
+				this.startMoveHorizontally(Direction.LEFT);
+				this.startMoveVertically(Direction.UP);
+			}
+			if (direction == Direction.DOWNRIGHT) {
+				this.endMoveHorizontally(this.getLastDirection());
+				this.endMoveVertically();
+				this.startMoveHorizontally(Direction.RIGHT);
+				this.startMoveVertically(Direction.DOWN);
+			}
+			if (direction == Direction.DOWNLEFT) {
+				this.endMoveHorizontally(this.getLastDirection());
+				this.endMoveVertically();
+				this.startMoveHorizontally(Direction.LEFT);
+				this.startMoveVertically(Direction.DOWN);
+			}
+		}
+		if (this.timeMovingHorizontally < movingTime)
+			this.timeMovingHorizontally += dt;
 	}
 }

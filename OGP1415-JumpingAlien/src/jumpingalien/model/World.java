@@ -17,12 +17,12 @@ import be.kuleuven.cs.som.annotate.Basic;
  * won the game or not, a method to inspect whether a tile is passable or not, and a method to advance 
  * the time.
  * 
- * @invar The world must be in a valid gameState
- * 		  || isValidGameState(gameState)
- * @invar Every tile in the world must have a valid type
- * 		  || isValidTileType(tileType)
- * @invar The world must have a valid ending point
- * 		  || targetTileX <= this.getWorldSize()[0] && targetTileY <= this.getWorldSize()[1]
+ * @invar The world must be in a valid gameState.
+ * 		  | isValidGameState(gameState)
+ * @invar Every tile in the world must have a valid type.
+ * 		  | isValidTileType(tileType)
+ * @invar The world must have a valid ending point.
+ * 		  | targetTileX <= this.getWorldSize()[0] && targetTileY <= this.getWorldSize()[1]
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
  * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
  * @version 5.0

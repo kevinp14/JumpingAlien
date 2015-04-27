@@ -195,14 +195,6 @@ public class Slime extends GameObject {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 		}
-		int movingTime = this.getRandomMovingTime();
-		if (this.timeMovingHorizontally >= movingTime) {
-			this.timeMovingHorizontally = 0;
-			this.endMoveHorizontally(this.getLastDirection());
-			this.startMoveHorizontally(this.getRandomDirection());
-		}
-		if (this.timeMovingHorizontally < movingTime)
-			this.timeMovingHorizontally += dt;
 		this.setHorizontalVelocity(this.getHorizontalVelocity() + this.getHorizontalAcceleration() * dt);
 		double newPositionX = this.getHorizontalVelocity() * dt - 
 				this.getHorizontalAcceleration() * Math.pow(dt, 2) + 
@@ -383,5 +375,13 @@ public class Slime extends GameObject {
 			else
 				this.timeImmuneForMagma += newDt;
 		}
+		int movingTime = this.getRandomMovingTime();
+		if (this.timeMovingHorizontally >= movingTime) {
+			this.timeMovingHorizontally = 0;
+			this.endMoveHorizontally(this.getLastDirection());
+			this.startMoveHorizontally(this.getRandomDirection());
+		}
+		if (this.timeMovingHorizontally < movingTime)
+			this.timeMovingHorizontally += dt;
 	}
 }
