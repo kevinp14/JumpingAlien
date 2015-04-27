@@ -21,6 +21,8 @@ import be.kuleuven.cs.som.annotate.Basic;
  * 		  || isValidGameState(gameState)
  * @invar Every tile in the world must have a valid type
  * 		  || isValidTileType(tileType)
+ * @invar The world must have a valid ending point
+ * 		  || targetTileX <= this.getWorldSize()[0] && targetTileY <= this.getWorldSize()[1]
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
  * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
  * @version 5.0
