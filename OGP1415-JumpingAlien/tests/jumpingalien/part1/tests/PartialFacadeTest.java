@@ -116,7 +116,7 @@ public class PartialFacadeTest {
 	}
 	
 	@Test
-	public void testHasJustMovedHorizontal(){
+	public void testHasJustMovedHorizontally(){
 		IFacade facade = new Facade();
 		
 		Mazub alien = facade.createMazub(0, 0, spriteArrayForSize(2,2));

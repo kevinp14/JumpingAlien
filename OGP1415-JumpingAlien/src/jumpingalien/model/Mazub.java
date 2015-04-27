@@ -5,43 +5,41 @@ import jumpingalien.util.*;
 
 
 /**
- * A class of Mazub aliens involving the horizontal and vertical velocity and acceleration 
- * of the alien and their maximum, the position of the bottom left pixel of the alien and its maximum,
- * a list of sprites or images of the alien that are displayed, the time the alien is moving or standing 
- * still, the last direction in which the alien was moving, methods to move the alien horizontally as 
- * well as vertically (jumping, falling and ducking), methods to inspect the behavior of the alien and
- * a method to change the characteristics of the alien which are time dependent.
+ * A class of Mazub aliens involving some maximums for the horizontal velocity depending on its current
+ * actions, a list of sprites or images of the alien that are displayed depending on its current actions, 
+ * the time the alien is moving horizontally or standing still, the last direction in which the alien
+ * was moving and the secondary direction in which the alien is moving (only when performing multiple
+ * movements at the same time), the number of hitpoints, methods to move the alien horizontally as 
+ * well as vertically (jumping, falling and ducking), methods to inspect the behavior of the alien 
+ * and a method to advance time and adapt the time depending characteristics based on the period of 
+ * time passed.
  * 
- * 
- * @invar //TODO	
+ * @invar //TODO
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
  * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
- * @version 5.0
+ * @version 8.0
  *
  */
 public class Mazub extends GameObject {
-	private double normalHorizontalVelocity = 1;
-	private double normalHorizontalAcceleration = 0.9;
+	private double normalHorizontalVelocity;
+	private double normalHorizontalAcceleration;
 	private double maxHorizontalVelocity;
 	private double maxRunningVelocity = 3;
 	private double maxDuckingVelocity = 1;
-	private double normalVerticalVelocity = 8;
+	private double normalVerticalVelocity;
 	private Sprite[] spriteList;
 	private double timeStalled;
 	private double timeMovingHorizontally;
 	private Direction secondaryDirection;
-	private int hitPoints = 100;
 	
 	/**
 	 * Initialize the Mazub alien at the given position in x- and y-direction with the given list of
-	 * sprites. Also sets initial values to the maximum of the position, the velocity and acceleration
-	 * in the horizontal as well as in the vertical direction, the maximum for the velocity, the time
-	 * moving or not moving and the direction.
+	 * sprites. Also sets the time moving horizontally to 0.
 	 * 
 	 * @param 	positionX
 	 * 			The position in the x-direction where the alien should be.
 	 * @param 	positionY
-	  * 			The position in the y-direction where the alien should be.
+	 * 			The position in the y-direction where the alien should be.
 	 * @param 	spriteList
 	 * 			The list of sprites displaying how the alien should look depending on its behavior.
 	 */
@@ -49,7 +47,11 @@ public class Mazub extends GameObject {
 		super(positionX, positionY, spriteList);
 		assert (isValidSpriteList(spriteList));
 		this.spriteList = spriteList;
+		this.normalHorizontalVelocity = 1;
+		this.normalHorizontalAcceleration = 0.9;
+		this.normalVerticalVelocity = 8;
 	    this.timeMovingHorizontally = 0;
+	    this.changeNbHitPoints(100);
 	}
 
 	/**
@@ -160,7 +162,7 @@ public class Mazub extends GameObject {
 	 * @return	True if and only if the tile above the alien is passable.
 	 */
 	public boolean isValidJumpingPosition(int[] position) {
-		return (!(this.world.isNotPassable(this.world.getGeologicalFeature(position[0], 
+		return (!(this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(position[0], 
 				position[1] + this.getCurrentSprite().getHeight()))));
 	}
 	
@@ -199,7 +201,7 @@ public class Mazub extends GameObject {
 	 * 			when ducking is passable.
 	 */
 	public boolean canEndDuck() {
-		return (!(this.world.isNotPassable(this.world.getGeologicalFeature(this.getPosition()[0],
+		return (!(this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(this.getPosition()[0],
 				this.getPosition()[1] + this.spriteList[0].getHeight()))));
 	}
 	
@@ -359,7 +361,7 @@ public class Mazub extends GameObject {
 	 * 			|	- this.getHorizontalAcceleration() * Math.pow(dt, 2)
 	 * 			|	+ this.getHorizontalAcceleration() * Math.pow(dt, 2) / 2
 	 * @throws	IllegalArgumentException
-	 * 			| //TODO
+	 * 			| !isValidDt(dt)
 	 */
 	private double horizontalMovement(double dt) throws IllegalArgumentException {
 		if (! isValidDt(dt))
@@ -380,13 +382,13 @@ public class Mazub extends GameObject {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 		}
-		if ((this.world.isNotPassable(this.world.getGeologicalFeature(
+		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
 				this.getPosition()[0], this.getPosition()[1])))
 				&& (this.getHorizontalVelocity() < 0)) {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 		}
-		if ((this.world.isNotPassable(this.world.getGeologicalFeature(
+		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
 				this.getPosition()[0] + this.getCurrentSprite().getWidth(), this.getPosition()[1]))) 
 				&& (this.getHorizontalVelocity() > 0)) {
 			this.setHorizontalAcceleration(0);
@@ -432,7 +434,8 @@ public class Mazub extends GameObject {
 	 * 			| newPositionY = this.getVerticalVelocity() * dt 
 	 * 			|	- this.getVerticalAcceleration() * Math.pow(dt, 2)
 	 * 			|	+ this.getVerticalAcceleration() * Math.pow(dt, 2)/2;
-	 * @throws	//TODO
+	 * @throws	IllegalArgumentException
+	 * 			| !isValidDt(dt)
 	 */ 
 	private double verticalMovement(double dt) throws IllegalArgumentException {
 		if (! isValidDt(dt))
@@ -441,14 +444,14 @@ public class Mazub extends GameObject {
 				&& (this.getVerticalVelocity() > 0)) {
 			this.setVerticalVelocity(0);
 		}
-		if ((this.getVerticalVelocity() < 0) && (this.world.isNotPassable(
-				this.world.getGeologicalFeature((int)this.getPosition()[0], 
+		if ((this.getVerticalVelocity() < 0) && (this.getWorld().isNotPassable(
+				this.getWorld().getGeologicalFeature((int)this.getPosition()[0], 
 						(int)this.getPosition()[1])))) {
 			this.setVerticalAcceleration(0);
 			this.setVerticalVelocity(0);
 		}
-		if ((this.getVerticalVelocity() > 0) && (this.world.isNotPassable(
-				this.world.getGeologicalFeature((int)this.getPosition()[0], 
+		if ((this.getVerticalVelocity() > 0) && (this.getWorld().isNotPassable(
+				this.getWorld().getGeologicalFeature((int)this.getPosition()[0], 
 				(int)this.getPosition()[1] + this.getCurrentSprite().getHeight())))) {
 			this.setVerticalVelocity(0);
 		}
@@ -470,7 +473,9 @@ public class Mazub extends GameObject {
 	 * magma if it falls into magma.
 	 * @param 	dt
 	 * 			The time passed dt.
-	 * @throws	//TODO
+	 * @effect //TODO
+	 * @throws	IllegalArgumentException
+	 * 			| !isValidDt(dt)
 	 */
 	public void advanceTime(double dt) throws IllegalArgumentException {
 		if (! isValidDt(dt))
@@ -488,31 +493,31 @@ public class Mazub extends GameObject {
 				&& (this.getVerticalVelocity() > 0)) {
 			this.setPosition(this.getPosition()[0], this.getMaxPosition()[1]);
 		}
-		if ((this.world.isNotPassable(this.world.getGeologicalFeature(
+		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
 				this.getPosition()[0], this.getPosition()[1])))
 				&& (this.getHorizontalVelocity() < 0)) {
-			this.setPosition(this.world.getBottomLeftPixelOfTile(this.getPosition()[0], 
-					this.getPosition()[1])[0] + this.world.getTileLength(), this.getPosition()[1]);
+			this.setPosition(this.getWorld().getBottomLeftPixelOfTile(this.getPosition()[0], 
+					this.getPosition()[1])[0] + this.getWorld().getTileLength(), this.getPosition()[1]);
 		}
-		if ((this.world.isNotPassable(this.world.getGeologicalFeature(
+		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
 				this.getPosition()[0] + this.getCurrentSprite().getWidth(), this.getPosition()[1]))) 
 				&& (this.getHorizontalVelocity() > 0)) {
-			this.setPosition(this.world.getBottomLeftPixelOfTile(this.getPosition()[0], 
-					this.getPosition()[1])[0] - this.world.getTileLength(), this.getPosition()[1]);
+			this.setPosition(this.getWorld().getBottomLeftPixelOfTile(this.getPosition()[0], 
+					this.getPosition()[1])[0] - this.getWorld().getTileLength(), this.getPosition()[1]);
 		}
-		if ((this.getVerticalVelocity() < 0) && (this.world.isNotPassable(
-				this.world.getGeologicalFeature((int)this.getPosition()[0], 
+		if ((this.getVerticalVelocity() < 0) && (this.getWorld().isNotPassable(
+				this.getWorld().getGeologicalFeature((int)this.getPosition()[0], 
 						(int)this.getPosition()[1])))) {
 			this.setPosition(this.getPosition()[0], 
-					this.world.getBottomLeftPixelOfTile((int)this.getPosition()[0], 
-					(int)this.getPosition()[1])[1] + this.world.getTileLength());
+					this.getWorld().getBottomLeftPixelOfTile((int)this.getPosition()[0], 
+					(int)this.getPosition()[1])[1] + this.getWorld().getTileLength());
 		}			
 		if ((this.getVerticalVelocity() > 0) && 
-				(this.world.isNotPassable(this.world.getGeologicalFeature((int)this.getPosition()[0], 
+				(this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature((int)this.getPosition()[0], 
 				(int)this.getPosition()[1] + this.getCurrentSprite().getHeight())))) {
 			this.setPosition(this.getPosition()[0], 
-					this.world.getBottomLeftPixelOfTile((int)this.getPosition()[0],
-					(int)this.getPosition()[1])[1] - this.world.getTileLength());
+					this.getWorld().getBottomLeftPixelOfTile((int)this.getPosition()[0],
+					(int)this.getPosition()[1])[1] - this.getWorld().getTileLength());
 		}
 		if (this.getHorizontalVelocity() == 0) {
 		    this.timeStalled += 1;
@@ -522,13 +527,13 @@ public class Mazub extends GameObject {
 			this.timeStalled = 0;
 			this.timeMovingHorizontally += 1;
 		}
-		for (Plant plant: this.world.getPlants()) {
+		for (Plant plant: this.getWorld().getPlants()) {
 			if (this.collidesWith(plant)) {
 				if (this.getNbHitPoints() <= 500)
 					this.changeNbHitPoints(50);
 			}
 		}
-		for (Shark shark: this.world.getSharks()) {
+		for (Shark shark: this.getWorld().getSharks()) {
 			if ((this.collidesWith(shark)) && (!this.bottomCollidesWithTopOfObject(shark))) {
 				this.setHorizontalAcceleration(0);
 				this.setHorizontalVelocity(0); /*Is dit goed om beweging te blokkeren? Want in de opgave
@@ -542,7 +547,7 @@ public class Mazub extends GameObject {
 					this.timeImmune += 1;
 			}
 		}
-		for (Slime slime: this.world.getSlimes()) {
+		for (Slime slime: this.getWorld().getSlimes()) {
 			if ((this.collidesWith(slime)) && (!this.bottomCollidesWithTopOfObject(slime))) {
 				this.setHorizontalAcceleration(0);
 				this.setHorizontalVelocity(0); /*Is dit goed om beweging te blokkeren? Want in de opgave

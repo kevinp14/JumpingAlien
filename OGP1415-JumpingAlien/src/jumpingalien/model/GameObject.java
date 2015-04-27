@@ -5,10 +5,23 @@ import be.kuleuven.cs.som.annotate.Immutable;
 import jumpingalien.util.*;
 
 /**
+ * A class of game object involving the horizontal and vertical velocity and acceleration 
+ * of the game object and their maximum, the position of the bottom left pixel of the game object and 
+ * its maximum, a list of sprites or images of the game object that are displayed depending on its 
+ * actions, the time the game object is standing still, is immune for enemies and is immune for magma,
+ * the last direction in which the game object was moving and the next direction in which the game object
+ * has to move (only applicable for plants), the number of hitpoints, the world in which the game object
+ * is, methods to change the number of position, velocities, accelerations, directions and the number of
+ * hitpoints, methods to inspect the behavior and characteristics of the game object, methods to inspect
+ * what kind of geological feature the game object is in, methods to make the game object immune for 
+ * enemies and magma, methods to detect collisions and a method to move the game object horizontally.
+ * 
+ * @invar //TODO
+ * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
+ * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * @version 4.0
  *
- * @author Gebruiker
- *
- */ //TODO
+ */
 public class GameObject {
 		
 	private double horizontalVelocity;
@@ -21,25 +34,33 @@ public class GameObject {
 	protected double normalVerticalAcceleration = -10;
 	private double positionX;
 	private double positionY;
-	private double maxPositionX = 1023;
-	private double maxPositionY = 767;
+	private double maxPositionX;
+	private double maxPositionY;
 	private Sprite[] spriteList;
 	private double timeStalled;
 	protected double timeImmune;
 	protected double timeImmuneForMagma;
 	private Direction lastDirection;
 	private Direction nextDirection;
-	private int hitPoints;
+	private int hitPoints = 0;
 	private boolean isImmune;
 	private boolean isImmuneForMagma;
-	protected World world;
+	private World world;
 
 	/**
+	 * Initialize the game object at the given x-position positionX, y-position positionY and with 
+	 * the given list of sprites spriteList. Also set the horizontal and vertical accelerations and
+	 * velocities to 0, set the time stalled, time immune and time immune for magma to 0, set the last
+	 * and next direction to stalled, make the game object vulnerable to enemies and magma and set the
+	 * game object's world to null.
 	 * 
-	 * @param positionX
-	 * @param positionY
-	 * @param spriteList
-	 */ //TODO
+	 * @param 	positionX
+	 * 			The position in the x-direction where the game object should be.
+	 * @param 	positionY
+	 * 			The position in the y-direction where the game object should be.
+	 * @param 	spriteList
+	 * 			The list of sprites displaying how the game object should look depending on its behavior.
+	 */
 	public GameObject(double positionX, double positionY, Sprite[] spriteList) {
 		int[] position = { (int)(positionX/100), (int)(positionY/100) };
 		assert (isValidPosition(position));
@@ -61,11 +82,20 @@ public class GameObject {
 	}
 	
 	/**
+	 * @return	The world in which the game object is.
+	 */
+	@Basic
+	protected World getWorld() {
+		return this.world;
+	}
+	
+	/**
 	 * Set the world of where the game object has to be to the give world.
 	 * 
 	 * @param world
 	 */
-	protected void setWorld(World world){
+	@Basic
+	public void setWorld(World world){
 		this.world = world;
 	}
 	

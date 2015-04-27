@@ -280,6 +280,7 @@ public class Facade implements IFacadePart2 {
 	 */
 	public void addSlime(World world, Slime slime){
 		world.addSlime(slime);
+		slime.setWorld(world);
 	}
 	
 	/**
@@ -373,6 +374,7 @@ public class Facade implements IFacadePart2 {
 	 */
 	public void addShark(World world, Shark shark){
 		world.addShark(shark);
+		shark.setWorld(world);
 	}
 	
 	/**
@@ -444,6 +446,7 @@ public class Facade implements IFacadePart2 {
 	 */
 	public void addPlant(World world, Plant plant){
 		world.addPlant(plant);
+		plant.setWorld(world);
 	}
 	
 	/**
@@ -513,6 +516,7 @@ public class Facade implements IFacadePart2 {
 	 */
 	public void setMazub(World world, Mazub alien){
 		world.setMazub(alien);
+		alien.setWorld(world);
 	}
 	
 	/**

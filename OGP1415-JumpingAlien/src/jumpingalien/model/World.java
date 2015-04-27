@@ -1,16 +1,28 @@
 package jumpingalien.model;
 
-import java.util.Hashtable;
 import java.util.ArrayList;
 
 import jumpingalien.part2.facade.IFacadePart2;
 import be.kuleuven.cs.som.annotate.Basic;
 
 /**
+ * A class of worlds involving the size of tiles (square blocks of pixels), the number of tiles in x- 
+ * and y-direction, the height and width of the visible window, the target tile (end tile), a list of 
+ * plants, sharks and slimes, an alien, a method to start the game, methods to get the lists of slimes,
+ * sharks and plant, and the alien, methods to add slimes, sharks, plants and an alien to the world,
+ * a method to inspect the tile length and one to get the tiles position in pixels, a method to get the
+ * visible window size and one to get the game world size, methods to get the bottom left or top right
+ * pixel of a tile, a method to calculate an accurate period of time dt, methods to get and set the 
+ * geological feature (air, water, magma, impassable) at a tile, methods to inspect whether the player
+ * won the game or not, a method to inspect whether a tile is passable or not, and a method to advance 
+ * the time.
  * 
- * @author Gebruiker
+ * @invar //TODO
+ * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
+ * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * @version 5.0
  *
- */ //TODO
+ */
 public class World {
 	private int tileSize;
 	private int nbTilesX;
@@ -22,23 +34,36 @@ public class World {
 	private boolean won;
 	private boolean gameOver;
 	private ArrayList<Plant> plants = new ArrayList<>();
+	private ArrayList<Plant> plantsCopy = new ArrayList<>(plants);
 	private ArrayList<Shark> sharks = new ArrayList<>();
+	private ArrayList<Shark> sharksCopy = new ArrayList<>(sharks);
 	private	ArrayList<Slime> slimes = new ArrayList<>();
+	private ArrayList<Slime> slimesCopy = new ArrayList<>(slimes);
 	private Mazub alien;
-	Hashtable<int[], Integer> tiles
-	= new Hashtable<int[], Integer>();
+	private int[][] tiles;
 	private GameState gameState;
 	
 	/**
+	 * Initialize a world with the given size of tiles, number of tiles in x- and y-direction, the 
+	 * height and width of the visible window and the target tiles.
 	 * 
-	 * @param tileSize
-	 * @param nbTilesX
-	 * @param nbTilesY
-	 * @param visibleWindowWidth
-	 * @param visibleWindowHeight
-	 * @param targetTileX
-	 * @param targetTileY
-	 */ //TODO
+	 * @param 	tileSize
+	 * 			The length of the square tiles.
+	 * @param 	nbTilesX
+	 * 			The number of tiles in the x-direction.
+	 * @param	nbTilesY
+	 * 			The number of tiles in the y-direction.
+	 * @param	visibleWindowWidth
+	 * 			The width of the visible window, the game window displayed on the screen.
+	 * @param	visibleWindowHeight
+	 * 			The height of the visible window, the game window displayed on the screen.
+	 * @param	targetTileX
+	 * 			The target tile number in x-direction. The target tile is the place where the alien has
+	 * 			to stand on to win the game.
+	 * @param	targetTileY
+	 * 			The target tile number in y-direction. The target tile is the place where the alien has
+	 * 			to stand on to win the game.
+	 */
 	public World (int tileSize, int nbTilesX, int nbTilesY,
 			int visibleWindowWidth, int visibleWindowHeight, int targetTileX,
 			int targetTileY){
@@ -49,13 +74,14 @@ public class World {
 		this.visibleWindowHeight = visibleWindowHeight;
 		this.targetTileX = targetTileX;
 		this.targetTileY = targetTileY;
-		this.won = false;
-		this.gameOver = false;
-		for (int x  = 0; x < nbTilesX; x++){
-			for (int y = 0; y < nbTilesY; y++){
-				this.tiles.put(new int[]{x*tileSize, y*tileSize, 0}, 0);
+		this.tiles = new int[this.nbTilesX][this.nbTilesY];
+		for (int row = 0; row < nbTilesX; row++){
+			for (int column = 0; column < nbTilesY; column++){
+				tiles[row][column] = 0;
 			}
 		}
+		this.won = false;
+		this.gameOver = false;
 		this.gameState = GameState.INITIATED;
 	}
 	
@@ -169,8 +195,6 @@ public class World {
 	/**
 	 * Add the given shark as a game object to the given world.
 	 * 
-	 * @param world
-	 *            The world to which the shark should be added.
 	 * @param shark
 	 *            The shark that needs to be added to the world.
 	 */
@@ -263,7 +287,7 @@ public class World {
 				placeInPositions += 1;
 			}
 		}
-		return positions ;
+		return positions;
 	}
 	
 	/**
@@ -275,48 +299,48 @@ public class World {
 	 */
 	@Basic
 	public int[] getVisibleWindow() {
-		if (this.alien.getLastDirection() == Direction.LEFT){
-			if (this.alien.getPosition()[0] < 200){
-				if (this.alien.getPosition()[1] < 200){
+		if (this.getMazub().getLastDirection() == Direction.LEFT){
+			if (this.getMazub().getPosition()[0] < 200){
+				if (this.getMazub().getPosition()[1] < 200){
 					return new int[]{0,0,this.visibleWindowWidth, this.visibleWindowHeight};
 				}
 				else{
-					return new int[]{0, this.alien.getPosition()[1] - 200, this.visibleWindowWidth, 
-							this.alien.getPosition()[1] - 200 + this.visibleWindowHeight};
+					return new int[]{0, this.getMazub().getPosition()[1] - 200, this.visibleWindowWidth, 
+							this.getMazub().getPosition()[1] - 200 + this.visibleWindowHeight};
 				}
 			}
 			else{
-				if (this.alien.getPosition()[1] < 200){
-					return new int[]{this.alien.getPosition()[0] + 200 - this.visibleWindowWidth,
-							0, this.alien.getPosition()[0] + 200, this.visibleWindowHeight};
+				if (this.getMazub().getPosition()[1] < 200){
+					return new int[]{this.getMazub().getPosition()[0] + 200 - this.visibleWindowWidth,
+							0, this.getMazub().getPosition()[0] + 200, this.visibleWindowHeight};
 				}
 				else{
-					return new int[]{this.alien.getPosition()[0] + 200 - this.visibleWindowWidth,
-							this.alien.getPosition()[1] - 200, this.alien.getPosition()[0] + 200,
-							this.alien.getPosition()[1] - 200 + this.visibleWindowHeight};
+					return new int[]{this.getMazub().getPosition()[0] + 200 - this.visibleWindowWidth,
+							this.getMazub().getPosition()[1] - 200, this.getMazub().getPosition()[0] + 200,
+							this.getMazub().getPosition()[1] - 200 + this.visibleWindowHeight};
 				}
 			}
 		}
 		else {
-			if (this.alien.getPosition()[0] < 200){
-				if (this.alien.getPosition()[1] < 200){
+			if (this.getMazub().getPosition()[0] < 200){
+				if (this.getMazub().getPosition()[1] < 200){
 					return new int[]{0,0,this.visibleWindowWidth, this.visibleWindowHeight};
 				}
 				else{
-					return new int[]{0, this.alien.getPosition()[1] - 200, this.visibleWindowWidth, 
-							this.alien.getPosition()[1] - 200 + this.visibleWindowHeight};
+					return new int[]{0, this.getMazub().getPosition()[1] - 200, this.visibleWindowWidth, 
+							this.getMazub().getPosition()[1] - 200 + this.visibleWindowHeight};
 				}
 			}
 			else{
-				if (this.alien.getPosition()[1] < 200){
-					return new int[]{this.alien.getPosition()[0] - 200,
-							0, this.alien.getPosition()[0] - 200 + this.visibleWindowWidth, 
+				if (this.getMazub().getPosition()[1] < 200){
+					return new int[]{this.getMazub().getPosition()[0] - 200,
+							0, this.getMazub().getPosition()[0] - 200 + this.visibleWindowWidth, 
 							this.visibleWindowHeight};
 				}
 				else{
-					return new int[]{this.alien.getPosition()[0] - 200,
-							this.alien.getPosition()[1] - 200, this.alien.getPosition()[0] - 200 + 
-							this.visibleWindowWidth, this.alien.getPosition()[1] - 200 + 
+					return new int[]{this.getMazub().getPosition()[0] - 200,
+							this.getMazub().getPosition()[1] - 200, this.getMazub().getPosition()[0] - 200 + 
+							this.visibleWindowWidth, this.getMazub().getPosition()[1] - 200 + 
 							this.visibleWindowHeight};
 				}
 			}
@@ -423,7 +447,7 @@ public class World {
 	 */
 	@Basic
 	public int getGeologicalFeature(int pixelX, int pixelY){
-		return this.tiles.get(this.getBottomLeftPixelOfTile(pixelX, pixelY));
+		return this.tiles[(pixelX/this.tileSize)][(pixelY/this.tileSize)];
 	}
 	
 	/**
@@ -450,7 +474,7 @@ public class World {
 	 */
 	public void setGeologicalFeature(int tileX, int tileY, int tileType){
 		if (!(this.gameState == GameState.STARTED))
-			this.tiles.put(this.getBottomLeftPixelOfTile(tileX, tileY), tileType);
+			this.tiles[tileX][tileY] = tileType;
 	}
 	
 	/**
@@ -495,32 +519,32 @@ public class World {
 	
 	public void advanceTime(double dt) {
 		double nextDt = this.getNewDt(dt);
-		this.alien.advanceTime(nextDt);
-		if ((this.alien.getNbHitPoints() == 0) 
-				|| (!this.alien.isValidPosition(this.alien.getPosition()))) {
+		this.getMazub().advanceTime(nextDt);
+		if ((this.getMazub().getNbHitPoints() == 0) 
+				|| (!(this.getMazub().getPosition()[1] < 0))) {
 			this.gameOver = true;
 			this.gameState = GameState.STOPPED;
 		}
-		if ((this.alien.getPosition()[0] == this.targetTileX) 
-				&& (this.alien.getPosition()[1] == this.targetTileY)) {
+		if ((this.getMazub().getPosition()[0] == this.targetTileX) 
+				&& (this.getMazub().getPosition()[1] == this.targetTileY)) {
 			this.won = true;
 			this.gameOver = true;
 			this.gameState = GameState.STOPPED;
 		}
-		for (Shark shark: sharks){
+		for (Shark shark: this.getSharks()){
 			shark.advanceTime(nextDt);
 			if ((shark.getNbHitPoints() == 0) || (!shark.isValidPosition(shark.getPosition())))
-				this.sharks.remove(shark);
+				this.sharksCopy.remove(shark);
 		}
-		for (Slime slime: slimes){
+		for (Slime slime: this.getSlimes()){
 			slime.advanceTime(nextDt);
 			if ((slime.getNbHitPoints() == 0) || (!slime.isValidPosition(slime.getPosition())))
-				this.slimes.remove(slime);
+				this.slimesCopy.remove(slime);
 		}
-		for(Plant plant: plants){
+		for(Plant plant: this.getPlants()){
 			plant.advanceTime(nextDt);
 			if ((plant.getNbHitPoints() == 0) || (!plant.isValidPosition(plant.getPosition())))
-				this.plants.remove(plant);
+				this.plantsCopy.remove(plant);
 		}
 	}
 }

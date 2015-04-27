@@ -6,29 +6,46 @@ import be.kuleuven.cs.som.annotate.Basic;
 import jumpingalien.util.Sprite;
 
 /**
+ * A class of sharks involving the normal and maximum for the horizontal velocity, the time the shark 
+ * is moving horizontally and the times it moved horizontally without jumping, the number of hitpoints, 
+ * a method to create a random moving time and direction, methods to inspect the shark's behaviour, 
+ * methods to move vertically and a method to advance time and adapt the time depending characteristics 
+ * based on the period of time passed.
  * 
- * @author Gebruiker
+ * @invar //TODO
+ * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
+ * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * @version 5.0
  *
- */ //TODO
+ */
 public class Shark extends GameObject {
-	private double normalHorizontalVelocity = 0;
-	private double normalHorizontalAcceleration = 1.5;
-	private double maxHorizontalVelocity = 4;
-	private double normalVerticalVelocity = 2;
+	private double normalHorizontalVelocity;
+	private double normalHorizontalAcceleration;
+	private double maxHorizontalVelocity;
+	private double normalVerticalVelocity;
 	private double timeMovingHorizontally;
 	private double timesNotJumped;
-	private int hitPoints = 100;
 	
 	/**
+	 * Initialize the shark at the given position in x- and y-direction with the given list of
+	 * sprites. Also sets the time moving horizontally and the times not jumped to 0.
 	 * 
-	 * @param positionX
-	 * @param positionY
-	 * @param spriteList
-	 */ //TODO
+	 * @param 	positionX
+	 * 			The position in the x-direction where the shark should be.
+	 * @param 	positionY
+	 * 			The position in the y-direction where the shark should be.
+	 * @param 	spriteList
+	 * 			The list of sprites displaying how the shark should look depending on its behavior.
+	 */
 	public Shark(int positionX, int positionY, Sprite[] spriteList) {
 		super(positionX, positionY, spriteList);
+		this.normalHorizontalVelocity = 0;
+		this.normalHorizontalAcceleration = 1.5;
+		this.maxHorizontalVelocity = 4;
+		this.normalVerticalVelocity = 2;
 	    this.timeMovingHorizontally = 0;	
 	    this.timesNotJumped = 0;
+	    this.changeNbHitPoints(100);
 	}
 	
 	/**
@@ -116,7 +133,7 @@ public class Shark extends GameObject {
 	 * 			equals 2 (water).
 	 */
 	private boolean isSubmergedInWater() {
-		return (this.world.getGeologicalFeature(this.getPosition()[0], (this.getPosition()[1] 
+		return (this.getWorld().getGeologicalFeature(this.getPosition()[0], (this.getPosition()[1] 
 				+ this.getCurrentSprite().getHeight() - 1)) == 2);
 	}
 	
@@ -311,7 +328,7 @@ public class Shark extends GameObject {
 	 * 			|	- this.getHorizontalAcceleration() * Math.pow(dt, 2)
 	 * 			|	+ this.getHorizontalAcceleration() * Math.pow(dt, 2) / 2
 	 * @throws	IllegalArgumentException
-	 * 			| //TODO
+	 * 			| !isValidDt(dt)
 	 */
 	private double horizontalMovement(double dt) throws IllegalArgumentException {
 		if (! isValidDt(dt))
@@ -332,13 +349,14 @@ public class Shark extends GameObject {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 		}
-		if ((this.world.isNotPassable(this.world.getGeologicalFeature(
+		System.out.println(this.getWorld());
+		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
 				this.getPosition()[0], this.getPosition()[1])))
 				&& (this.getHorizontalVelocity() < 0)) {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 		}
-		if ((this.world.isNotPassable(this.world.getGeologicalFeature(
+		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
 				this.getPosition()[0] + this.getCurrentSprite().getWidth(), this.getPosition()[1]))) 
 				&& (this.getHorizontalVelocity() > 0)) {
 			this.setHorizontalAcceleration(0);
@@ -448,7 +466,8 @@ public class Shark extends GameObject {
 	 * 			| newPositionY = this.getVerticalVelocity() * dt 
 	 * 			|	- this.getVerticalAcceleration() * Math.pow(dt, 2)
 	 * 			|	+ this.getVerticalAcceleration() * Math.pow(dt, 2)/2;
-	 * @throws	//TODO
+	 * @throws	IllegalArgumentException
+	 * 			| !isValidDt(dt)
 	 */
 	private double verticalMovement(double dt) throws IllegalArgumentException {
 		if (! isValidDt(dt))
@@ -457,14 +476,14 @@ public class Shark extends GameObject {
 				&& (this.getVerticalVelocity() > 0)) {
 			this.setVerticalVelocity(0);
 		}
-		if ((this.getVerticalVelocity() < 0) && (this.world.isNotPassable(
-				this.world.getGeologicalFeature((int)this.getPosition()[0], 
+		if ((this.getVerticalVelocity() < 0) && (this.getWorld().isNotPassable(
+				this.getWorld().getGeologicalFeature((int)this.getPosition()[0], 
 						(int)this.getPosition()[1])))) {
 			this.setVerticalAcceleration(0);
 			this.setVerticalVelocity(0);
 		}
-		if ((this.getVerticalVelocity() > 0) && (this.world.isNotPassable(
-				this.world.getGeologicalFeature((int)this.getPosition()[0], 
+		if ((this.getVerticalVelocity() > 0) && (this.getWorld().isNotPassable(
+				this.getWorld().getGeologicalFeature((int)this.getPosition()[0], 
 				(int)this.getPosition()[1] + this.getCurrentSprite().getHeight())))) {
 			this.setVerticalVelocity(0);
 		}
@@ -489,7 +508,9 @@ public class Shark extends GameObject {
 	 * shark is in water or magma, and make it immune for magma if it falls into magma.
 	 * @param 	dt
 	 * 			The time passed dt.
-	 * @throws	//TODO
+	 * @effect //TODO
+	 * @throws	IllegalArgumentException
+	 * 			| !isValidDt(dt)
 	 */
 	public void advanceTime(double dt) throws IllegalArgumentException {
 		if (! isValidDt(dt)) 
@@ -509,37 +530,37 @@ public class Shark extends GameObject {
 				&& (this.getVerticalVelocity() > 0)) {
 			this.setPosition(this.getPosition()[0], this.getMaxPosition()[1]);
 		}
-		if ((this.world.isNotPassable(this.world.getGeologicalFeature(
+		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
 				this.getPosition()[0], this.getPosition()[1])))
 				&& (this.getHorizontalVelocity() < 0)) {
-			this.setPosition(this.world.getBottomLeftPixelOfTile(this.getPosition()[0], 
-					this.getPosition()[1])[0] + this.world.getTileLength(), this.getPosition()[1]);
+			this.setPosition(this.getWorld().getBottomLeftPixelOfTile(this.getPosition()[0], 
+					this.getPosition()[1])[0] + this.getWorld().getTileLength(), this.getPosition()[1]);
 		}
-		if ((this.world.isNotPassable(this.world.getGeologicalFeature(
+		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
 				this.getPosition()[0] + this.getCurrentSprite().getWidth(), this.getPosition()[1]))) 
 				&& (this.getHorizontalVelocity() > 0)) {
-			this.setPosition(this.world.getBottomLeftPixelOfTile(this.getPosition()[0], 
-					this.getPosition()[1])[0] - this.world.getTileLength(), this.getPosition()[1]);
+			this.setPosition(this.getWorld().getBottomLeftPixelOfTile(this.getPosition()[0], 
+					this.getPosition()[1])[0] - this.getWorld().getTileLength(), this.getPosition()[1]);
 		}
-		if ((this.getVerticalVelocity() < 0) && (this.world.isNotPassable(
-				this.world.getGeologicalFeature((int)this.getPosition()[0], 
+		if ((this.getVerticalVelocity() < 0) && (this.getWorld().isNotPassable(
+				this.getWorld().getGeologicalFeature((int)this.getPosition()[0], 
 						(int)this.getPosition()[1])))) {
 			this.setPosition(this.getPosition()[0], 
-					this.world.getBottomLeftPixelOfTile((int)this.getPosition()[0], 
-					(int)this.getPosition()[1])[1] + this.world.getTileLength());
+					this.getWorld().getBottomLeftPixelOfTile((int)this.getPosition()[0], 
+					(int)this.getPosition()[1])[1] + this.getWorld().getTileLength());
 		}			
 		if ((this.getVerticalVelocity() > 0) && 
-				(this.world.isNotPassable(this.world.getGeologicalFeature((int)this.getPosition()[0], 
+				(this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature((int)this.getPosition()[0], 
 				(int)this.getPosition()[1] + this.getCurrentSprite().getHeight())))) {
 			this.setPosition(this.getPosition()[0], 
-					this.world.getBottomLeftPixelOfTile((int)this.getPosition()[0],
-					(int)this.getPosition()[1])[1] - this.world.getTileLength());
+					this.getWorld().getBottomLeftPixelOfTile((int)this.getPosition()[0],
+					(int)this.getPosition()[1])[1] - this.getWorld().getTileLength());
 		}
 		if (!(this.getHorizontalVelocity() == 0)) {
 			this.timeMovingHorizontally += 1;
 		}
-		if ((this.collidesWith(this.world.getMazub())) 
-				&& (!this.bottomCollidesWithTopOfObject(this.world.getMazub()))) {
+		if ((this.collidesWith(this.getWorld().getMazub())) 
+				&& (!this.bottomCollidesWithTopOfObject(this.getWorld().getMazub()))) {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 			if (!this.isImmune()) {
@@ -549,7 +570,7 @@ public class Shark extends GameObject {
 			else
 				this.timeImmune += 1;
 		}
-		for (Shark shark: this.world.getSharks()) {
+		for (Shark shark: this.getWorld().getSharks()) {
 			if ((this.collidesWith(shark)) && (!this.bottomCollidesWithTopOfObject(shark))) {
 				this.setHorizontalAcceleration(0);
 				this.setHorizontalVelocity(0); /*Is dit goed om beweging te blokkeren? Want in de opgave
@@ -557,7 +578,7 @@ public class Shark extends GameObject {
 				and acceleration, may not change directly as a result of the collision."*/
 			}
 		}
-		for (Slime slime: this.world.getSlimes()) {
+		for (Slime slime: this.getWorld().getSlimes()) {
 			if ((this.collidesWith(slime)) && (!this.bottomCollidesWithTopOfObject(slime))) {
 				this.setHorizontalAcceleration(0);
 				this.setHorizontalVelocity(0); /*Is dit goed om beweging te blokkeren? Want in de opgave

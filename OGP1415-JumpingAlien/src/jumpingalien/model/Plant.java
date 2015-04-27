@@ -6,26 +6,40 @@ import be.kuleuven.cs.som.annotate.Basic;
 import jumpingalien.util.Sprite;
 
 /**
+ * A class of plants involving the normal and maximum for the horizontal velocity, the time the plant 
+ * is moving horizontally, the number of hitpoints, a method to create a random direction and a method 
+ * to advance time and adapt the time depending characteristics based on the period of time passed.
  * 
- * @author Gebruiker
+ * @invar //TODO
+ * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
+ * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * @version 3.0
  *
- */ //TODO
+ */
 public class Plant extends GameObject {
-	private double normalHorizontalVelocity = 0.5;
-	private double normalHorizontalAcceleration = 0;
-	private double maxHorizontalVelocity = 0.5;
+	private double normalHorizontalVelocity;
+	private double normalHorizontalAcceleration;
+	private double maxHorizontalVelocity;
 	private double timeMovingHorizontally;
-	private int hitPoints = 1;
 	
 	/**
+	 * Initialize the plant at the given position in x- and y-direction with the given list of
+	 * sprites. Also sets the time moving horizontally to 0.
 	 * 
-	 * @param positionX
-	 * @param positionY
-	 * @param spriteList
-	 */ //TODO
+	 * @param 	positionX
+	 * 			The position in the x-direction where the plant should be.
+	 * @param 	positionY
+	 * 			The position in the y-direction where the plant should be.
+	 * @param 	spriteList
+	 * 			The list of sprites displaying how the plant should look depending on its behavior.
+	 */
 	public Plant(int positionX, int positionY, Sprite[] spriteList){
 		super(positionX, positionY, spriteList);
+		this.normalHorizontalVelocity = 0.5;
+		this.normalHorizontalAcceleration = 0;
+		this.maxHorizontalVelocity = 0.5;
 	    this.timeMovingHorizontally = 0;
+	    this.changeNbHitPoints(1);
 	}
 	
 	/**
@@ -98,13 +112,13 @@ public class Plant extends GameObject {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 		}
-		if ((this.world.isNotPassable(this.world.getGeologicalFeature(
+		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
 				this.getPosition()[0], this.getPosition()[1])))
 				&& (this.getHorizontalVelocity() < 0)) {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 		}
-		if ((this.world.isNotPassable(this.world.getGeologicalFeature(
+		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
 				this.getPosition()[0] + this.getCurrentSprite().getWidth(), this.getPosition()[1]))) 
 				&& (this.getHorizontalVelocity() > 0)) {
 			this.setHorizontalAcceleration(0);
@@ -130,7 +144,9 @@ public class Plant extends GameObject {
 	 * moving horizontally, and decrease the plants hitpoints if it collides with a hungry alien.
 	 * @param	dt
 	 * 			The time passed dt.
-	 * @throws	//TODO
+	 * @effect //TODO
+	 * @throws	IllegalArgumentException
+	 * 			| !isValidDt(dt)
 	 */
 	public void advanceTime(double dt) throws IllegalArgumentException {
 		if (! isValidDt(dt))
@@ -144,22 +160,22 @@ public class Plant extends GameObject {
 				(this.getHorizontalVelocity() > 0)) {
 			this.setPosition(this.getMaxPosition()[0], this.getPosition()[1]);
 		}
-		if ((this.world.isNotPassable(this.world.getGeologicalFeature(
+		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
 				this.getPosition()[0], this.getPosition()[1])))
 				&& (this.getHorizontalVelocity() < 0)) {
-			this.setPosition(this.world.getBottomLeftPixelOfTile(this.getPosition()[0], 
-					this.getPosition()[1])[0] + this.world.getTileLength(), this.getPosition()[1]);
+			this.setPosition(this.getWorld().getBottomLeftPixelOfTile(this.getPosition()[0], 
+					this.getPosition()[1])[0] + this.getWorld().getTileLength(), this.getPosition()[1]);
 		}
-		if ((this.world.isNotPassable(this.world.getGeologicalFeature(
+		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
 				this.getPosition()[0] + this.getCurrentSprite().getWidth(), this.getPosition()[1]))) 
 				&& (this.getHorizontalVelocity() > 0)) {
-			this.setPosition(this.world.getBottomLeftPixelOfTile(this.getPosition()[0], 
-					this.getPosition()[1])[0] - this.world.getTileLength(), this.getPosition()[1]);
+			this.setPosition(this.getWorld().getBottomLeftPixelOfTile(this.getPosition()[0], 
+					this.getPosition()[1])[0] - this.getWorld().getTileLength(), this.getPosition()[1]);
 		}
 		if (!(this.getHorizontalVelocity() == 0)) {
 			this.timeMovingHorizontally += 1;
 		}
-		if ((this.collidesWith(this.world.getMazub())) && (this.world.getMazub().getNbHitPoints() <= 500))
+		if ((this.collidesWith(this.getWorld().getMazub())) && (this.getWorld().getMazub().getNbHitPoints() <= 500))
 			this.changeNbHitPoints(-1);
 	}
 }

@@ -6,29 +6,46 @@ import be.kuleuven.cs.som.annotate.Basic;
 import jumpingalien.util.Sprite;
 
 /**
+ * A class of slimes involving the normal and maximum for the horizontal velocity, the slime's school,
+ * the time the slime is moving horizontally, the number of hitpoints, a method to change the school
+ * in which the slime is, a method to create a random moving time and direction and a method 
+ * to advance time and adapt the time depending characteristics based on the period of time passed.
  * 
- * @author Gebruiker
+ * 
+ * @invar //TODO
+ * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
+ * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * @version 5.0
  *
- */ //TODO
+ */
 public class Slime extends GameObject {
-	private double normalHorizontalVelocity = 0;
-	private double normalHorizontalAcceleration = 0.7;
-	private double maxHorizontalVelocity = 2.5;
+	private double normalHorizontalVelocity;
+	private double normalHorizontalAcceleration;
+	private double maxHorizontalVelocity;
 	private School school;
 	private double timeMovingHorizontally;
-	private int hitPoints = 100;
 
 	/**
+	 * Initialize the slime at the given position in x- and y-direction with the given list of
+	 * sprites. Also sets the time moving horizontally to 0.
 	 * 
-	 * @param positionX
-	 * @param positionY
-	 * @param spriteList
-	 * @param school
-	 */ //TODO
+	 * @param 	positionX
+	 * 			The position in the x-direction where the slime should be.
+	 * @param 	positionY
+	 * 			The position in the y-direction where the slime should be.
+	 * @param 	spriteList
+	 * 			The list of sprites displaying how the slime should look depending on its behavior.
+	 * @param	school
+	 * 			The school to which the slime has to be assigned.
+	 */
 	public Slime (int positionX, int positionY, Sprite[] spriteList, School school) {
 		super(positionX, positionY, spriteList);
+		this.normalHorizontalVelocity = 0;
+		this.normalHorizontalAcceleration = 0.7;
+		this.maxHorizontalVelocity = 2.5;
 	    this.timeMovingHorizontally = 0;
 		this.school = school;
+		this.changeNbHitPoints(100);
 	}
 	
 	/**
@@ -155,13 +172,13 @@ public class Slime extends GameObject {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 		}
-		if ((this.world.isNotPassable(this.world.getGeologicalFeature(
+		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
 				this.getPosition()[0], this.getPosition()[1])))
 				&& (this.getHorizontalVelocity() < 0)) {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 		}
-		if ((this.world.isNotPassable(this.world.getGeologicalFeature(
+		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
 				this.getPosition()[0] + this.getCurrentSprite().getWidth(), this.getPosition()[1]))) 
 				&& (this.getHorizontalVelocity() > 0)) {
 			this.setHorizontalAcceleration(0);
@@ -209,19 +226,20 @@ public class Slime extends GameObject {
 	 * 			| newPositionY = this.getVerticalVelocity() * dt 
 	 * 			|	- this.getVerticalAcceleration() * Math.pow(dt, 2)
 	 * 			|	+ this.getVerticalAcceleration() * Math.pow(dt, 2)/2;
-	 * @throws	//TODO
+	 * @throws	IllegalArgumentException
+	 * 			| !isValidDt(dt)
 	 */
 	private double verticalMovement(double dt) throws IllegalArgumentException {
 		if (! isValidDt(dt))
 			throw new IllegalArgumentException("The given period of time dt is invalid!");
-		if ((this.getVerticalVelocity() < 0) && (this.world.isNotPassable(
-				this.world.getGeologicalFeature((int)this.getPosition()[0], 
+		if ((this.getVerticalVelocity() < 0) && (this.getWorld().isNotPassable(
+				this.getWorld().getGeologicalFeature((int)this.getPosition()[0], 
 						(int)this.getPosition()[1])))) {
 			this.setVerticalAcceleration(0);
 			this.setVerticalVelocity(0);
 		}
-		if ((this.getVerticalVelocity() > 0) && (this.world.isNotPassable(
-				this.world.getGeologicalFeature((int)this.getPosition()[0], 
+		if ((this.getVerticalVelocity() > 0) && (this.getWorld().isNotPassable(
+				this.getWorld().getGeologicalFeature((int)this.getPosition()[0], 
 				(int)this.getPosition()[1] + this.getCurrentSprite().getHeight())))) {
 			this.setVerticalVelocity(0);
 		}
@@ -243,7 +261,9 @@ public class Slime extends GameObject {
 	 * magma if it falls into magma.
 	 * @param 	dt
 	 * 			The time passed dt.
-	 * @throws	//TODO
+	 * @effect //TODO
+	 * @throws	IllegalArgumentException
+	 * 			| !isValidDt(dt)
 	 */
 	public void advanceTime(double dt) throws IllegalArgumentException {
 		if (! isValidDt(dt)) 
@@ -257,36 +277,36 @@ public class Slime extends GameObject {
 				(this.getHorizontalVelocity() > 0)) {
 			this.setPosition(this.getMaxPosition()[0], this.getPosition()[1]);
 		}
-		if ((this.world.isNotPassable(this.world.getGeologicalFeature(
+		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
 				this.getPosition()[0], this.getPosition()[1])))
 				&& (this.getHorizontalVelocity() < 0)) {
-			this.setPosition(this.world.getBottomLeftPixelOfTile(this.getPosition()[0], 
-					this.getPosition()[1])[0] + this.world.getTileLength(), this.getPosition()[1]);
+			this.setPosition(this.getWorld().getBottomLeftPixelOfTile(this.getPosition()[0], 
+					this.getPosition()[1])[0] + this.getWorld().getTileLength(), this.getPosition()[1]);
 		}
-		if ((this.world.isNotPassable(this.world.getGeologicalFeature(
+		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
 				this.getPosition()[0] + this.getCurrentSprite().getWidth(), this.getPosition()[1]))) 
 				&& (this.getHorizontalVelocity() > 0)) {
-			this.setPosition(this.world.getBottomLeftPixelOfTile(this.getPosition()[0], 
-					this.getPosition()[1])[0] - this.world.getTileLength(), this.getPosition()[1]);
+			this.setPosition(this.getWorld().getBottomLeftPixelOfTile(this.getPosition()[0], 
+					this.getPosition()[1])[0] - this.getWorld().getTileLength(), this.getPosition()[1]);
 		}
-		if ((this.getVerticalVelocity() < 0) && (this.world.isNotPassable(
-				this.world.getGeologicalFeature((int)this.getPosition()[0], 
+		if ((this.getVerticalVelocity() < 0) && (this.getWorld().isNotPassable(
+				this.getWorld().getGeologicalFeature((int)this.getPosition()[0], 
 						(int)this.getPosition()[1])))) {
 			this.setPosition(this.getPosition()[0], 
-					this.world.getBottomLeftPixelOfTile((int)this.getPosition()[0], 
-					(int)this.getPosition()[1])[1] + this.world.getTileLength());
+					this.getWorld().getBottomLeftPixelOfTile((int)this.getPosition()[0], 
+					(int)this.getPosition()[1])[1] + this.getWorld().getTileLength());
 		}			
 		if ((this.getVerticalVelocity() > 0) && 
-				(this.world.isNotPassable(this.world.getGeologicalFeature((int)this.getPosition()[0], 
+				(this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature((int)this.getPosition()[0], 
 				(int)this.getPosition()[1] + this.getCurrentSprite().getHeight())))) {
 			this.setPosition(this.getPosition()[0], 
-					this.world.getBottomLeftPixelOfTile((int)this.getPosition()[0],
-					(int)this.getPosition()[1])[1] - this.world.getTileLength());
+					this.getWorld().getBottomLeftPixelOfTile((int)this.getPosition()[0],
+					(int)this.getPosition()[1])[1] - this.getWorld().getTileLength());
 		}
 		if (!(this.getHorizontalVelocity() == 0)) {
 			this.timeMovingHorizontally += 1;
 		}
-		for (Slime slime: this.world.getSlimes()) {
+		for (Slime slime: this.getWorld().getSlimes()) {
 			if (this.collidesWith(slime)) {
 				this.setHorizontalAcceleration(0);
 				this.setHorizontalVelocity(0); /*Is dit goed om beweging te blokkeren? Want in de opgave
@@ -309,7 +329,7 @@ public class Slime extends GameObject {
 				}
 			}
 		}
-		for (Shark shark: this.world.getSharks()) {
+		for (Shark shark: this.getWorld().getSharks()) {
 			if ((this.collidesWith(shark)) && (!this.bottomCollidesWithTopOfObject(shark))) {
 				this.setHorizontalAcceleration(0);
 				this.setHorizontalVelocity(0); /*Is dit goed om beweging te blokkeren? Want in de opgave
@@ -323,8 +343,8 @@ public class Slime extends GameObject {
 					this.timeImmune += 1;
 			}
 		}
-		if ((this.collidesWith(this.world.getMazub())) 
-				&& (!this.bottomCollidesWithTopOfObject(this.world.getMazub()))) {
+		if ((this.collidesWith(this.getWorld().getMazub())) 
+				&& (!this.bottomCollidesWithTopOfObject(this.getWorld().getMazub()))) {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 			if (!this.isImmune()) {
