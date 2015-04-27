@@ -34,11 +34,8 @@ public class World {
 	private boolean won;
 	private boolean gameOver;
 	private ArrayList<Plant> plants = new ArrayList<>();
-	private ArrayList<Plant> plantsCopy = new ArrayList<>(plants);
 	private ArrayList<Shark> sharks = new ArrayList<>();
-	private ArrayList<Shark> sharksCopy = new ArrayList<>(sharks);
 	private	ArrayList<Slime> slimes = new ArrayList<>();
-	private ArrayList<Slime> slimesCopy = new ArrayList<>(slimes);
 	private Mazub alien;
 	private int[][] tiles;
 	private GameState gameState;
@@ -75,11 +72,6 @@ public class World {
 		this.targetTileX = targetTileX;
 		this.targetTileY = targetTileY;
 		this.tiles = new int[this.nbTilesX][this.nbTilesY];
-		for (int row = 0; row < nbTilesX; row++){
-			for (int column = 0; column < nbTilesY; column++){
-				tiles[row][column] = 0;
-			}
-		}
 		this.won = false;
 		this.gameOver = false;
 		this.gameState = GameState.INITIATED;
@@ -161,7 +153,7 @@ public class World {
 	 */
 	@Basic
 	public ArrayList<Plant> getPlants(){
-		return this.plants;
+		return new ArrayList<>(plants);
 	}
 	
 	/**
@@ -189,7 +181,7 @@ public class World {
 	 */
 	@Basic
 	public ArrayList<Shark> getSharks(){
-		return this.sharks;
+		return new ArrayList<>(sharks);
 	}
 	
 	/**
@@ -215,7 +207,7 @@ public class World {
 	 */
 	@Basic
 	public ArrayList<Slime> getSlimes(){
-		return this.slimes;
+		return new ArrayList<>(slimes);
 	}
 
 	/**
@@ -271,6 +263,18 @@ public class World {
 	 */
 	@Basic
 	public int[][] getTilePositionsIn(int pixelLeft, int pixelBottom,
+			   int pixelRight, int pixelTop){
+		ArrayList<int[]> tilePositions = new ArrayList<int[]>();
+		for(int rowPos = (pixelBottom/tileSize)*tileSize; rowPos <= pixelTop; rowPos+=tileSize){
+			for(int colPos = (pixelLeft/tileSize)*tileSize;colPos <= pixelRight;colPos+=tileSize){
+				if((this.tileSize*nbTilesY)-getTileLength()>=rowPos
+						&& (this.tileSize*nbTilesX)-getTileLength()>=colPos)
+					tilePositions.add(new int[]{colPos/tileSize,rowPos/tileSize});
+				}
+			}
+	return tilePositions.toArray(new int[tilePositions.size()][]);
+	}
+/*	public int[][] getTilePositionsIn(int pixelLeft, int pixelBottom,
 			int pixelRight, int pixelTop){
 		int dimension = 0;
 		for (int x = (int)(pixelLeft/this.tileSize); x < pixelRight; x += this.tileSize ){
@@ -288,7 +292,7 @@ public class World {
 			}
 		}
 		return positions;
-	}
+	}*/
 	
 	/**
 	 * Return the coordinates of the rectangular visible window that moves
@@ -518,10 +522,10 @@ public class World {
 	}
 	
 	public void advanceTime(double dt) {
-		double nextDt = this.getNewDt(dt);
-		this.getMazub().advanceTime(nextDt);
+		double newDt = this.getNewDt(dt);
+		this.getMazub().advanceTime(newDt);
 		if ((this.getMazub().getNbHitPoints() == 0) 
-				|| (!(this.getMazub().getPosition()[1] < 0))) {
+				|| (this.getMazub().getPosition()[1] < 0)) {
 			this.gameOver = true;
 			this.gameState = GameState.STOPPED;
 		}
@@ -532,19 +536,19 @@ public class World {
 			this.gameState = GameState.STOPPED;
 		}
 		for (Shark shark: this.getSharks()){
-			shark.advanceTime(nextDt);
+			shark.advanceTime(newDt);
 			if ((shark.getNbHitPoints() == 0) || (!shark.isValidPosition(shark.getPosition())))
-				this.sharksCopy.remove(shark);
+				this.sharks.remove(shark);
 		}
 		for (Slime slime: this.getSlimes()){
-			slime.advanceTime(nextDt);
+			slime.advanceTime(newDt);
 			if ((slime.getNbHitPoints() == 0) || (!slime.isValidPosition(slime.getPosition())))
-				this.slimesCopy.remove(slime);
+				this.slimes.remove(slime);
 		}
 		for(Plant plant: this.getPlants()){
-			plant.advanceTime(nextDt);
+			plant.advanceTime(newDt);
 			if ((plant.getNbHitPoints() == 0) || (!plant.isValidPosition(plant.getPosition())))
-				this.plantsCopy.remove(plant);
+				this.plants.remove(plant);
 		}
 	}
 }

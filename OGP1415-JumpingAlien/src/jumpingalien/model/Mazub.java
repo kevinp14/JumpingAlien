@@ -1,4 +1,5 @@
 package jumpingalien.model;
+
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 import jumpingalien.util.*;
@@ -23,12 +24,10 @@ import jumpingalien.util.*;
 public class Mazub extends GameObject {
 	private double normalHorizontalVelocity;
 	private double normalHorizontalAcceleration;
-	private double maxHorizontalVelocity;
 	private double maxRunningVelocity = 3;
 	private double maxDuckingVelocity = 1;
 	private double normalVerticalVelocity;
 	private Sprite[] spriteList;
-	private double timeStalled;
 	private double timeMovingHorizontally;
 	private Direction secondaryDirection;
 	
@@ -73,8 +72,8 @@ public class Mazub extends GameObject {
 				if (this.isAirborne())
 					return spriteList[5];
 				else {
-					if ((this.timeMovingHorizontally % 75) <= 11)
-						return spriteList[(int) (18 + (this.timeMovingHorizontally % 75))];
+					if ((this.timeMovingHorizontally % 0.75) <= 11)
+						return spriteList[(int) (18 + (this.timeMovingHorizontally % 0.75))];
 					else
 						this.timeMovingHorizontally = 0;
 				}
@@ -85,8 +84,8 @@ public class Mazub extends GameObject {
 				if (this.isAirborne())
 					return spriteList[4];
 				else {
-					if ((this.timeMovingHorizontally % 75) <= 11)
-						return spriteList[(int) (7 + (this.timeMovingHorizontally % 75))];
+					if ((this.timeMovingHorizontally % 0.75) <= 11)
+						return spriteList[(int) (7 + (this.timeMovingHorizontally % 0.75))];
 					else 
 						this.timeMovingHorizontally = 0;
 				}
@@ -496,36 +495,44 @@ public class Mazub extends GameObject {
 		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
 				this.getPosition()[0], this.getPosition()[1])))
 				&& (this.getHorizontalVelocity() < 0)) {
-			this.setPosition(this.getWorld().getBottomLeftPixelOfTile(this.getPosition()[0], 
-					this.getPosition()[1])[0] + this.getWorld().getTileLength(), this.getPosition()[1]);
+			this.setPosition(this.getWorld().getBottomLeftPixelOfTile((this.getPosition()[0]
+					/this.getWorld().getTileLength()), 
+					(this.getPosition()[1]/this.getWorld().getTileLength()))[0] 
+							+ this.getWorld().getTileLength(), this.getPosition()[1]);
 		}
 		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
 				this.getPosition()[0] + this.getCurrentSprite().getWidth(), this.getPosition()[1]))) 
 				&& (this.getHorizontalVelocity() > 0)) {
-			this.setPosition(this.getWorld().getBottomLeftPixelOfTile(this.getPosition()[0], 
-					this.getPosition()[1])[0] - this.getWorld().getTileLength(), this.getPosition()[1]);
+			this.setPosition(this.getWorld().getBottomLeftPixelOfTile((this.getPosition()[0]
+					/this.getWorld().getTileLength()), 
+					(this.getPosition()[1]/this.getWorld().getTileLength()))[0]
+							- this.getWorld().getTileLength(), this.getPosition()[1]);
 		}
 		if ((this.getVerticalVelocity() < 0) && (this.getWorld().isNotPassable(
 				this.getWorld().getGeologicalFeature((int)this.getPosition()[0], 
 						(int)this.getPosition()[1])))) {
 			this.setPosition(this.getPosition()[0], 
-					this.getWorld().getBottomLeftPixelOfTile((int)this.getPosition()[0], 
-					(int)this.getPosition()[1])[1] + this.getWorld().getTileLength());
-		}			
+					this.getWorld().getBottomLeftPixelOfTile(((int)this.getPosition()[0]
+							/this.getWorld().getTileLength()), 
+					((int)this.getPosition()[1]/this.getWorld().getTileLength()))[1] 
+							+ this.getWorld().getTileLength());
+		}
 		if ((this.getVerticalVelocity() > 0) && 
 				(this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature((int)this.getPosition()[0], 
 				(int)this.getPosition()[1] + this.getCurrentSprite().getHeight())))) {
 			this.setPosition(this.getPosition()[0], 
-					this.getWorld().getBottomLeftPixelOfTile((int)this.getPosition()[0],
-					(int)this.getPosition()[1])[1] - this.getWorld().getTileLength());
+					this.getWorld().getBottomLeftPixelOfTile((int)this.getPosition()[0]
+							/this.getWorld().getTileLength(),
+					(int)this.getPosition()[1]/this.getWorld().getTileLength())[1] 
+							- this.getWorld().getTileLength());
 		}
 		if (this.getHorizontalVelocity() == 0) {
-		    this.timeStalled += 1;
+		    this.timeStalled += dt;
 			this.timeMovingHorizontally = 0;
 		}
 		else {
 			this.timeStalled = 0;
-			this.timeMovingHorizontally += 1;
+			this.timeMovingHorizontally += dt;
 		}
 		for (Plant plant: this.getWorld().getPlants()) {
 			if (this.collidesWith(plant)) {
@@ -544,7 +551,7 @@ public class Mazub extends GameObject {
 					this.makeImmune();
 				}
 				else
-					this.timeImmune += 1;
+					this.timeImmune += dt;
 			}
 		}
 		for (Slime slime: this.getWorld().getSlimes()) {
@@ -558,7 +565,7 @@ public class Mazub extends GameObject {
 					this.makeImmune();
 				}
 				else
-					this.timeImmune += 1;
+					this.timeImmune += dt;
 			}
 		}
 		if (this.isInWater())
@@ -569,7 +576,7 @@ public class Mazub extends GameObject {
 				this.makeImmuneForMagma();
 			}
 			else
-				this.timeImmuneForMagma += 1;
+				this.timeImmuneForMagma += dt;
 		}
 	}
 }

@@ -26,9 +26,9 @@ public class GameObject {
 		
 	private double horizontalVelocity;
 	private double horizontalAcceleration;
-	private double normalHorizontalVelocity;
-	private double normalHorizontalAcceleration;
-	private double maxHorizontalVelocity;
+	protected double normalHorizontalVelocity;
+	protected double normalHorizontalAcceleration;
+	protected double maxHorizontalVelocity;
 	private double verticalVelocity;
 	private double verticalAcceleration;
 	protected double normalVerticalAcceleration = -10;
@@ -37,7 +37,7 @@ public class GameObject {
 	private double maxPositionX;
 	private double maxPositionY;
 	private Sprite[] spriteList;
-	private double timeStalled;
+	protected double timeStalled;
 	protected double timeImmune;
 	protected double timeImmuneForMagma;
 	private Direction lastDirection;
@@ -375,7 +375,7 @@ public class GameObject {
 	 * @return	True if and only if the time stalled is smaller than or equal to 30.
 	 */
 	public boolean hasJustMovedHorizontally() {
-		return (this.timeStalled <= 30);
+		return (this.timeStalled <= 0.30);
 	}
 
 	/**
@@ -457,7 +457,7 @@ public class GameObject {
 	 * Makes the game object immune for enemies.
 	 */
 	protected void makeImmune() {
-		if (this.timeImmune <= 60) 
+		if (this.timeImmune <= 0.60) 
 			this.isImmune = true;
 		else {
 			this.isImmune = false;
@@ -469,7 +469,7 @@ public class GameObject {
 	 * Makes the game object immune for magma.
 	 */
 	protected void makeImmuneForMagma() {
-		if (this.timeImmuneForMagma <= 20) 
+		if (this.timeImmuneForMagma <= 0.20) 
 			this.isImmuneForMagma = true;
 		else {
 			this.isImmuneForMagma = false;
@@ -483,7 +483,7 @@ public class GameObject {
 	 * @param 	object
 	 * 			The object with which the game object could collide.
 	 * @return	True if and only if no sides of the game object's tile collide with a side of the 
-	 * 			given object's tile
+	 * 			given object's tile.
 	 */
 	protected boolean collidesWith(GameObject object){
 		return (!((this.getPosition()[0] + (this.getCurrentSprite().getWidth() - 1) 

@@ -19,9 +19,6 @@ import jumpingalien.util.Sprite;
  *
  */
 public class Shark extends GameObject {
-	private double normalHorizontalVelocity;
-	private double normalHorizontalAcceleration;
-	private double maxHorizontalVelocity;
 	private double normalVerticalVelocity;
 	private double timeMovingHorizontally;
 	private double timesNotJumped;
@@ -55,9 +52,9 @@ public class Shark extends GameObject {
 		Random rand = new Random();
 		int movingTime = rand.nextInt(40);
 		if (movingTime > 10)
-			return movingTime;
+			return (movingTime/10);
 		else
-			return (movingTime + 10);
+			return ((movingTime + 10)/10);
 	}
 	
 	/**
@@ -349,7 +346,6 @@ public class Shark extends GameObject {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 		}
-		System.out.println(this.getWorld());
 		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
 				this.getPosition()[0], this.getPosition()[1])))
 				&& (this.getHorizontalVelocity() < 0)) {
@@ -533,31 +529,44 @@ public class Shark extends GameObject {
 		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
 				this.getPosition()[0], this.getPosition()[1])))
 				&& (this.getHorizontalVelocity() < 0)) {
-			this.setPosition(this.getWorld().getBottomLeftPixelOfTile(this.getPosition()[0], 
-					this.getPosition()[1])[0] + this.getWorld().getTileLength(), this.getPosition()[1]);
+			System.out.println(this.getPosition()[0]);
+			this.setPosition(this.getWorld().getBottomLeftPixelOfTile((this.getPosition()[0]
+					/this.getWorld().getTileLength()), 
+					(this.getPosition()[1]/this.getWorld().getTileLength()))[0] 
+							+ this.getWorld().getTileLength(), this.getPosition()[1]);
+			System.out.println(this.getPosition()[0]);
 		}
 		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
 				this.getPosition()[0] + this.getCurrentSprite().getWidth(), this.getPosition()[1]))) 
 				&& (this.getHorizontalVelocity() > 0)) {
-			this.setPosition(this.getWorld().getBottomLeftPixelOfTile(this.getPosition()[0], 
-					this.getPosition()[1])[0] - this.getWorld().getTileLength(), this.getPosition()[1]);
+			System.out.println(this.getPosition()[0]);
+			this.setPosition(this.getWorld().getBottomLeftPixelOfTile((this.getPosition()[0]
+					/this.getWorld().getTileLength()), 
+					(this.getPosition()[1]/this.getWorld().getTileLength()))[0]
+							- this.getWorld().getTileLength(), this.getPosition()[1]);
+			System.out.println(this.getPosition()[0]);
 		}
+		System.out.println(this.getPosition()[0]);
 		if ((this.getVerticalVelocity() < 0) && (this.getWorld().isNotPassable(
 				this.getWorld().getGeologicalFeature((int)this.getPosition()[0], 
 						(int)this.getPosition()[1])))) {
 			this.setPosition(this.getPosition()[0], 
-					this.getWorld().getBottomLeftPixelOfTile((int)this.getPosition()[0], 
-					(int)this.getPosition()[1])[1] + this.getWorld().getTileLength());
-		}			
+					this.getWorld().getBottomLeftPixelOfTile(((int)this.getPosition()[0]
+							/this.getWorld().getTileLength()), 
+					((int)this.getPosition()[1]/this.getWorld().getTileLength()))[1] 
+							+ this.getWorld().getTileLength());
+		}
 		if ((this.getVerticalVelocity() > 0) && 
 				(this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature((int)this.getPosition()[0], 
 				(int)this.getPosition()[1] + this.getCurrentSprite().getHeight())))) {
 			this.setPosition(this.getPosition()[0], 
-					this.getWorld().getBottomLeftPixelOfTile((int)this.getPosition()[0],
-					(int)this.getPosition()[1])[1] - this.getWorld().getTileLength());
+					this.getWorld().getBottomLeftPixelOfTile((int)this.getPosition()[0]
+							/this.getWorld().getTileLength(),
+					(int)this.getPosition()[1]/this.getWorld().getTileLength())[1] 
+							- this.getWorld().getTileLength());
 		}
 		if (!(this.getHorizontalVelocity() == 0)) {
-			this.timeMovingHorizontally += 1;
+			this.timeMovingHorizontally += dt;
 		}
 		if ((this.collidesWith(this.getWorld().getMazub())) 
 				&& (!this.bottomCollidesWithTopOfObject(this.getWorld().getMazub()))) {
@@ -568,7 +577,7 @@ public class Shark extends GameObject {
 				this.makeImmune();
 			}
 			else
-				this.timeImmune += 1;
+				this.timeImmune += dt;
 		}
 		for (Shark shark: this.getWorld().getSharks()) {
 			if ((this.collidesWith(shark)) && (!this.bottomCollidesWithTopOfObject(shark))) {
@@ -589,7 +598,7 @@ public class Shark extends GameObject {
 					this.makeImmune();
 				}
 				else
-					this.timeImmune += 1;
+					this.timeImmune += dt;
 			}
 		}
 		if (this.isInAir())
@@ -600,7 +609,7 @@ public class Shark extends GameObject {
 				this.makeImmuneForMagma();
 			}
 			else
-				this.timeImmuneForMagma += 1;
+				this.timeImmuneForMagma += dt;
 		}
 	}
 }

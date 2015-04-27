@@ -19,9 +19,6 @@ import jumpingalien.util.Sprite;
  *
  */
 public class Slime extends GameObject {
-	private double normalHorizontalVelocity;
-	private double normalHorizontalAcceleration;
-	private double maxHorizontalVelocity;
 	private School school;
 	private double timeMovingHorizontally;
 
@@ -80,9 +77,9 @@ public class Slime extends GameObject {
 		Random rand = new Random();
 		int movingTime = rand.nextInt(60);
 		if (movingTime > 20)
-			return movingTime;
+			return (movingTime/10);
 		else
-			return (movingTime + 20);
+			return ((movingTime + 20)/10);
 	}
 	
 	/**
@@ -280,31 +277,30 @@ public class Slime extends GameObject {
 		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
 				this.getPosition()[0], this.getPosition()[1])))
 				&& (this.getHorizontalVelocity() < 0)) {
-			this.setPosition(this.getWorld().getBottomLeftPixelOfTile(this.getPosition()[0], 
-					this.getPosition()[1])[0] + this.getWorld().getTileLength(), this.getPosition()[1]);
+			this.setPosition(this.getWorld().getBottomLeftPixelOfTile((this.getPosition()[0]
+					/this.getWorld().getTileLength()), 
+					(this.getPosition()[1]/this.getWorld().getTileLength()))[0] 
+							+ this.getWorld().getTileLength(), this.getPosition()[1]);
 		}
 		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
 				this.getPosition()[0] + this.getCurrentSprite().getWidth(), this.getPosition()[1]))) 
 				&& (this.getHorizontalVelocity() > 0)) {
-			this.setPosition(this.getWorld().getBottomLeftPixelOfTile(this.getPosition()[0], 
-					this.getPosition()[1])[0] - this.getWorld().getTileLength(), this.getPosition()[1]);
+			this.setPosition(this.getWorld().getBottomLeftPixelOfTile((this.getPosition()[0]
+					/this.getWorld().getTileLength()), 
+					(this.getPosition()[1]/this.getWorld().getTileLength()))[0]
+							- this.getWorld().getTileLength(), this.getPosition()[1]);
 		}
 		if ((this.getVerticalVelocity() < 0) && (this.getWorld().isNotPassable(
 				this.getWorld().getGeologicalFeature((int)this.getPosition()[0], 
 						(int)this.getPosition()[1])))) {
 			this.setPosition(this.getPosition()[0], 
-					this.getWorld().getBottomLeftPixelOfTile((int)this.getPosition()[0], 
-					(int)this.getPosition()[1])[1] + this.getWorld().getTileLength());
-		}			
-		if ((this.getVerticalVelocity() > 0) && 
-				(this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature((int)this.getPosition()[0], 
-				(int)this.getPosition()[1] + this.getCurrentSprite().getHeight())))) {
-			this.setPosition(this.getPosition()[0], 
-					this.getWorld().getBottomLeftPixelOfTile((int)this.getPosition()[0],
-					(int)this.getPosition()[1])[1] - this.getWorld().getTileLength());
+					this.getWorld().getBottomLeftPixelOfTile(((int)this.getPosition()[0]
+							/this.getWorld().getTileLength()), 
+					((int)this.getPosition()[1]/this.getWorld().getTileLength()))[1] 
+							+ this.getWorld().getTileLength());
 		}
 		if (!(this.getHorizontalVelocity() == 0)) {
-			this.timeMovingHorizontally += 1;
+			this.timeMovingHorizontally += dt;
 		}
 		for (Slime slime: this.getWorld().getSlimes()) {
 			if (this.collidesWith(slime)) {
@@ -340,7 +336,7 @@ public class Slime extends GameObject {
 					this.makeImmune();
 				}
 				else
-					this.timeImmune += 1;
+					this.timeImmune += dt;
 			}
 		}
 		if ((this.collidesWith(this.getWorld().getMazub())) 
@@ -356,7 +352,7 @@ public class Slime extends GameObject {
 				this.makeImmune();
 			}
 			else
-				this.timeImmune += 1;
+				this.timeImmune += dt;
 		}
 		if (this.isInWater())
 			this.changeNbHitPoints((int)(-2 * (dt / (0.2))));
@@ -366,7 +362,7 @@ public class Slime extends GameObject {
 				this.makeImmuneForMagma();
 			}
 			else
-				this.timeImmuneForMagma += 1;
+				this.timeImmuneForMagma += dt;
 		}
 	}
 }

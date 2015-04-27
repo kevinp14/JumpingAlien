@@ -17,9 +17,6 @@ import jumpingalien.util.Sprite;
  *
  */
 public class Plant extends GameObject {
-	private double normalHorizontalVelocity;
-	private double normalHorizontalAcceleration;
-	private double maxHorizontalVelocity;
 	private double timeMovingHorizontally;
 	
 	/**
@@ -125,7 +122,7 @@ public class Plant extends GameObject {
 			this.setHorizontalVelocity(0);
 		}
 		if (this.isMovingHorizontally()) {
-			if (!(this.timeMovingHorizontally <= 50)) {
+			if (!(this.timeMovingHorizontally <= 0.50)) {
 				this.endMoveHorizontally(this.getLastDirection());
 				this.startMoveHorizontally(this.getNextDirection());
 			}
@@ -163,17 +160,21 @@ public class Plant extends GameObject {
 		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
 				this.getPosition()[0], this.getPosition()[1])))
 				&& (this.getHorizontalVelocity() < 0)) {
-			this.setPosition(this.getWorld().getBottomLeftPixelOfTile(this.getPosition()[0], 
-					this.getPosition()[1])[0] + this.getWorld().getTileLength(), this.getPosition()[1]);
+			this.setPosition(this.getWorld().getBottomLeftPixelOfTile((this.getPosition()[0]
+					/this.getWorld().getTileLength()), 
+					(this.getPosition()[1]/this.getWorld().getTileLength()))[0] 
+							+ this.getWorld().getTileLength(), this.getPosition()[1]);
 		}
 		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
 				this.getPosition()[0] + this.getCurrentSprite().getWidth(), this.getPosition()[1]))) 
 				&& (this.getHorizontalVelocity() > 0)) {
-			this.setPosition(this.getWorld().getBottomLeftPixelOfTile(this.getPosition()[0], 
-					this.getPosition()[1])[0] - this.getWorld().getTileLength(), this.getPosition()[1]);
+			this.setPosition(this.getWorld().getBottomLeftPixelOfTile((this.getPosition()[0]
+					/this.getWorld().getTileLength()), 
+					(this.getPosition()[1]/this.getWorld().getTileLength()))[0]
+							- this.getWorld().getTileLength(), this.getPosition()[1]);
 		}
 		if (!(this.getHorizontalVelocity() == 0)) {
-			this.timeMovingHorizontally += 1;
+			this.timeMovingHorizontally += dt;
 		}
 		if ((this.collidesWith(this.getWorld().getMazub())) && (this.getWorld().getMazub().getNbHitPoints() <= 500))
 			this.changeNbHitPoints(-1);
