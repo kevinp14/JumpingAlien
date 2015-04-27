@@ -18,7 +18,7 @@ import jumpingalien.util.*;
  * 
  * @invar //TODO
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
  * @version 4.0
  *
  */
@@ -169,10 +169,13 @@ public class GameObject {
 	 */ //TODO totaal
 	@Basic
 	protected void changeNbHitPoints(int hitPointsDifference) {
-		if ((hitPointsDifference < 0) && (Math.abs(hitPointsDifference) > this.getNbHitPoints()))
+		this.hitPoints += hitPointsDifference;
+		if (this.hitPoints < 0){
 			this.hitPoints = 0;
-		else
-			this.hitPoints += hitPointsDifference;
+		}
+		if (this.hitPoints > maxHitPoints){
+			this.hitPoints = maxHitPoints;
+		}
 	}
 	
 	/**
