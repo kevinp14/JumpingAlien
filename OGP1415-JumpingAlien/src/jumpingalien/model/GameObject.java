@@ -1,7 +1,6 @@
 package jumpingalien.model;
 
-import be.kuleuven.cs.som.annotate.Basic;
-import be.kuleuven.cs.som.annotate.Immutable;
+import be.kuleuven.cs.som.annotate.*;
 import jumpingalien.util.*;
 
 /**
@@ -68,6 +67,8 @@ public class GameObject {
 	 * @param 	spriteList
 	 * 			The list of sprites displaying how the game object should look depending on its behavior.
 	 */
+	@Model
+	@Raw
 	public GameObject(double positionX, double positionY, Sprite[] spriteList) {
 		int[] position = { (int)(positionX/100), (int)(positionY/100) };
 		assert (isValidPosition(position));

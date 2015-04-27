@@ -2,7 +2,6 @@ package jumpingalien.model;
 
 import java.util.Random;
 
-import be.kuleuven.cs.som.annotate.Basic;
 import jumpingalien.util.Sprite;
 
 /**

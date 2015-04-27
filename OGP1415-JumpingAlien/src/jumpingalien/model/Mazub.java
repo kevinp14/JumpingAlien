@@ -56,8 +56,6 @@ public class Mazub extends GameObject {
 	/**
 	 * Return the current sprite image for the given alien.
 	 * 
-	 * @param 	alien
-	 *          The alien for which to get the current sprite image.
 	 * @return 	The current sprite image for the given alien, determined by its
 	 * 			state as defined in the assignment.
 	 */

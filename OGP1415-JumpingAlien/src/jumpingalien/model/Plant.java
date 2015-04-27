@@ -2,7 +2,6 @@ package jumpingalien.model;
 
 import java.util.Random;
 
-import be.kuleuven.cs.som.annotate.Basic;
 import jumpingalien.util.Sprite;
 
 /**
@@ -124,14 +123,9 @@ public class Plant extends GameObject {
 	 * 			|			(new this).setHorizontalVelocity(0)
 	 * @post	If the plant is already moving horizontally for more than 0.5s, it starts moving into
 	 * 			the next (opposite) direction.
-	 * 			| if (this.isMovingHorizontally())
-	 * 			|	if (!(this.timeMovingHorizontally <= 50))
-	 * 			|		this.endMoveHorizontally(this.getLastDirection())
-	 * 			|		this.startMoveHorizontally(this.getNextDirection())
-	 * @post	If the plant is not moving horizontally already, it starts moving into a random direction
-	 * 			(left or right).
-	 * 			| if (!this.isMovingHorizontally())
-	 * 			|	this.startMoveHorizontally(this.getRandomMove())
+	 * 			|if (!(this.timeMovingHorizontally <= 50))
+	 * 			|	this.endMoveHorizontally(this.getLastDirection())
+	 * 			|	this.startMoveHorizontally(this.getNextDirection())
 	 * @return	newPositionX
 	 * 			The plant's new x-position after horizontal movement.
 	 * 			| newPositionX = this.getHorizontalVelocity() * dt

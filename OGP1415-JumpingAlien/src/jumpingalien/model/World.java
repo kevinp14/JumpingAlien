@@ -510,6 +510,7 @@ public class World {
 	 *            </ul>
 	 */
 	public void setGeologicalFeature(int tileX, int tileY, int tileType){
+		assert (isValidTileType(tileType));
 		if (!(this.gameState == GameState.STARTED))
 			this.tiles[tileX][tileY] = tileType;
 	}

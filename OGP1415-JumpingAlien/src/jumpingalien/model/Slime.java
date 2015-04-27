@@ -47,10 +47,7 @@ public class Slime extends GameObject {
 	}
 	
 	/**
-	 * Returns the current school to which the given slime belongs.
-	 * 
-	 * @param slime
-	 *            The slime for which to retrieve the school.
+	 * Returns the current school to which the slime belongs.
 	 * 
 	 * @return The current school of the given slime.
 	 */
