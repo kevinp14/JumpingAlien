@@ -104,7 +104,11 @@ public class Slime extends GameObject {
 		double acceleration = Math.pow((Math.pow(this.getHorizontalAcceleration(), 2) + 
 				Math.pow(this.getVerticalAcceleration(),2)), 1/2);
 		double newDt = 0.01 / (velocity + acceleration*dt);
-		return newDt;
+		if ((velocity + acceleration*dt) == 0)
+			return 0.01;
+		else {
+			return newDt;
+		}
 	}
 	
 	/**
@@ -175,19 +179,20 @@ public class Slime extends GameObject {
 			this.setHorizontalAcceleration(0); 
 			this.setHorizontalVelocity(0);
 		}
-		if ((this.getPosition()[0] >= (this.getMaxPosition()[0])) && 
+		else if ((this.getPosition()[0] >= (this.getMaxPosition()[0])) && 
 				(this.getHorizontalVelocity() > 0)) {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 		}
-		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
-				this.getPosition()[0], this.getPosition()[1])))
+		else if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
+				this.getPosition()[0] + 1, this.getPosition()[1] + 1)))
 				&& (this.getHorizontalVelocity() < 0)) {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 		}
-		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
-				this.getPosition()[0] + this.getCurrentSprite().getWidth(), this.getPosition()[1]))) 
+		else if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
+				this.getPosition()[0] + this.getCurrentSprite().getWidth() - 1, 
+				this.getPosition()[1] + 1))) 
 				&& (this.getHorizontalVelocity() > 0)) {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
@@ -231,14 +236,14 @@ public class Slime extends GameObject {
 	 */
 	private double verticalMovement(double dt) throws IllegalArgumentException {
 		if ((this.getVerticalVelocity() < 0) && (this.getWorld().isNotPassable(
-				this.getWorld().getGeologicalFeature((int)this.getPosition()[0], 
-						(int)this.getPosition()[1])))) {
+				this.getWorld().getGeologicalFeature(this.getPosition()[0] + 1, 
+						this.getPosition()[1] + 1)))) {
 			this.setVerticalAcceleration(0);
 			this.setVerticalVelocity(0);
 		}
-		if ((this.getVerticalVelocity() > 0) && (this.getWorld().isNotPassable(
-				this.getWorld().getGeologicalFeature((int)this.getPosition()[0], 
-				(int)this.getPosition()[1] + this.getCurrentSprite().getHeight())))) {
+		else if ((this.getVerticalVelocity() > 0) && (this.getWorld().isNotPassable(
+				this.getWorld().getGeologicalFeature(this.getPosition()[0] + 1, 
+						this.getPosition()[1] + this.getCurrentSprite().getHeight() - 1)))) {
 			this.setVerticalVelocity(0);
 		}
 		this.setVerticalVelocity(this.getVerticalVelocity() + this.normalVerticalAcceleration*dt);
@@ -249,62 +254,11 @@ public class Slime extends GameObject {
 	}
 	
 	/**
-	 * Set the new position on the screen of the slime to new position in the game world, limit the
-	 * slime's position to the minimum (in x-direction) and the maximum (in x-direction), block the 
-	 * slime's movement if it wants to move to a tile that is not passable, adapt the time
-	 * moving horizontally, block the slime's movement and change the slime's school if it collides
-	 * with another slime, block the slime's movement, decrease its hitpoints and make it immune
-	 * if it collides with an enemy (only when it does not collide with its bottom perimeter), 
-	 * decrease the number of hitpoints if the slime is in water or magma, and make it immune for 
-	 * magma if it falls into magma.
-	 * @param 	dt
-	 * 			The time passed dt.
-	 * @effect //TODO
-	 * @throws	IllegalArgumentException
-	 * 			| !isValidDt(dt)
+	 * 
+	 * @param newDt
+	 * @param oldPosition
 	 */
-	public void advanceTime(double dt) throws IllegalArgumentException {
-		double newDt = this.getNewDt(dt);
-		int[] oldPosition = this.getPosition();
-		if (!this.isValidDt(newDt)) 
-			throw new IllegalArgumentException("The given period of time dt is invalid!");
-		this.setPosition(this.getPosition()[0] + (int)(100 * this.horizontalMovement(newDt)),
-				this.getPosition()[1] + (int)(100 * this.verticalMovement(newDt)));
-		if ((this.getPosition()[0] <= 0) && (this.getHorizontalVelocity() < 0)) {
-			this.setPosition(0, this.getPosition()[1]);
-		}
-		if ((this.getPosition()[0] >= (this.getMaxPosition()[0])) && 
-				(this.getHorizontalVelocity() > 0)) {
-			this.setPosition(this.getMaxPosition()[0], this.getPosition()[1]);
-		}
-		if ((this.getHorizontalVelocity() < 0) && (this.getWorld().isNotPassable(
-				this.getWorld().getGeologicalFeature(this.getPosition()[0], 
-						this.getPosition()[1] + 1)))) {
-			this.setPosition(oldPosition[0], oldPosition[1]);
-			/*this.getWorld().getBottomLeftPixelOfTile(
-					(this.getPosition()[0]/this.getWorld().getTileLength()), 
-					(this.getPosition()[1]/this.getWorld().getTileLength())
-					)[0] + this.getWorld().getTileLength(), this.getPosition()[1]);*/
-		}
-		if ((this.getHorizontalVelocity() > 0) && (this.getWorld().isNotPassable(
-				this.getWorld().getGeologicalFeature(
-						this.getPosition()[0] + this.getCurrentSprite().getWidth(), 
-						this.getPosition()[1] + 1)))) {
-			this.setPosition(oldPosition[0], oldPosition[1]);
-					/*this.getWorld().getBottomLeftPixelOfTile(
-					(this.getPosition()[0]/this.getWorld().getTileLength()), 
-					(this.getPosition()[1]/this.getWorld().getTileLength())
-					)[0] - this.getWorld().getTileLength(), this.getPosition()[1]);*/
-		}
-		if ((this.getVerticalVelocity() < 0) && (this.getWorld().isNotPassable(
-				this.getWorld().getGeologicalFeature(this.getPosition()[0] + 1, 
-						this.getPosition()[1])))) {
-			this.setPosition(oldPosition[0], oldPosition[1]);
-					/*this.getPosition()[0], this.getWorld().getBottomLeftPixelOfTile(
-					(this.getPosition()[0]/this.getWorld().getTileLength()), 
-					(this.getPosition()[1]/this.getWorld().getTileLength())
-					)[1] + this.getWorld().getTileLength());*/
-		}
+	private void collidesWithActions(double newDt, int[] oldPosition) {
 		for (Slime slime: this.getWorld().getSlimes()) {
 			if (this.collidesWith(slime)) {
 				this.setHorizontalAcceleration(0);
@@ -362,16 +316,53 @@ public class Slime extends GameObject {
 			else
 				this.timeImmune += newDt;
 		}
+	}
+	
+	/**
+	 * 
+	 * @param newDt
+	 */
+	private void isInFluidActions(double newDt) {
 		if (this.isInWater())
-			this.changeNbHitPoints((int)(-2 * ((10*newDt) / (20))));
+			this.changeNbHitPoints((int)(-2 * ((10*newDt)/2)));
 		if (this.isInMagma()) {
 			if (!this.isImmuneForMagma()) {
-				this.changeNbHitPoints((int)(-50 *((10*(newDt + 0.2)) / (20))));
+				this.changeNbHitPoints((int)(-50 *((10*(newDt + 0.2)) /2)));
 				this.makeImmuneForMagma();
 			}
 			else
 				this.timeImmuneForMagma += newDt;
 		}
+	}
+	
+	/**
+	 * Set the new position on the screen of the slime to new position in the game world, limit the
+	 * slime's position to the minimum (in x-direction) and the maximum (in x-direction), block the 
+	 * slime's movement if it wants to move to a tile that is not passable, adapt the time
+	 * moving horizontally, block the slime's movement and change the slime's school if it collides
+	 * with another slime, block the slime's movement, decrease its hitpoints and make it immune
+	 * if it collides with an enemy (only when it does not collide with its bottom perimeter), 
+	 * decrease the number of hitpoints if the slime is in water or magma, and make it immune for 
+	 * magma if it falls into magma.
+	 * @param 	dt
+	 * 			The time passed dt.
+	 * @effect //TODO
+	 * @throws	IllegalArgumentException
+	 * 			| !isValidDt(dt)
+	 */
+	public void advanceTime(double dt) throws IllegalArgumentException {
+		double newDt = this.getNewDt(dt);
+		int[] oldPosition = this.getPosition();
+		if (!this.isValidDt(newDt)) 
+			throw new IllegalArgumentException("The given period of time dt is invalid!");
+		if (this.isTryingToCrossBoundaries())
+			this.doNotCrossBoundaries();
+		else if (this.isTouchingImpassableTileRight())
+			this.doNotCrossImpassableTile(oldPosition);
+		this.setPosition(this.getPosition()[0] + (100 * this.horizontalMovement(newDt)),
+				this.getPosition()[1] + (100 * this.verticalMovement(newDt)));
+		this.collidesWithActions(newDt, oldPosition);
+		this.isInFluidActions(newDt);
 		int movingTime = this.getRandomMovingTime();
 		if (this.timeMovingHorizontally >= movingTime) {
 			this.timeMovingHorizontally = 0;

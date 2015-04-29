@@ -439,21 +439,6 @@ public class World {
 	}
 	
 	/**
-	 * @param 	dt
-	 * 			The period of time dt for which the new period of time needs to be calculated.
-	 * @return	The new period of time dt based on the current velocity and acceleration of the alien
-	 * 			in this world. (used for accurate collision detection).
-	 */
-/*	private double getNewDt(double dt){
-		double velocity = Math.pow((Math.pow(this.alien.getHorizontalVelocity(), 2) + 
-				Math.pow(this.alien.getVerticalVelocity(),2)), 1/2);
-		double acceleration = Math.pow((Math.pow(this.alien.getHorizontalAcceleration(), 2) + 
-				Math.pow(this.alien.getVerticalAcceleration(),2)), 1/2);
-		double newDt = 0.01 / (velocity + acceleration*dt);
-		return newDt;
-	}*/
-	
-	/**
 	 * Returns the geological feature of the tile with its bottom left pixel at
 	 * the given position.
 	 * 
@@ -555,6 +540,10 @@ public class World {
 		return (geologicalFeature == 1);
 	}
 	
+	/**
+	 * 
+	 * @param dt
+	 */
 	public void advanceTime(double dt) {
 		this.getMazub().advanceTime(dt);
 		if ((this.getMazub().getNbHitPoints() == 0) 

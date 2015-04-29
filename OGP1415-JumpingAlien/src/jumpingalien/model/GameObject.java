@@ -528,6 +528,41 @@ public class GameObject {
 	}
 	
 	/**
+	 * 
+	 * @return
+	 */
+	protected boolean isTryingToCrossBoundaries() {
+		return (((this.getPosition()[0] <= 0) 
+						&& (this.getHorizontalVelocity() < 0)) 
+				|| ((this.getPosition()[0] >= (this.getMaxPosition()[0])) 
+						&& (this.getHorizontalVelocity() > 0))
+				|| ((this.getPosition()[1] >= this.getMaxPosition()[1]) 
+						&& (this.getVerticalVelocity() > 0)));
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	protected boolean isTouchingImpassableTileRight() {
+		return (this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
+				this.getPosition()[0] + this.getCurrentSprite().getWidth() - 1, 
+				this.getPosition()[1] + 1)));
+	}
+	
+	protected boolean isTouchingImmpassableTileTop() {
+		return (this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
+				this.getPosition()[0] + 1, 
+				this.getPosition()[1] + this.getCurrentSprite().getHeight() - 1)));
+	}
+	
+	protected boolean isTouchingImpassableTileLeftOrBottom() {
+		return (this.getWorld().isNotPassable(
+				this.getWorld().getGeologicalFeature(this.getPosition()[0] + 1, 
+						this.getPosition()[1] + 1)));
+	}
+	
+	/**
 	 * Make the game object begin to move in the x-direction to the left (negative x-direction) 
 	 * or to the right (positive x-direction) depending on the given direction and set the next
 	 * direction (only useful for plants). Also limit the velocity in the x-direction to its maximum.
@@ -576,6 +611,68 @@ public class GameObject {
 		if ((direction == Direction.LEFT) && (this.getHorizontalVelocity() < 0)) {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	protected void doNotCrossBoundaries() {
+		if ((this.getPosition()[0] <= 0) && (this.getHorizontalVelocity() < 0)) {
+			this.setPosition(0, this.getPosition()[1]);
+		}
+		else if ((this.getPosition()[0] >= (this.getMaxPosition()[0])) && 
+				(this.getHorizontalVelocity() > 0)) {
+			this.setPosition(this.getMaxPosition()[0], this.getPosition()[1]);
+		}
+		else if ((this.getPosition()[1] >= this.getMaxPosition()[1]) 
+				&& (this.getVerticalVelocity() > 0)) {
+			this.setPosition(this.getPosition()[0], this.getMaxPosition()[1]);
+		}
+	}
+	
+	/**
+	 * 
+	 * @param oldPosition
+	 */
+	protected void doNotCrossImpassableTile(int[] oldPosition) {
+		if ((this.getHorizontalVelocity() < 0) && (this.getWorld().isNotPassable(
+				this.getWorld().getGeologicalFeature(this.getPosition()[0] + 1, 
+						this.getPosition()[1] + 1)))) {
+			this.setPosition(oldPosition[0], oldPosition[1]);
+					/*this.getWorld().getBottomLeftPixelOfTile(
+					(this.getPosition()[0]/this.getWorld().getTileLength()), 
+					(this.getPosition()[1]/this.getWorld().getTileLength())
+					)[0] + this.getWorld().getTileLength(), this.getPosition()[1]);*/
+		}
+		else if ((this.getHorizontalVelocity() > 0) && (this.getWorld().isNotPassable(
+				this.getWorld().getGeologicalFeature(
+						this.getPosition()[0] + this.getCurrentSprite().getWidth() - 1, 
+						this.getPosition()[1] + 1)))) {
+			this.setPosition(oldPosition[0], oldPosition[1]);
+					/*this.getWorld().getBottomLeftPixelOfTile(
+					(this.getPosition()[0]/this.getWorld().getTileLength()), 
+					(this.getPosition()[1]/this.getWorld().getTileLength())
+					)[0] - this.getWorld().getTileLength(), this.getPosition()[1]);*/
+		}
+		else if ((this.isFalling()) && (this.getWorld().isNotPassable(
+				this.getWorld().getGeologicalFeature(this.getPosition()[0] + 1, 
+						this.getPosition()[1] + 1)))) {
+			this.setPosition(oldPosition[0], oldPosition[1]);
+					/*this.getPosition()[0], this.getWorld().getBottomLeftPixelOfTile(
+					(this.getPosition()[0]/this.getWorld().getTileLength()), 
+					(this.getPosition()[1]/this.getWorld().getTileLength())
+					)[1] + this.getWorld().getTileLength());*/
+		}
+		else if ((this.getVerticalVelocity() > 0) && 
+				(this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
+						this.getPosition()[0] + 1, 
+						this.getPosition()[1] + this.getCurrentSprite().getHeight() - 1)))) {
+			this.setPosition(oldPosition[0], oldPosition[1]);
+					/*this.getPosition()[0], this.getWorld().getBottomLeftPixelOfTile(
+					(this.getPosition()[0]/this.getWorld().getTileLength()),
+					(this.getPosition()[1]/this.getWorld().getTileLength())
+					)[1] - this.getWorld().getTileLength());*/
 		}
 	}
 }

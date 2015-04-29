@@ -62,7 +62,11 @@ public class Plant extends GameObject {
 		double acceleration = Math.pow((Math.pow(this.getHorizontalAcceleration(), 2) + 
 				Math.pow(this.getVerticalAcceleration(),2)), 1/2);
 		double newDt = 0.01 / (velocity + acceleration*dt);
-		return newDt;
+		if ((velocity + acceleration*dt) == 0)
+			return 0.01;
+		else {
+			return newDt;
+		}
 	}
 	
 	@Override
@@ -135,25 +139,37 @@ public class Plant extends GameObject {
 			this.setHorizontalAcceleration(0); 
 			this.setHorizontalVelocity(0);
 		}
-		if ((this.getPosition()[0] >= (this.getMaxPosition()[0])) && 
+		else if ((this.getPosition()[0] >= (this.getMaxPosition()[0])) && 
 				(this.getHorizontalVelocity() > 0)) {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 		}
-		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
-				this.getPosition()[0], this.getPosition()[1])))
+		else if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
+				this.getPosition()[0] + 1, this.getPosition()[1] + 1)))
 				&& (this.getHorizontalVelocity() < 0)) {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 		}
-		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
-				this.getPosition()[0] + this.getCurrentSprite().getWidth(), this.getPosition()[1]))) 
+		else if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
+				this.getPosition()[0] + this.getCurrentSprite().getWidth() - 1, 
+				this.getPosition()[1] + 1))) 
 				&& (this.getHorizontalVelocity() > 0)) {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 		}
 		double newPositionX = this.getHorizontalVelocity() * dt;
 		return newPositionX;
+	}
+	
+	/**
+	 * 
+	 * @param newDt
+	 * @param oldPosition
+	 */
+	private void collidesWithActions(double newDt, int[] oldPosition) {
+		if ((this.collidesWith(this.getWorld().getMazub())) && 
+				(this.getWorld().getMazub().getNbHitPoints() <= 500))
+			this.changeNbHitPoints(-1);
 	}
 	
 	/**
@@ -169,37 +185,16 @@ public class Plant extends GameObject {
 	 */
 	public void advanceTime(double dt) throws IllegalArgumentException {
 		double newDt = this.getNewDt(dt);
+		int[] oldPosition = this.getPosition();
 		if (!this.isValidDt(newDt))
 			throw new IllegalArgumentException("The given period of time dt is invalid!");
-		this.setPosition(this.getPosition()[0] + (int)(100 * this.horizontalMovement(newDt)),
+		if (this.isTryingToCrossBoundaries())
+			this.doNotCrossBoundaries();
+		else if (this.isTouchingImpassableTileRight())
+			this.doNotCrossImpassableTile(oldPosition);
+		this.setPosition(this.getPosition()[0] + (100 * this.horizontalMovement(newDt)),
 				this.getPosition()[1]);
-		if ((this.getPosition()[0] <= 0) && (this.getHorizontalVelocity() < 0)) {
-			this.setPosition(0, this.getPosition()[1]);
-		}
-		if ((this.getPosition()[0] >= (this.getMaxPosition()[0])) && 
-				(this.getHorizontalVelocity() > 0)) {
-			this.setPosition(this.getMaxPosition()[0], this.getPosition()[1]);
-		}
-		if ((this.getHorizontalVelocity() < 0) && (this.getWorld().isNotPassable(
-				this.getWorld().getGeologicalFeature(this.getPosition()[0], 
-						this.getPosition()[1] + 1)))) {
-			this.setPosition(this.getWorld().getBottomLeftPixelOfTile(
-					(this.getPosition()[0]/this.getWorld().getTileLength()), 
-					(this.getPosition()[1]/this.getWorld().getTileLength())
-					)[0] + this.getWorld().getTileLength(), this.getPosition()[1]);
-		}
-		if ((this.getHorizontalVelocity() > 0) && (this.getWorld().isNotPassable(
-				this.getWorld().getGeologicalFeature(
-						this.getPosition()[0] + this.getCurrentSprite().getWidth(), 
-						this.getPosition()[1] + 1)))) {
-			this.setPosition(this.getWorld().getBottomLeftPixelOfTile(
-					(this.getPosition()[0]/this.getWorld().getTileLength()), 
-					(this.getPosition()[1]/this.getWorld().getTileLength())
-					)[0] - this.getWorld().getTileLength(), this.getPosition()[1]);
-		}
-		if ((this.collidesWith(this.getWorld().getMazub())) && 
-				(this.getWorld().getMazub().getNbHitPoints() <= 500))
-			this.changeNbHitPoints(-1);
+		this.collidesWithActions(newDt, oldPosition);
 		if (this.timeMovingHorizontally >= 0.50) {
 			this.timeMovingHorizontally = 0;
 			this.endMoveHorizontally(this.getLastDirection());

@@ -22,8 +22,6 @@ import jumpingalien.util.*;
  *
  */
 public class Mazub extends GameObject {
-	private double normalHorizontalVelocity;
-	private double normalHorizontalAcceleration;
 	private double maxRunningVelocity = 3;
 	private double maxDuckingVelocity = 1;
 	private double normalVerticalVelocity;
@@ -48,6 +46,7 @@ public class Mazub extends GameObject {
 		this.spriteList = spriteList;
 		this.normalHorizontalVelocity = 1;
 		this.normalHorizontalAcceleration = 0.9;
+		this.setMaxHorizontalVelocity(3);
 		this.normalVerticalVelocity = 8;
 	    this.timeMovingHorizontally = 0;
 	    this.changeNbHitPoints(100);
@@ -70,8 +69,8 @@ public class Mazub extends GameObject {
 				if (this.isAirborne())
 					return spriteList[5];
 				else {
-					if (((10*this.timeMovingHorizontally) % 75) <= 11)
-						return spriteList[(int)(18 + ((10*this.timeMovingHorizontally) % 75))];
+					if (((100*this.timeMovingHorizontally) % 75) <= 11)
+						return spriteList[(int)(19 + ((100*this.timeMovingHorizontally) % 75))];
 					else
 						this.timeMovingHorizontally = 0;
 				}
@@ -82,8 +81,8 @@ public class Mazub extends GameObject {
 				if (this.isAirborne())
 					return spriteList[4];
 				else {
-					if (((10*this.timeMovingHorizontally) % 75) <= 11)
-						return spriteList[(int) (7 + ((10*this.timeMovingHorizontally) % 75))];
+					if (((100*this.timeMovingHorizontally) % 75) <= 11)
+						return spriteList[(int) (8 + ((100*this.timeMovingHorizontally) % 75))];
 					else 
 						this.timeMovingHorizontally = 0;
 				}
@@ -164,7 +163,11 @@ public class Mazub extends GameObject {
 		double acceleration = Math.pow((Math.pow(this.getHorizontalAcceleration(), 2) + 
 				Math.pow(this.getVerticalAcceleration(),2)), 1/2);
 		double newDt = 0.01 / (velocity + acceleration*dt);
-		return newDt;
+		if ((velocity + acceleration*dt) == 0)
+			return 0.01;
+		else {
+			return newDt;
+		}
 	}
 	
 	/**
@@ -174,8 +177,8 @@ public class Mazub extends GameObject {
 	 * @return	True if and only if the tile above the alien is passable.
 	 */
 	public boolean isValidJumpingPosition(int[] position) {
-		return (!(this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(position[0], 
-				position[1] + this.getCurrentSprite().getHeight()))));
+		return (this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(position[0] + 1, 
+				position[1])));
 	}
 	
 	/**
@@ -277,7 +280,7 @@ public class Mazub extends GameObject {
 				this.setHorizontalVelocity(this.getMaxHorizontalVelocity());
 			}
 		}
-		else{
+		else {
 			this.setLastDirection(Direction.LEFT);
 			if (this.isMovingRight())
 				this.setSecondaryDirection(Direction.RIGHT);
@@ -387,23 +390,25 @@ public class Mazub extends GameObject {
 			this.setHorizontalAcceleration(0); 
 			this.setHorizontalVelocity(0);
 		}
-		if ((this.getPosition()[0] >= (this.getMaxPosition()[0])) && 
+		else if ((this.getPosition()[0] >= (this.getMaxPosition()[0])) && 
 				(this.getHorizontalVelocity() > 0)) {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 		}
-		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
-				this.getPosition()[0], this.getPosition()[1])))
-				&& (this.getHorizontalVelocity() < 0)) {
+		else if ((this.getHorizontalVelocity() < 0) && (this.getWorld().isNotPassable(
+				this.getWorld().getGeologicalFeature(this.getPosition()[0] + 1, 
+						this.getPosition()[1] + 1)))) {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 		}
-		if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
-				this.getPosition()[0] + this.getCurrentSprite().getWidth(), this.getPosition()[1]))) 
-				&& (this.getHorizontalVelocity() > 0)) {
+		else if ((this.getHorizontalVelocity() > 0) && (this.getWorld().isNotPassable(
+				this.getWorld().getGeologicalFeature(
+						this.getPosition()[0] + this.getCurrentSprite().getWidth() - 1, 
+						this.getPosition()[1] + 1)))) {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 		}
+		System.out.println(this.getHorizontalVelocity());
 		this.setHorizontalVelocity(this.getHorizontalVelocity() + this.getHorizontalAcceleration() * dt);
 		double newPositionX = this.getHorizontalVelocity() * dt 
 				- this.getHorizontalAcceleration() * Math.pow(dt, 2) 
@@ -452,15 +457,16 @@ public class Mazub extends GameObject {
 				&& (this.getVerticalVelocity() > 0)) {
 			this.setVerticalVelocity(0);
 		}
-		if ((this.getVerticalVelocity() < 0) && (this.getWorld().isNotPassable(
-				this.getWorld().getGeologicalFeature((int)this.getPosition()[0], 
-						(int)this.getPosition()[1])))) {
+		else if ((this.getVerticalVelocity() < 0) && (this.getWorld().isNotPassable(
+				this.getWorld().getGeologicalFeature(this.getPosition()[0] + 1, 
+						this.getPosition()[1] + 1)))) {
 			this.setVerticalAcceleration(0);
 			this.setVerticalVelocity(0);
 		}
-		if ((this.getVerticalVelocity() > 0) && (this.getWorld().isNotPassable(
-				this.getWorld().getGeologicalFeature((int)this.getPosition()[0], 
-				(int)this.getPosition()[1] + this.getCurrentSprite().getHeight())))) {
+		else if ((this.getVerticalVelocity() > 0) && 
+				(this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
+						this.getPosition()[0] + 1, 
+						this.getPosition()[1] + this.getCurrentSprite().getHeight() - 1)))) {
 			this.setVerticalVelocity(0);
 		}
 		this.setVerticalVelocity(this.getVerticalVelocity() + this.normalVerticalAcceleration*dt);
@@ -471,84 +477,11 @@ public class Mazub extends GameObject {
 	}
 	
 	/**
-	 * Set the new position on the screen of the alien to new position in the game world, limit the
-	 * alien's position to the minimum (in x-direction) and the maximum (both in x- and y-direction),
-	 * block the alien's movement if it wants to move to a tile that is not passable, adapt the time
-	 * moving horizontally and the time not moving, increase the number of hitpoints if the alien 
-	 * collides with a plant, block the alien's movement, decrease its hitpoints and make it immune
-	 * if it collides with an enemy (only when it does not collide with its bottom perimeter), 
-	 * decrease the number of hitpoints if the alien is in water or magma, and make it immune for 
-	 * magma if it falls into magma.
-	 * @param 	dt
-	 * 			The time passed dt.
-	 * @effect //TODO
-	 * @throws	IllegalArgumentException
-	 * 			| !isValidDt(dt)
+	 * 
+	 * @param newDt
+	 * @param oldPosition
 	 */
-	public void advanceTime(double dt) throws IllegalArgumentException {
-		double newDt = this.getNewDt(dt);
-		int[] oldPosition = this.getPosition();
-		if (!this.isValidDt(newDt))
-			throw new IllegalArgumentException("The given period of time dt is invalid!");
-		this.setPosition(this.getPosition()[0] + (int)(100 * this.horizontalMovement(newDt)),
-				this.getPosition()[1] + (int)(100 * this.verticalMovement(newDt)));
-		if ((this.getPosition()[0] <= 0) && (this.getHorizontalVelocity() < 0)) {
-			this.setPosition(0, this.getPosition()[1]);
-		}
-		if ((this.getPosition()[0] >= (this.getMaxPosition()[0])) && 
-				(this.getHorizontalVelocity() > 0)) {
-			this.setPosition(this.getMaxPosition()[0], this.getPosition()[1]);
-		}
-		if ((this.getPosition()[1] >= this.getMaxPosition()[1]) 
-				&& (this.getVerticalVelocity() > 0)) {
-			this.setPosition(this.getPosition()[0], this.getMaxPosition()[1]);
-		}
-		if ((this.getHorizontalVelocity() < 0) && (this.getWorld().isNotPassable(
-				this.getWorld().getGeologicalFeature(this.getPosition()[0], 
-						this.getPosition()[1] + 1)))) {
-			this.setPosition(oldPosition[0], oldPosition[1]);
-					/*this.getWorld().getBottomLeftPixelOfTile(
-					(this.getPosition()[0]/this.getWorld().getTileLength()), 
-					(this.getPosition()[1]/this.getWorld().getTileLength())
-					)[0] + this.getWorld().getTileLength(), this.getPosition()[1]);*/
-		}
-		if ((this.getHorizontalVelocity() > 0) && (this.getWorld().isNotPassable(
-				this.getWorld().getGeologicalFeature(
-						this.getPosition()[0] + this.getCurrentSprite().getWidth(), 
-						this.getPosition()[1] + 1)))) {
-			this.setPosition(oldPosition[0], oldPosition[1]);
-					/*this.getWorld().getBottomLeftPixelOfTile(
-					(this.getPosition()[0]/this.getWorld().getTileLength()), 
-					(this.getPosition()[1]/this.getWorld().getTileLength())
-					)[0] - this.getWorld().getTileLength(), this.getPosition()[1]);*/
-		}
-		if ((this.getVerticalVelocity() < 0) && (this.getWorld().isNotPassable(
-				this.getWorld().getGeologicalFeature(this.getPosition()[0] + 1, 
-						this.getPosition()[1])))) {
-			this.setPosition(oldPosition[0], oldPosition[1]);
-					/*this.getPosition()[0], this.getWorld().getBottomLeftPixelOfTile(
-					(this.getPosition()[0]/this.getWorld().getTileLength()), 
-					(this.getPosition()[1]/this.getWorld().getTileLength())
-					)[1] + this.getWorld().getTileLength());*/
-		}
-		if ((this.getVerticalVelocity() > 0) && 
-				(this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
-						this.getPosition()[0] + 1, 
-						this.getPosition()[1] + this.getCurrentSprite().getHeight())))) {
-			this.setPosition(oldPosition[0], oldPosition[1]);
-					/*this.getPosition()[0], this.getWorld().getBottomLeftPixelOfTile(
-					(this.getPosition()[0]/this.getWorld().getTileLength()),
-					(this.getPosition()[1]/this.getWorld().getTileLength())
-					)[1] - this.getWorld().getTileLength());*/
-		}
-		if (!this.isMovingHorizontally()) {
-		    this.timeStalled += newDt;
-			this.timeMovingHorizontally = 0;
-		}
-		else {
-			this.timeStalled = 0;
-			this.timeMovingHorizontally += newDt;
-		}
+	private void collidesWithActions(double newDt, int[] oldPosition) {
 		for (Plant plant: this.getWorld().getPlants()) {
 			if (this.collidesWith(plant)) {
 				if (this.getNbHitPoints() <= 500)
@@ -587,15 +520,68 @@ public class Mazub extends GameObject {
 					this.timeImmune += newDt;
 			}
 		}
+	}
+	
+	/**
+	 * 
+	 * @param newDt
+	 */
+	private void isInFluidActions(double newDt) {
 		if (this.isInWater())
-			this.changeNbHitPoints((int)(-2 * ((10*newDt) / (20))));
+			this.changeNbHitPoints((int)(-2 * ((10*newDt)/2)));
 		if (this.isInMagma()) {
 			if (!this.isImmuneForMagma()) {
-				this.changeNbHitPoints((int)(-50 *((10*(newDt + 0.2)) / (20))));
+				this.changeNbHitPoints((int)(-50 *((10*(newDt + 0.2))/2)));
 				this.makeImmuneForMagma();
 			}
 			else
 				this.timeImmuneForMagma += newDt;
 		}
+	}
+	
+	/**
+	 * Set the new position on the screen of the alien to new position in the game world, limit the
+	 * alien's position to the minimum (in x-direction) and the maximum (both in x- and y-direction),
+	 * block the alien's movement if it wants to move to a tile that is not passable, adapt the time
+	 * moving horizontally and the time not moving, increase the number of hitpoints if the alien 
+	 * collides with a plant, block the alien's movement, decrease its hitpoints and make it immune
+	 * if it collides with an enemy (only when it does not collide with its bottom perimeter), 
+	 * decrease the number of hitpoints if the alien is in water or magma, and make it immune for 
+	 * magma if it falls into magma.
+	 * @param 	dt
+	 * 			The time passed dt.
+	 * @effect //TODO
+	 * @throws	IllegalArgumentException
+	 * 			| !isValidDt(dt)
+	 */
+	public void advanceTime(double dt) throws IllegalArgumentException {
+		double newDt = this.getNewDt(dt);
+		int[] oldPosition = this.getPosition();
+		if (!this.isValidDt(newDt))
+			throw new IllegalArgumentException("The given period of time dt is invalid!");
+		if (!this.isMovingHorizontally()) {
+		    this.timeStalled += newDt;
+			this.timeMovingHorizontally = 0;
+		}
+		if (this.isMovingHorizontally()) {
+			this.timeStalled = 0;
+			this.timeMovingHorizontally += newDt;
+		}
+		if (this.isTryingToCrossBoundaries())
+			this.doNotCrossBoundaries();
+		if ((this.isTouchingImpassableTileLeftOrBottom()) 
+				&& (!(this.isTouchingImpassableTileRight())) 
+				&& (!(this.isTouchingImmpassableTileTop()))) {
+//			System.out.println("horizontal");
+//			System.out.println(this.horizontalMovement(newDt));
+//			System.out.println("vertical");
+//			System.out.println(this.verticalMovement(newDt));
+			this.setPosition(this.getPosition()[0] + (100 * this.horizontalMovement(newDt)),
+				this.getPosition()[1] + (100 * this.verticalMovement(newDt)));
+		}
+		else 
+			this.doNotCrossImpassableTile(oldPosition);
+		this.collidesWithActions(newDt, oldPosition);
+		this.isInFluidActions(newDt);
 	}
 }
