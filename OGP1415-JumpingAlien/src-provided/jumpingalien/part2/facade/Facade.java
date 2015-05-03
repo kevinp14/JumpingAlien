@@ -675,8 +675,6 @@ public class Facade implements IFacadePart2 {
 	 *            The alien that has to stop jumping.
 	 */ //TODO
 	public void endJump(Mazub alien) throws ModelException {
-		if (!alien.isJumping())
-			throw new ModelException("The alien has already stopped jumping!");
 		alien.endJump();
 	}
 	

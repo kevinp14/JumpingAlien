@@ -1,5 +1,7 @@
 package jumpingalien.model;
 
+import java.util.ArrayList;
+
 import be.kuleuven.cs.som.annotate.*;
 import jumpingalien.util.*;
 
@@ -44,6 +46,9 @@ public class GameObject {
 	private double positionY;
 	private Sprite[] spriteList;
 	protected double timeStalled;
+	protected double timeInWater;
+	protected double timeInAir;
+	protected double timeInMagma;
 	protected double timeImmune;
 	protected double timeImmuneForMagma;
 	private Direction lastDirection;
@@ -80,6 +85,9 @@ public class GameObject {
 		this.setVerticalAcceleration(0);
 		this.spriteList = spriteList;
 	    this.timeStalled = 0;
+	    this.timeInAir = 0;
+	    this.timeInWater = 0;
+	    this.timeInMagma = 0;
 	    this.timeImmune = 0;
 	    this.timeImmuneForMagma = 0;
 	    this.lastDirection = Direction.STALLED;
@@ -326,6 +334,20 @@ public class GameObject {
 	protected void setNextDirection(Direction direction){
 		this.nextDirection = direction;
 	}
+	
+	protected ArrayList<Integer> getHorizontalPixels() {
+		ArrayList<Integer> bottomPixels = new ArrayList<Integer>();
+		for (int x=0; x < this.getCurrentSprite().getWidth(); x++)
+			bottomPixels.add(this.getPosition()[0] + x);
+		return bottomPixels;
+	}
+	
+	protected ArrayList<Integer> getVerticalPixels() {
+		ArrayList<Integer> bottomPixels = new ArrayList<Integer>();
+		for (int y=0; y < this.getCurrentSprite().getHeight(); y++)
+			bottomPixels.add(this.getPosition()[1] + y);
+		return bottomPixels;
+	}
 
 	/**
 	 * Check whether the given direction is a valid one to move in.
@@ -459,7 +481,7 @@ public class GameObject {
 	 * @return	True if and only if the geological feature at the game object's position is 2 (water).
 	 */
 	protected boolean isInWater(){
-		return (this.world.getGeologicalFeature(this.getPosition()[0], this.getPosition()[1]) == 2);
+		return (this.world.getGeologicalFeature(this.getPosition()[0], this.getPosition()[1] + 1) == 2);
 	}
 	
 	/**
@@ -468,7 +490,7 @@ public class GameObject {
 	 * @return	True if and only if the geological feature at the game object's position is 3 (magma).
 	 */
 	protected boolean isInMagma(){
-		return (this.world.getGeologicalFeature(this.getPosition()[0], this.getPosition()[1]) == 3);
+		return (this.world.getGeologicalFeature(this.getPosition()[0], this.getPosition()[1] + 1) == 3);
 	}
 	
 	/**
@@ -523,15 +545,29 @@ public class GameObject {
 	 * @return	True if and only if the game object collides with the object and the y-position of the
 	 * 			game object equals the y-position of the given object - 1.
 	 */
-	protected boolean bottomCollidesWithTopOfObject(GameObject object) {
-		return ((this.collidesWith(object)) && (this.getPosition()[1] == (object.getPosition()[1] - 1)));
+	protected boolean bottomCollidesWithTop(GameObject object) {
+		int pixelsColliding = 0;
+		for (Integer thisHorizontalPosition: this.getHorizontalPixels()) {
+			for (Integer objectHorizontalPosition: object.getHorizontalPixels()) {
+				if ((this.collidesWith(object)) && (this.getPosition()[1] 
+						== object.getPosition()[1] + object.getCurrentSprite().getHeight() - 1) 
+						&& (thisHorizontalPosition == objectHorizontalPosition)) 
+					pixelsColliding += 1;
+			}
+		}
+		if (pixelsColliding > 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 	
 	/**
 	 * 
 	 * @return
 	 */
-	protected boolean isTryingToCrossBoundaries() {
+	protected boolean crossBoundaries() {
 		return (((this.getPosition()[0] <= 0) 
 						&& (this.getHorizontalVelocity() < 0)) 
 				|| ((this.getPosition()[0] >= (this.getMaxPosition()[0])) 
@@ -544,22 +580,45 @@ public class GameObject {
 	 * 
 	 * @return
 	 */
-	protected boolean isTouchingImpassableTileRight() {
+	protected boolean touchImpassableRight() {
 		return (this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
 				this.getPosition()[0] + this.getCurrentSprite().getWidth() - 1, 
 				this.getPosition()[1] + 1)));
 	}
 	
-	protected boolean isTouchingImmpassableTileTop() {
+	protected boolean touchImpassableTop() {
 		return (this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
 				this.getPosition()[0] + 1, 
 				this.getPosition()[1] + this.getCurrentSprite().getHeight() - 1)));
 	}
 	
-	protected boolean isTouchingImpassableTileLeftOrBottom() {
+	protected boolean touchImpassableLeft() {
+		return (this.getWorld().isNotPassable(
+				this.getWorld().getGeologicalFeature(this.getPosition()[0], 
+						this.getPosition()[1] + 1)));
+	}
+	
+	
+	protected boolean touchImpassableBottom() {
 		return (this.getWorld().isNotPassable(
 				this.getWorld().getGeologicalFeature(this.getPosition()[0] + 1, 
-						this.getPosition()[1] + 1)));
+						this.getPosition()[1])));
+	}
+	
+	protected boolean crossImpassableRight() {
+		return ((this.touchImpassableRight()) && (this.getHorizontalVelocity() > 0));
+	}
+	
+	protected boolean crossImpassableTop() {
+		return ((this.touchImpassableTop()) && (this.getVerticalVelocity() > 0));
+	}
+	
+	protected boolean crossImpassableLeft() {
+		return ((this.touchImpassableLeft()) && (this.getHorizontalVelocity() < 0));
+	}
+	
+	protected boolean crossImpassableBottom() {
+		return ((this.touchImpassableBottom()) && (this.getVerticalVelocity() < 0));
 	}
 	
 	/**
@@ -617,16 +676,21 @@ public class GameObject {
 	/**
 	 * 
 	 */
-	protected void doNotCrossBoundaries() {
+	protected void crossBoundariesActions() {
 		if ((this.getPosition()[0] <= 0) && (this.getHorizontalVelocity() < 0)) {
+			this.setHorizontalAcceleration(0);
+			this.setHorizontalVelocity(0);
 			this.setPosition(0, this.getPosition()[1]);
 		}
 		else if ((this.getPosition()[0] >= (this.getMaxPosition()[0])) && 
 				(this.getHorizontalVelocity() > 0)) {
+			this.setHorizontalAcceleration(0);
+			this.setHorizontalVelocity(0);
 			this.setPosition(this.getMaxPosition()[0], this.getPosition()[1]);
 		}
 		else if ((this.getPosition()[1] >= this.getMaxPosition()[1]) 
 				&& (this.getVerticalVelocity() > 0)) {
+			this.setHorizontalVelocity(0);
 			this.setPosition(this.getPosition()[0], this.getMaxPosition()[1]);
 		}
 	}
@@ -635,44 +699,20 @@ public class GameObject {
 	 * 
 	 * @param oldPosition
 	 */
-	protected void doNotCrossImpassableTile(int[] oldPosition) {
-		if ((this.getHorizontalVelocity() < 0) && (this.getWorld().isNotPassable(
-				this.getWorld().getGeologicalFeature(this.getPosition()[0] + 1, 
-						this.getPosition()[1] + 1)))) {
+	protected void crossImpassableActions(int[] oldPosition) {
+		if ((this.crossImpassableLeft()) || (this.crossImpassableRight())) {
+			this.setHorizontalAcceleration(0);
+			this.setHorizontalVelocity(0);
 			this.setPosition(oldPosition[0], oldPosition[1]);
-					/*this.getWorld().getBottomLeftPixelOfTile(
-					(this.getPosition()[0]/this.getWorld().getTileLength()), 
-					(this.getPosition()[1]/this.getWorld().getTileLength())
-					)[0] + this.getWorld().getTileLength(), this.getPosition()[1]);*/
 		}
-		else if ((this.getHorizontalVelocity() > 0) && (this.getWorld().isNotPassable(
-				this.getWorld().getGeologicalFeature(
-						this.getPosition()[0] + this.getCurrentSprite().getWidth() - 1, 
-						this.getPosition()[1] + 1)))) {
+		else if (this.crossImpassableBottom()) {
+			this.setVerticalAcceleration(0);
+			this.setVerticalVelocity(0);
 			this.setPosition(oldPosition[0], oldPosition[1]);
-					/*this.getWorld().getBottomLeftPixelOfTile(
-					(this.getPosition()[0]/this.getWorld().getTileLength()), 
-					(this.getPosition()[1]/this.getWorld().getTileLength())
-					)[0] - this.getWorld().getTileLength(), this.getPosition()[1]);*/
 		}
-		else if ((this.isFalling()) && (this.getWorld().isNotPassable(
-				this.getWorld().getGeologicalFeature(this.getPosition()[0] + 1, 
-						this.getPosition()[1] + 1)))) {
+		else if (this.crossImpassableTop()) {
+			this.setVerticalVelocity(0);
 			this.setPosition(oldPosition[0], oldPosition[1]);
-					/*this.getPosition()[0], this.getWorld().getBottomLeftPixelOfTile(
-					(this.getPosition()[0]/this.getWorld().getTileLength()), 
-					(this.getPosition()[1]/this.getWorld().getTileLength())
-					)[1] + this.getWorld().getTileLength());*/
-		}
-		else if ((this.getVerticalVelocity() > 0) && 
-				(this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
-						this.getPosition()[0] + 1, 
-						this.getPosition()[1] + this.getCurrentSprite().getHeight() - 1)))) {
-			this.setPosition(oldPosition[0], oldPosition[1]);
-					/*this.getPosition()[0], this.getWorld().getBottomLeftPixelOfTile(
-					(this.getPosition()[0]/this.getWorld().getTileLength()),
-					(this.getPosition()[1]/this.getWorld().getTileLength())
-					)[1] - this.getWorld().getTileLength());*/
 		}
 	}
 }

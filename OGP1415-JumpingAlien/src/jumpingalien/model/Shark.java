@@ -458,7 +458,7 @@ public class Shark extends GameObject {
 	 */
 	private void collidesWithActions(double newDt, int[] oldPosition) {
 		if ((this.collidesWith(this.getWorld().getMazub())) 
-				&& (!this.bottomCollidesWithTopOfObject(this.getWorld().getMazub()))) {
+				&& (!this.bottomCollidesWithTop(this.getWorld().getMazub()))) {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 			this.setPosition(oldPosition[0], oldPosition[1]);
@@ -470,7 +470,7 @@ public class Shark extends GameObject {
 				this.timeImmune += newDt;
 		}
 		for (Shark shark: this.getWorld().getSharks()) {
-			if ((this.collidesWith(shark)) && (!this.bottomCollidesWithTopOfObject(shark))) {
+			if ((this.collidesWith(shark)) && (!this.bottomCollidesWithTop(shark))) {
 				this.setHorizontalAcceleration(0);
 				this.setHorizontalVelocity(0); 
 				this.setPosition(oldPosition[0], oldPosition[1]);
@@ -480,7 +480,7 @@ public class Shark extends GameObject {
 			}
 		}
 		for (Slime slime: this.getWorld().getSlimes()) {
-			if ((this.collidesWith(slime)) && (!this.bottomCollidesWithTopOfObject(slime))) {
+			if ((this.collidesWith(slime)) && (!this.bottomCollidesWithTop(slime))) {
 				this.setHorizontalAcceleration(0);
 				this.setHorizontalVelocity(0); 
 				this.setPosition(oldPosition[0], oldPosition[1]);
@@ -534,10 +534,10 @@ public class Shark extends GameObject {
 		int[] oldPosition = this.getPosition();
 		if (!this.isValidDt(newDt)) 
 			throw new IllegalArgumentException("The given period of time dt is invalid!");
-		if (this.isTryingToCrossBoundaries())
-			this.doNotCrossBoundaries();
-		else if (this.isTouchingImpassableTileRight())
-			this.doNotCrossImpassableTile(oldPosition);
+		if (this.crossBoundaries())
+			this.crossBoundariesActions();
+		else if (this.touchImpassableRight())
+			this.crossImpassableActions(oldPosition);
 		this.setPosition(this.getPosition()[0] + (100 * this.horizontalMovement(newDt)),
 				this.getPosition()[1] + (100 * this.verticalMovement(newDt)));
 		this.collidesWithActions(newDt, oldPosition);

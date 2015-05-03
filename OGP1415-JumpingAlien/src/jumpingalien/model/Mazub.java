@@ -46,7 +46,7 @@ public class Mazub extends GameObject {
 		this.spriteList = spriteList;
 		this.normalHorizontalVelocity = 1;
 		this.normalHorizontalAcceleration = 0.9;
-		this.setMaxHorizontalVelocity(3);
+		this.maxHorizontalVelocity = 3;
 		this.normalVerticalVelocity = 8;
 	    this.timeMovingHorizontally = 0;
 	    this.changeNbHitPoints(100);
@@ -378,7 +378,7 @@ public class Mazub extends GameObject {
 	 * @throws	IllegalArgumentException
 	 * 			| !isValidDt(dt)
 	 */
-	private double horizontalMovement(double dt) throws IllegalArgumentException {
+	private double horizontalMovement(double dt, int[] oldPosition) throws IllegalArgumentException {
 		if (Math.abs(this.getHorizontalVelocity()) >= this.getMaxHorizontalVelocity()) {
 			this.setHorizontalAcceleration(0);
 			if (this.getHorizontalVelocity() < 0) {
@@ -386,31 +386,20 @@ public class Mazub extends GameObject {
 			} else
 				this.setHorizontalVelocity(this.getMaxHorizontalVelocity());
 		}
-		if ((this.getPosition()[0] <= 0) && (this.getHorizontalVelocity() < 0)) {
-			this.setHorizontalAcceleration(0); 
-			this.setHorizontalVelocity(0);
+		if (((this.getPosition()[0] <= 0) && (this.getHorizontalVelocity() < 0)) 
+				|| ((this.getPosition()[0] >= (this.getMaxPosition()[0])) && 
+						(this.getHorizontalVelocity() > 0))) {
+			this.crossBoundariesActions();
 		}
-		else if ((this.getPosition()[0] >= (this.getMaxPosition()[0])) && 
-				(this.getHorizontalVelocity() > 0)) {
-			this.setHorizontalAcceleration(0);
-			this.setHorizontalVelocity(0);
+		else if ((this.crossImpassableLeft()) || (this.crossImpassableRight())) {
+			this.crossImpassableActions(oldPosition);
 		}
-		else if ((this.getHorizontalVelocity() < 0) && (this.getWorld().isNotPassable(
-				this.getWorld().getGeologicalFeature(this.getPosition()[0] + 1, 
-						this.getPosition()[1] + 1)))) {
-			this.setHorizontalAcceleration(0);
-			this.setHorizontalVelocity(0);
-		}
-		else if ((this.getHorizontalVelocity() > 0) && (this.getWorld().isNotPassable(
-				this.getWorld().getGeologicalFeature(
-						this.getPosition()[0] + this.getCurrentSprite().getWidth() - 1, 
-						this.getPosition()[1] + 1)))) {
-			this.setHorizontalAcceleration(0);
-			this.setHorizontalVelocity(0);
-		}
-		System.out.println(this.getHorizontalVelocity());
+//		System.out.println("snelheid");
+//		System.out.println(this.getHorizontalVelocity());
+//		System.out.println("versnelling");
+//		System.out.println(this.getHorizontalAcceleration());
 		this.setHorizontalVelocity(this.getHorizontalVelocity() + this.getHorizontalAcceleration() * dt);
-		double newPositionX = this.getHorizontalVelocity() * dt 
+		double newPositionX = 100 * this.getHorizontalVelocity() * dt 
 				- this.getHorizontalAcceleration() * Math.pow(dt, 2) 
 				+ this.getHorizontalAcceleration() * Math.pow(dt, 2) / 2;
 		return newPositionX;
@@ -452,36 +441,26 @@ public class Mazub extends GameObject {
 	 * @throws	IllegalArgumentException
 	 * 			| !isValidDt(dt)
 	 */ 
-	private double verticalMovement(double dt) throws IllegalArgumentException {
+	private double verticalMovement(double dt, int[] oldPosition) throws IllegalArgumentException {
 		if ((this.getPosition()[1] >= this.getMaxPosition()[1]) 
 				&& (this.getVerticalVelocity() > 0)) {
-			this.setVerticalVelocity(0);
+			this.crossBoundariesActions();
 		}
-		else if ((this.getVerticalVelocity() < 0) && (this.getWorld().isNotPassable(
-				this.getWorld().getGeologicalFeature(this.getPosition()[0] + 1, 
-						this.getPosition()[1] + 1)))) {
-			this.setVerticalAcceleration(0);
-			this.setVerticalVelocity(0);
-		}
-		else if ((this.getVerticalVelocity() > 0) && 
-				(this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
-						this.getPosition()[0] + 1, 
-						this.getPosition()[1] + this.getCurrentSprite().getHeight() - 1)))) {
-			this.setVerticalVelocity(0);
-		}
-		this.setVerticalVelocity(this.getVerticalVelocity() + this.normalVerticalAcceleration*dt);
-		double newPositionY = this.getVerticalVelocity() * dt 
+		else if ((this.crossImpassableBottom()) || (this.crossImpassableTop()))
+			this.crossImpassableActions(oldPosition);
+		this.setVerticalVelocity(this.getVerticalVelocity() + this.getVerticalAcceleration()*dt);
+		double newPositionY = 100 * this.getVerticalVelocity() * dt 
 				- this.getVerticalAcceleration() * Math.pow(dt, 2)
 				+ this.getVerticalAcceleration() * Math.pow(dt, 2)/2;
 		return newPositionY;
 	}
-	
+		
 	/**
 	 * 
 	 * @param newDt
 	 * @param oldPosition
 	 */
-	private void collidesWithActions(double newDt, int[] oldPosition) {
+	private void collidesActions(double newDt, int[] oldPosition) {
 		for (Plant plant: this.getWorld().getPlants()) {
 			if (this.collidesWith(plant)) {
 				if (this.getNbHitPoints() <= 500)
@@ -489,7 +468,7 @@ public class Mazub extends GameObject {
 			}
 		}
 		for (Shark shark: this.getWorld().getSharks()) {
-			if ((this.collidesWith(shark)) && (!this.bottomCollidesWithTopOfObject(shark))) {
+			if ((this.collidesWith(shark)) && (!this.bottomCollidesWithTop(shark))) {
 				this.setHorizontalAcceleration(0);
 				this.setHorizontalVelocity(0);
 				this.setPosition(oldPosition[0], oldPosition[1]);
@@ -505,7 +484,7 @@ public class Mazub extends GameObject {
 			}
 		}
 		for (Slime slime: this.getWorld().getSlimes()) {
-			if ((this.collidesWith(slime)) && (!this.bottomCollidesWithTopOfObject(slime))) {
+			if ((this.collidesWith(slime)) && (!this.bottomCollidesWithTop(slime))) {
 				this.setHorizontalAcceleration(0);
 				this.setHorizontalVelocity(0);
 				this.setPosition(oldPosition[0], oldPosition[1]);
@@ -527,15 +506,22 @@ public class Mazub extends GameObject {
 	 * @param newDt
 	 */
 	private void isInFluidActions(double newDt) {
-		if (this.isInWater())
-			this.changeNbHitPoints((int)(-2 * ((10*newDt)/2)));
-		if (this.isInMagma()) {
+		if (this.isInWater()) {
+			this.timeInWater += newDt;
+			this.changeNbHitPoints((int)(-2 * ((10*this.timeInWater)/2)));
+		}
+		else if (this.isInMagma()) {
 			if (!this.isImmuneForMagma()) {
-				this.changeNbHitPoints((int)(-50 *((10*(newDt + 0.2))/2)));
+				this.timeInMagma += newDt;
+				this.changeNbHitPoints((int)(-50 *((10*this.timeInMagma + 0.2))/2));
 				this.makeImmuneForMagma();
 			}
 			else
 				this.timeImmuneForMagma += newDt;
+		}
+		else {
+			this.timeInWater = 0;
+			this.timeInMagma = 0;
 		}
 	}
 	
@@ -555,33 +541,37 @@ public class Mazub extends GameObject {
 	 * 			| !isValidDt(dt)
 	 */
 	public void advanceTime(double dt) throws IllegalArgumentException {
-		double newDt = this.getNewDt(dt);
-		int[] oldPosition = this.getPosition();
-		if (!this.isValidDt(newDt))
+		if (!this.isValidDt(dt))
 			throw new IllegalArgumentException("The given period of time dt is invalid!");
+		int[] oldestPosition = this.getPosition();
+		double sumDt = 0;
 		if (!this.isMovingHorizontally()) {
-		    this.timeStalled += newDt;
+		    this.timeStalled += dt;
 			this.timeMovingHorizontally = 0;
 		}
 		if (this.isMovingHorizontally()) {
 			this.timeStalled = 0;
-			this.timeMovingHorizontally += newDt;
+			this.timeMovingHorizontally += dt;
 		}
-		if (this.isTryingToCrossBoundaries())
-			this.doNotCrossBoundaries();
-		if ((this.isTouchingImpassableTileLeftOrBottom()) 
-				&& (!(this.isTouchingImpassableTileRight())) 
-				&& (!(this.isTouchingImmpassableTileTop()))) {
-//			System.out.println("horizontal");
-//			System.out.println(this.horizontalMovement(newDt));
-//			System.out.println("vertical");
-//			System.out.println(this.verticalMovement(newDt));
-			this.setPosition(this.getPosition()[0] + (100 * this.horizontalMovement(newDt)),
-				this.getPosition()[1] + (100 * this.verticalMovement(newDt)));
+		if ((this.isInWater()) || (this.isInMagma()))
+			this.isInFluidActions(dt);
+		if (this.crossBoundaries())
+			this.crossBoundariesActions();
+		if ((!this.crossImpassableBottom()) && (!this.crossImpassableLeft())
+				&& (!this.crossImpassableTop()) && (!this.crossImpassableRight())) {
+			this.setPosition(this.getPosition()[0] + this.horizontalMovement(dt, oldestPosition),
+				this.getPosition()[1] + this.verticalMovement(dt, oldestPosition));
 		}
-		else 
-			this.doNotCrossImpassableTile(oldPosition);
-		this.collidesWithActions(newDt, oldPosition);
-		this.isInFluidActions(newDt);
+		while (sumDt < dt) {
+			double newDt = this.getNewDt(dt);
+			int[] oldPosition = this.getPosition();
+			if (!this.isValidDt(newDt))
+				throw new IllegalArgumentException("The given period of time dt is invalid!");
+			if ((this.crossImpassableBottom()) || (this.crossImpassableLeft()) 
+					|| (this.crossImpassableTop()) || (this.crossImpassableRight())) 
+				this.crossImpassableActions(oldPosition);
+			this.collidesActions(newDt, oldPosition);
+			sumDt += newDt;
+		}
 	}
 }

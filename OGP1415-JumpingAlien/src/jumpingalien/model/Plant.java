@@ -188,10 +188,10 @@ public class Plant extends GameObject {
 		int[] oldPosition = this.getPosition();
 		if (!this.isValidDt(newDt))
 			throw new IllegalArgumentException("The given period of time dt is invalid!");
-		if (this.isTryingToCrossBoundaries())
-			this.doNotCrossBoundaries();
-		else if (this.isTouchingImpassableTileRight())
-			this.doNotCrossImpassableTile(oldPosition);
+		if (this.crossBoundaries())
+			this.crossBoundariesActions();
+		else if (this.touchImpassableRight())
+			this.crossImpassableActions(oldPosition);
 		this.setPosition(this.getPosition()[0] + (100 * this.horizontalMovement(newDt)),
 				this.getPosition()[1]);
 		this.collidesWithActions(newDt, oldPosition);
