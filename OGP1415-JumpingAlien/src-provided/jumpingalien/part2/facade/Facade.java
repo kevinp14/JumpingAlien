@@ -1,7 +1,6 @@
 package jumpingalien.part2.facade;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 import jumpingalien.model.Direction;
 import jumpingalien.model.Mazub;

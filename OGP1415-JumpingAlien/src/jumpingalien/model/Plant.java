@@ -14,7 +14,7 @@ import jumpingalien.util.Sprite;
  * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
  * @version 3.0
  *
- */
+ */ //TODO: meeste @post veranderen in @effect en @invar bekijken
 public class Plant extends GameObject {
 	
 	private double timeMovingHorizontally;
@@ -134,29 +134,13 @@ public class Plant extends GameObject {
 	 * 			The plant's new x-position after horizontal movement.
 	 * 			| newPositionX = this.getHorizontalVelocity() * dt
 	 */
-	private double horizontalMovement(double dt) throws IllegalArgumentException {
-		if ((this.getPosition()[0] <= 0) && (this.getHorizontalVelocity() < 0)) {
-			this.setHorizontalAcceleration(0); 
-			this.setHorizontalVelocity(0);
+	private double horizontalMovement(double dt, int[] oldPosition) throws IllegalArgumentException {
+/*		if (this.crossBoundaries()) {
+			this.crossBoundariesActions();
 		}
-		else if ((this.getPosition()[0] >= (this.getMaxPosition()[0])) && 
-				(this.getHorizontalVelocity() > 0)) {
-			this.setHorizontalAcceleration(0);
-			this.setHorizontalVelocity(0);
-		}
-		else if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
-				this.getPosition()[0] + 1, this.getPosition()[1] + 1)))
-				&& (this.getHorizontalVelocity() < 0)) {
-			this.setHorizontalAcceleration(0);
-			this.setHorizontalVelocity(0);
-		}
-		else if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
-				this.getPosition()[0] + this.getCurrentSprite().getWidth() - 1, 
-				this.getPosition()[1] + 1))) 
-				&& (this.getHorizontalVelocity() > 0)) {
-			this.setHorizontalAcceleration(0);
-			this.setHorizontalVelocity(0);
-		}
+		else if ((this.crossImpassableLeft()) || (this.crossImpassableRight())) {
+			this.crossImpassableActions(oldPosition)
+		}*/
 		double newPositionX = this.getHorizontalVelocity() * dt;
 		return newPositionX;
 	}
@@ -168,7 +152,7 @@ public class Plant extends GameObject {
 	 */
 	private void collidesWithActions(double newDt, int[] oldPosition) {
 		if ((this.collidesWith(this.getWorld().getMazub())) && 
-				(this.getWorld().getMazub().getNbHitPoints() <= 500))
+				(this.getWorld().getMazub().getNbHitPoints() < 500))
 			this.changeNbHitPoints(-1);
 	}
 	
@@ -184,24 +168,30 @@ public class Plant extends GameObject {
 	 * 			| !isValidDt(dt)
 	 */
 	public void advanceTime(double dt) throws IllegalArgumentException {
-		double newDt = this.getNewDt(dt);
-		int[] oldPosition = this.getPosition();
-		if (!this.isValidDt(newDt))
+		if (!this.isValidDt(dt))
 			throw new IllegalArgumentException("The given period of time dt is invalid!");
-		if (this.crossBoundaries())
-			this.crossBoundariesActions();
-		else if (this.touchImpassableRight())
-			this.crossImpassableActions(oldPosition);
-		this.setPosition(this.getPosition()[0] + (100 * this.horizontalMovement(newDt)),
-				this.getPosition()[1]);
-		this.collidesWithActions(newDt, oldPosition);
+		double sumDt = 0;
 		if (this.timeMovingHorizontally >= 0.50) {
 			this.timeMovingHorizontally = 0;
 			this.endMoveHorizontally(this.getLastDirection());
 			this.startMoveHorizontally(this.getNextDirection());
 		}
-		if (this.timeMovingHorizontally < 0.50) {
+		else if (this.timeMovingHorizontally < 0.50) {
 			this.timeMovingHorizontally += dt;
+		}
+		while (sumDt < dt) {
+			double newDt = this.getNewDt(dt);
+			int[] oldPosition = this.getPosition();
+			if (this.crossBoundaries())
+				this.crossBoundariesActions();
+			if ((this.crossImpassableLeft()) || (this.crossImpassableRight()))
+				this.crossImpassableActions(oldPosition);
+			this.collidesWithActions(newDt, oldPosition);
+			if ((!this.crossImpassableLeft()) && (!this.crossImpassableRight())) {
+				this.setPosition(this.getPosition()[0] + (100 * this.horizontalMovement(
+						newDt, oldPosition)), this.getPosition()[1]);
+			}
+			sumDt += newDt;
 		}
 	}
 }

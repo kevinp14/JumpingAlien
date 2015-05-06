@@ -27,7 +27,7 @@ import be.kuleuven.cs.som.annotate.Basic;
  * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
  * @version 5.0
  *
- */
+ */ //TODO: meeste @post veranderen in @effect en @invar bekijken
 public class World {
 	private int tileSize;
 	protected int nbTilesX;
@@ -335,6 +335,7 @@ public class World {
 	 *         <b>left, bottom, right, top</b>.
 	 */
 	@Basic
+	// TODO:Niet buiten game world gaan
 	public int[] getVisibleWindow() {
 		if (this.getMazub().getLastDirection() == Direction.LEFT){
 			if (this.getMazub().getPosition()[0] < 200){
@@ -540,10 +541,6 @@ public class World {
 		return (geologicalFeature == 1);
 	}
 	
-	/**
-	 * 
-	 * @param dt
-	 */
 	public void advanceTime(double dt) {
 		this.getMazub().advanceTime(dt);
 		if ((this.getMazub().getNbHitPoints() == 0) 
@@ -557,7 +554,7 @@ public class World {
 			this.gameOver = true;
 			this.gameState = GameState.STOPPED;
 		}
-		for (Shark shark: this.getSharks()){
+/*		for (Shark shark: this.getSharks()){
 			shark.advanceTime(dt);
 			if ((shark.getNbHitPoints() == 0) || (!shark.isValidPosition(shark.getPosition())))
 				this.sharks.remove(shark);
@@ -566,7 +563,7 @@ public class World {
 			slime.advanceTime(dt);
 			if ((slime.getNbHitPoints() == 0) || (!slime.isValidPosition(slime.getPosition())))
 				this.slimes.remove(slime);
-		}
+		}*/
 		for(Plant plant: this.getPlants()){
 			plant.advanceTime(dt);
 			if ((plant.getNbHitPoints() == 0) || (!plant.isValidPosition(plant.getPosition())))

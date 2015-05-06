@@ -27,11 +27,12 @@ import jumpingalien.util.*;
  * 		  | isValidSpriteList(spriteList)
  * @invar The direction in which a game object is ordered to move must be a possible direction to move in.
  * 		  | isValidMovingDirection(direction)
+ *
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
  * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
  * @version 4.0
  *
- */
+ */ //TODO: meeste @post veranderen in @effect en @invar bekijken
 public class GameObject {
 		
 	private double horizontalVelocity;
@@ -183,7 +184,9 @@ public class GameObject {
 	 * Add the given hitpoints difference to the current number of hitpoints of the game object if its
 	 * hitpoints stay bigger than 0 by doing this.
 	 * 
-	 * @param hitPointsDifference
+	 * @pre	
+	 * @post	
+	 * @param 	hitPointsDifference
 	 */ //TODO totaal
 	@Basic
 	protected void changeNbHitPoints(int hitPointsDifference) {
@@ -242,6 +245,7 @@ public class GameObject {
 	 * Set the acceleration of the game object in the x-direction to the given vertical acceleration.
 	 * @param	horizontalAcceleration
 	 * 			The horizontal acceleration for the game object.
+	 * @pre	
 	 * @post	The new horizontal acceleration is set to the given one.
 	 * 			| (new this).horizontalAcceleration = horizontalAcceleration
 	 */ //TODO totaal
@@ -293,6 +297,7 @@ public class GameObject {
 	 * Set the acceleration of the game object in the y-direction to the given vertical acceleration.
 	 * @param 	verticalAcceleration
 	 * 			The vertical acceleration for the game object.
+	 * @pre	
 	 * @post	The new vertical acceleration is set to the given one.
 	 * 			| (new this).verticalAcceleration = verticalAcceleration
 	 */ //TODO totaal
@@ -342,7 +347,7 @@ public class GameObject {
 		return bottomPixels;
 	}
 	
-	protected ArrayList<Integer> getVerticalPixels() {
+	private ArrayList<Integer> getVerticalPixels() {
 		ArrayList<Integer> bottomPixels = new ArrayList<Integer>();
 		for (int y=0; y < this.getCurrentSprite().getHeight(); y++)
 			bottomPixels.add(this.getPosition()[1] + y);
@@ -497,24 +502,22 @@ public class GameObject {
 	 * Makes the game object immune for enemies.
 	 */
 	protected void makeImmune() {
-		if (this.timeImmune <= 0.60) 
-			this.isImmune = true;
-		else {
-			this.isImmune = false;
-			this.timeImmune = 0;
-		}
+		this.isImmune = true;
+	}
+	
+	protected void makeVulnerable() {
+		this.isImmune = false;
 	}
 	
 	/**
 	 * Makes the game object immune for magma.
 	 */
 	protected void makeImmuneForMagma() {
-		if (this.timeImmuneForMagma <= 0.20) 
-			this.isImmuneForMagma = true;
-		else {
-			this.isImmuneForMagma = false;
-			this.timeImmuneForMagma = 0;
-		}
+		this.isImmuneForMagma = true;
+	}
+	
+	protected void makeVulnerableForMagma() {
+		this.isImmuneForMagma = false;
 	}
 	
 	/**
@@ -555,12 +558,7 @@ public class GameObject {
 					pixelsColliding += 1;
 			}
 		}
-		if (pixelsColliding > 0) {
-			return true;
-		}
-		else {
-			return false;
-		}
+		return (pixelsColliding > 0);
 	}
 	
 	/**
@@ -581,28 +579,50 @@ public class GameObject {
 	 * @return
 	 */
 	protected boolean touchImpassableRight() {
-		return (this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
-				this.getPosition()[0] + this.getCurrentSprite().getWidth() - 1, 
-				this.getPosition()[1] + 1)));
+		int pixelsTouching = 0;
+		for (int rightPixel: this.getVerticalPixels()) {
+			if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
+					this.getPosition()[0] + this.getCurrentSprite().getWidth(), rightPixel)))
+					&& (rightPixel != this.getPosition()[1])
+					&& (rightPixel != this.getPosition()[1] + this.getCurrentSprite().getHeight()))
+				pixelsTouching += 1;
+		}
+		return (pixelsTouching > 0);
 	}
 	
 	protected boolean touchImpassableTop() {
-		return (this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
-				this.getPosition()[0] + 1, 
-				this.getPosition()[1] + this.getCurrentSprite().getHeight() - 1)));
+		int pixelsTouching = 0;
+		for (int topPixel: this.getHorizontalPixels()) {
+			if (this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(topPixel, 
+					this.getPosition()[1] + this.getCurrentSprite().getHeight()))
+					&& (topPixel != this.getPosition()[0])
+					&& (topPixel != this.getPosition()[0] + this.getCurrentSprite().getWidth()))
+				pixelsTouching += 1;
+		}
+		return (pixelsTouching > 0);
 	}
 	
 	protected boolean touchImpassableLeft() {
-		return (this.getWorld().isNotPassable(
-				this.getWorld().getGeologicalFeature(this.getPosition()[0], 
-						this.getPosition()[1] + 1)));
+		int pixelsTouching = 0;
+		for (int leftPixel: this.getVerticalPixels()) {
+			if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
+					this.getPosition()[0], leftPixel))) && (leftPixel != this.getPosition()[1])
+					&& (leftPixel != this.getPosition()[1] + this.getCurrentSprite().getHeight()))
+				pixelsTouching += 1;
+		}
+		return (pixelsTouching > 0);
 	}
 	
 	
 	protected boolean touchImpassableBottom() {
-		return (this.getWorld().isNotPassable(
-				this.getWorld().getGeologicalFeature(this.getPosition()[0] + 1, 
-						this.getPosition()[1])));
+		int pixelsTouching = 0;
+		for (int bottomPixel: this.getHorizontalPixels()) {
+			if (this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(bottomPixel, 
+					this.getPosition()[1])) && (bottomPixel != this.getPosition()[0])
+					&& (bottomPixel != this.getPosition()[0] + this.getCurrentSprite().getWidth()))
+				pixelsTouching += 1;
+		}
+		return (pixelsTouching > 0);
 	}
 	
 	protected boolean crossImpassableRight() {
@@ -633,7 +653,7 @@ public class GameObject {
 		assert (isValidMovingDirection(direction));
 		if (direction == Direction.RIGHT) {
 			this.setLastDirection(Direction.RIGHT);
-			if (this.getHorizontalVelocity() < this.getMaxHorizontalVelocity()) { 
+			if (this.getHorizontalVelocity() <= this.getMaxHorizontalVelocity()) { 
 				this.setHorizontalVelocity(this.normalHorizontalVelocity);
 				this.setHorizontalAcceleration(this.normalHorizontalAcceleration);
 			}
@@ -644,7 +664,7 @@ public class GameObject {
 		}
 		else{
 			this.setLastDirection(Direction.LEFT);
-			if (this.getHorizontalVelocity() > -this.getMaxHorizontalVelocity()) { 
+			if (this.getHorizontalVelocity() >= -this.getMaxHorizontalVelocity()) { 
 				this.setHorizontalVelocity(-this.normalHorizontalVelocity);
 				this.setHorizontalAcceleration(-this.normalHorizontalAcceleration);
 			}
@@ -705,12 +725,13 @@ public class GameObject {
 			this.setHorizontalVelocity(0);
 			this.setPosition(oldPosition[0], oldPosition[1]);
 		}
-		else if (this.crossImpassableBottom()) {
+		if (this.crossImpassableBottom()) {
 			this.setVerticalAcceleration(0);
 			this.setVerticalVelocity(0);
 			this.setPosition(oldPosition[0], oldPosition[1]);
 		}
-		else if (this.crossImpassableTop()) {
+		if (this.crossImpassableTop()) {
+			this.setVerticalAcceleration(this.normalVerticalAcceleration);
 			this.setVerticalVelocity(0);
 			this.setPosition(oldPosition[0], oldPosition[1]);
 		}
