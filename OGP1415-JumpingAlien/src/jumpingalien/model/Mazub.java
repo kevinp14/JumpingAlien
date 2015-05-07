@@ -5,6 +5,8 @@ import be.kuleuven.cs.som.annotate.Immutable;
 import jumpingalien.util.*;
 
 
+// Klassendiagram maken en meenemen naar verdediging
+
 /**
  * A class of Mazub aliens involving some maximums for the horizontal velocity depending on its current
  * actions, a list of sprites or images of the alien that are displayed depending on its current actions, 
@@ -69,8 +71,8 @@ public class Mazub extends GameObject {
 				if (this.isAirborne())
 					return spriteList[5];
 				else {
-					if (((100*this.timeMovingHorizontally) % 75) <= 11)
-						return spriteList[(int)(19 + ((100*this.timeMovingHorizontally) % 75))];
+					if (((1000*this.timeMovingHorizontally) / 75) < 11)
+						return spriteList[(int)(19 + ((1000*this.timeMovingHorizontally) / 75))];
 					else
 						this.timeMovingHorizontally = 0;
 				}
@@ -81,8 +83,8 @@ public class Mazub extends GameObject {
 				if (this.isAirborne())
 					return spriteList[4];
 				else {
-					if (((100*this.timeMovingHorizontally) % 75) <= 11)
-						return spriteList[(int) (8 + ((100*this.timeMovingHorizontally) % 75))];
+					if (((1000*this.timeMovingHorizontally) / 75) < 11)
+						return spriteList[(int) (8 + ((1000*this.timeMovingHorizontally) / 75))];
 					else 
 						this.timeMovingHorizontally = 0;
 				}
@@ -227,10 +229,7 @@ public class Mazub extends GameObject {
 					topPixel, this.getPosition()[1] + this.spriteList[0].getHeight())))
 				pixelsTouching += 1;
 		}
-		if (pixelsTouching > 0)
-			return false;
-		else
-			return true;
+		return (pixelsTouching == 0);
 	}
 	
 
@@ -527,17 +526,21 @@ public class Mazub extends GameObject {
 	 */
 	private void isInFluidActions(double newDt) {
 		if (this.isInWater()) {
-			this.timeInWater += newDt;
-			this.changeNbHitPoints((int)(-2 * ((10*this.timeInWater)/2)));
+			if (timeInWater >= 0.2) {
+				this.changeNbHitPoints(-2);
+				this.timeInWater = 0;
+			}
+			else 
+				this.timeInWater += newDt;
 		}
 		else if (this.isInMagma()) {
+			this.timeInMagma += newDt;
 			if (!this.isImmuneForMagma()) {
-				this.timeInMagma += newDt;
-				this.changeNbHitPoints((int)(-50 *((10*this.timeInMagma + 0.2))/2));
+				this.changeNbHitPoints(-50);
 				this.makeImmuneForMagma();
 			}
 			else {
-				if (this.timeImmuneForMagma <= 0.20) 
+				if (this.timeImmuneForMagma < 0.20) 
 					this.timeImmuneForMagma += newDt;
 				else {
 					this.makeVulnerableForMagma();

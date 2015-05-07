@@ -142,6 +142,20 @@ public class GameObject {
 		int[] position = new int[]{ (int)this.positionX, (int)this.positionY };
 		return position;
 	}
+	
+	/**
+	 * Returns the maximum possible position in the game world.
+	 * 
+	 * @return An array, consisting of 2 integers {x, y}, that represents the
+	 *         maximum possible position in the game world.
+	 */
+	@Basic
+	protected int[] getMaxPosition() {
+		double maxPositionX = (this.getWorld().getTileLength() * this.getWorld().nbTilesX) - 1;
+		double maxPositionY = (this.getWorld().getTileLength() * this.getWorld().nbTilesY) - 1;
+		int[] maxPosition = { (int)maxPositionX, (int)maxPositionY };
+	    return maxPosition;
+	}
 
 	/**
 	 * Set the position of the game object to the given position in x- an y-direction.
@@ -156,20 +170,6 @@ public class GameObject {
 	protected void setPosition(double positionX, double positionY) {
 		this.positionX = positionX;
 		this.positionY = positionY;
-	}
-	
-	/**
-	 * Returns the maximum possible position in the game world.
-	 * 
-	 * @return An array, consisting of 2 integers {x, y}, that represents the
-	 *         maximum possible position in the game world.
-	 */
-	@Basic
-	protected int[] getMaxPosition() {
-		double maxPositionX = (this.getWorld().getTileLength() * this.getWorld().nbTilesX) - 1;
-		double maxPositionY = (this.getWorld().getTileLength() * this.getWorld().nbTilesY) - 1;
-		int[] maxPosition = { (int)maxPositionX, (int)maxPositionY };
-	    return maxPosition;
 	}
 
 	/**
@@ -485,8 +485,21 @@ public class GameObject {
 	 * 
 	 * @return	True if and only if the geological feature at the game object's position is 2 (water).
 	 */
-	protected boolean isInWater(){
-		return (this.world.getGeologicalFeature(this.getPosition()[0], this.getPosition()[1] + 1) == 2);
+	protected boolean isInWater() {
+		int pixelsTouching = 0;
+		for (int verticalPixel: this.getVerticalPixels()) {
+			if ((this.world.getGeologicalFeature(this.getPosition()[0], verticalPixel) == 2) ||
+					this.world.getGeologicalFeature
+					(this.getPosition()[0] + this.getCurrentSprite().getWidth(), verticalPixel) == 2)
+				pixelsTouching += 1;
+		}
+		for (int horizontalPixel: this.getHorizontalPixels()) {
+			if ((this.world.getGeologicalFeature(horizontalPixel, this.getPosition()[1]) == 2) ||
+					(this.world.getGeologicalFeature(horizontalPixel, 
+							this.getPosition()[1] + this.getCurrentSprite().getHeight()) == 2))
+				pixelsTouching += 1;
+		}
+		return (pixelsTouching > 0);
 	}
 	
 	/**
@@ -494,8 +507,21 @@ public class GameObject {
 	 * 
 	 * @return	True if and only if the geological feature at the game object's position is 3 (magma).
 	 */
-	protected boolean isInMagma(){
-		return (this.world.getGeologicalFeature(this.getPosition()[0], this.getPosition()[1] + 1) == 3);
+	protected boolean isInMagma() {
+		int pixelsTouching = 0;
+		for (int verticalPixel: this.getVerticalPixels()) {
+			if ((this.world.getGeologicalFeature(this.getPosition()[0], verticalPixel) == 3) ||
+					this.world.getGeologicalFeature
+					(this.getPosition()[0] + this.getCurrentSprite().getWidth(), verticalPixel) == 3)
+				pixelsTouching += 1;
+		}
+		for (int horizontalPixel: this.getHorizontalPixels()) {
+			if ((this.world.getGeologicalFeature(horizontalPixel, this.getPosition()[1]) == 3) ||
+					(this.world.getGeologicalFeature(horizontalPixel, 
+							this.getPosition()[1] + this.getCurrentSprite().getHeight()) == 3))
+				pixelsTouching += 1;
+		}
+		return (pixelsTouching > 0);
 	}
 	
 	/**

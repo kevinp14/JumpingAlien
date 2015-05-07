@@ -17,8 +17,6 @@ import be.kuleuven.cs.som.annotate.Basic;
  * won the game or not, a method to inspect whether a tile is passable or not, and a method to advance 
  * the time.
  * 
- * @invar The world must be in a valid gameState.
- * 		  | isValidGameState(gameState)
  * @invar Every tile in the world must have a valid type.
  * 		  | isValidTileType(tileType)
  * @invar The world must have a valid ending point.
@@ -80,34 +78,6 @@ public class World {
 		this.won = false;
 		this.gameOver = false;
 		this.gameState = GameState.INITIATED;
-	}
-	
-	/**
-	 * Check whether the given tileType is a valid one.
-	 * 
-	 * @param 	tileType
-	 * 			The tileType which has to be checked.
-	 * @return	True if and only if the direction is 0, 1, 2 or 3.
-	 */
-	private boolean isValidTileType(int tileType){
-		return ((tileType == 0)
-				|| (tileType == 1)
-				|| (tileType == 2)
-				|| (tileType == 3)
-				);
-	}
-	
-	/**
-	 * Check whether the given GameState is a valid one.
-	 * 
-	 * @param 	gameState
-	 * 			The GameState which has to be checked.
-	 * @return	True if and only if the direction is initiated, started, stopped.
-	 */
-	private boolean isValidGameState(GameState gameState){
-		return ((gameState == GameState.INITIATED)
-				|| (gameState == GameState.STARTED)
-				|| (gameState == GameState.STOPPED));
 	}
 	
 	/**
@@ -335,27 +305,33 @@ public class World {
 	 *         <b>left, bottom, right, top</b>.
 	 */
 	@Basic
-	// TODO:Niet buiten game world gaan
 	public int[] getVisibleWindow() {
-		if (this.getMazub().getLastDirection() == Direction.LEFT){
-			if (this.getMazub().getPosition()[0] < 200){
-				if (this.getMazub().getPosition()[1] < 200){
+		if (this.getMazub().getLastDirection() == Direction.LEFT) {
+			if (this.getMazub().getPosition()[0] < 200) {
+				if (this.getMazub().getPosition()[1] < 200) {
 					return new int[]{0,0,this.visibleWindowWidth, this.visibleWindowHeight};
 				}
-				else{
+				else {
 					return new int[]{0, this.getMazub().getPosition()[1] - 200, this.visibleWindowWidth, 
-							this.getMazub().getPosition()[1] - 200 + this.visibleWindowHeight};
+							Math.min(this.getWorldSize()[1], this.getMazub().getPosition()[1] 
+									- 200 + this.visibleWindowHeight)};
 				}
 			}
-			else{
-				if (this.getMazub().getPosition()[1] < 200){
-					return new int[]{this.getMazub().getPosition()[0] + 200 - this.visibleWindowWidth,
-							0, this.getMazub().getPosition()[0] + 200, this.visibleWindowHeight};
+			else {
+				if (this.getMazub().getPosition()[1] < 200) {
+					return new int[]{this.getMazub().getPosition()[0] - 200,
+							0, Math.min(this.getWorldSize()[0], 
+									this.getMazub().getPosition()[0] - 200 + this.visibleWindowWidth), 
+									this.visibleWindowHeight};
 				}
-				else{
-					return new int[]{this.getMazub().getPosition()[0] + 200 - this.visibleWindowWidth,
-							this.getMazub().getPosition()[1] - 200, this.getMazub().getPosition()[0] + 200,
-							this.getMazub().getPosition()[1] - 200 + this.visibleWindowHeight};
+				else {
+					return new int[]{this.getMazub().getPosition()[0] - 200,
+							this.getMazub().getPosition()[1] - 200, 
+							Math.min(this.getWorldSize()[0], this.getMazub().getPosition()[0]
+									- 200 + this.visibleWindowWidth),
+									Math.min(this.getWorldSize()[1], 
+											this.getMazub().getPosition()[1] - 200 
+											+ this.visibleWindowHeight)};
 				}
 			}
 		}
@@ -366,20 +342,24 @@ public class World {
 				}
 				else{
 					return new int[]{0, this.getMazub().getPosition()[1] - 200, this.visibleWindowWidth, 
-							this.getMazub().getPosition()[1] - 200 + this.visibleWindowHeight};
+							Math.min(this.getWorldSize()[1], this.getMazub().getPosition()[1] 
+									- 200 + this.visibleWindowHeight)};
 				}
 			}
 			else{
 				if (this.getMazub().getPosition()[1] < 200){
 					return new int[]{this.getMazub().getPosition()[0] - 200,
-							0, this.getMazub().getPosition()[0] - 200 + this.visibleWindowWidth, 
-							this.visibleWindowHeight};
+							0, Math.min(this.getWorldSize()[0], 
+									this.getMazub().getPosition()[0] - 200 + this.visibleWindowWidth), 
+									this.visibleWindowHeight};
 				}
 				else{
 					return new int[]{this.getMazub().getPosition()[0] - 200,
-							this.getMazub().getPosition()[1] - 200, this.getMazub().getPosition()[0] - 200 + 
-							this.visibleWindowWidth, this.getMazub().getPosition()[1] - 200 + 
-							this.visibleWindowHeight};
+							this.getMazub().getPosition()[1] - 200, 
+							Math.min(this.getWorldSize()[0], this.getMazub().getPosition()[0] 
+									- 200 + this.visibleWindowWidth), Math.min(this.getWorldSize()[1]
+											, this.getMazub().getPosition()[1] - 200 
+											+ this.visibleWindowHeight)};
 				}
 			}
 		}
@@ -539,6 +519,21 @@ public class World {
 	 */
 	public boolean isNotPassable(int geologicalFeature){
 		return (geologicalFeature == 1);
+	}
+	
+	/**
+	 * Check whether the given tileType is a valid one.
+	 * 
+	 * @param 	tileType
+	 * 			The tileType which has to be checked.
+	 * @return	True if and only if the direction is 0, 1, 2 or 3.
+	 */
+	private boolean isValidTileType(int tileType){
+		return ((tileType == 0)
+				|| (tileType == 1)
+				|| (tileType == 2)
+				|| (tileType == 3)
+				);
 	}
 	
 	public void advanceTime(double dt) {

@@ -639,7 +639,9 @@ public class Facade implements IFacadePart2 {
 	 * @param alien
 	 *            The alien that has to start ducking.
 	 */ //TODO
-	public void startDuck(Mazub alien){
+	public void startDuck(Mazub alien) throws ModelException {
+//		if (alien.isDucking())
+//			throw new ModelException("The alien is already ducking!");
 		alien.startDuck();
 	}
 	
@@ -650,8 +652,8 @@ public class Facade implements IFacadePart2 {
 	 *            The alien that has to stop ducking.
 	 */ //TODO
 	public void endDuck(Mazub alien) throws ModelException {
-		if (!alien.isDucking())
-			throw new ModelException("The alien was not ducking!");
+//		if (!alien.canEndDuck())
+//			throw new ModelException("The alien can not stop ducking here!");
 		alien.endDuck();
 	}
 	
@@ -661,9 +663,9 @@ public class Facade implements IFacadePart2 {
 	 * @param alien
 	 *            The alien that has to start jumping.
 	 */ //TODO
-	public void startJump(Mazub alien) throws ModelException { 
-		if (alien.isJumping())
-			throw new ModelException("The alien can not jump while in the air!");
+	public void startJump(Mazub alien) throws ModelException {
+//		if (!alien.isValidJumpingPosition(alien.getPosition()))
+//			throw new ModelException("The alien can not jump when not on solid terrain!");
 		alien.startJump();
 	}
 	
@@ -674,6 +676,8 @@ public class Facade implements IFacadePart2 {
 	 *            The alien that has to stop jumping.
 	 */ //TODO
 	public void endJump(Mazub alien) throws ModelException {
+//		if (!alien.isJumping())
+//			throw new ModelException("The alien has already stopped jumping");
 		alien.endJump();
 	}
 	
