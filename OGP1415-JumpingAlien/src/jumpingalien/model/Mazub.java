@@ -46,9 +46,9 @@ public class Mazub extends GameObject {
 		super(positionX, positionY, spriteList);
 		assert (isValidSpriteList(spriteList));
 		this.spriteList = spriteList;
-		this.normalHorizontalVelocity = 1;
-		this.normalHorizontalAcceleration = 0.9;
-		this.maxHorizontalVelocity = 3;
+		this.setNormalHorizontalVelocity(1);
+		this.setNormalHorizontalAcceleration(0.9);
+		this.setMaxHorizontalVelocity(3);
 		this.normalVerticalVelocity = 8;
 	    this.timeMovingHorizontally = 0;
 	    this.changeNbHitPoints(100);
@@ -110,19 +110,6 @@ public class Mazub extends GameObject {
 			else
 				return spriteList[0];
 		}
-	}
-	
-	/**
-	 * Set the maximum of the velocity of the alien in the x-direction to the given maximum for the 
-	 * horizontal velocity.
-	 * @param	maxHorizontalVelocity
-	 * 			The maximum for the horizontal velocity the alien can have.
-	 * @post	The new maximum horizontal velocity is set to the given one.
-	 * 			| (new this).maxHorizontalVelocity = maxHorizontalVelocity
-	 */
-	@Basic
-	private void setMaxHorizontalVelocity(double maxHorizontalVelocity) {
-		this.maxHorizontalVelocity = maxHorizontalVelocity;
 	}
 	
 	/**
@@ -223,13 +210,19 @@ public class Mazub extends GameObject {
 	 * 			when ducking is passable.
 	 */
 	public boolean canEndDuck() {
-		int pixelsTouching = 0;
-		for (int topPixel: this.getHorizontalPixels()) {
+		for (int horizontalPixel: this.getHorizontalPixels()) {
 			if (this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
-					topPixel, this.getPosition()[1] + this.spriteList[0].getHeight())))
-				pixelsTouching += 1;
+					horizontalPixel, this.getPosition()[1] + this.spriteList[0].getHeight())))
+				return false;
 		}
-		return (pixelsTouching == 0);
+		return true;
+	}
+	
+	protected boolean touchTargetTile() {
+		return ((((this.getPosition()[0] + this.getCurrentSprite().getWidth()) 
+				/ this.getWorld().getTileLength()) == this.getWorld().getTargetTile()[0])
+				&& (((this.getPosition()[1] + this.getCurrentSprite().getWidth()) 
+						/ this.getWorld().getTileLength()) == this.getWorld().getTargetTile()[1]));
 	}
 	
 
@@ -239,7 +232,7 @@ public class Mazub extends GameObject {
 	public void startJump() {
 		if (this.isValidJumpingPosition(this.getPosition())) {
 			this.setVerticalVelocity(this.normalVerticalVelocity);
-			this.setVerticalAcceleration(this.normalVerticalAcceleration);
+			this.setVerticalAcceleration(this.getNormalVerticalAcceleration());
 		}
 	}
 	
@@ -277,7 +270,6 @@ public class Mazub extends GameObject {
 	 * @param	direction
 	 * 			The given direction in which the alien has to move.
 	 */
-	@Override
 	public void startMoveHorizontally(Direction direction) {
 		assert (isValidMovingDirection(direction));
 		if (direction == Direction.RIGHT) {
@@ -285,8 +277,8 @@ public class Mazub extends GameObject {
 			if (this.isMovingLeft())
 				this.setSecondaryDirection(Direction.LEFT);
 			if (this.getHorizontalVelocity() <= this.getMaxHorizontalVelocity()) { 
-				this.setHorizontalVelocity(this.normalHorizontalVelocity);
-				this.setHorizontalAcceleration(this.normalHorizontalAcceleration);
+				this.setHorizontalVelocity(this.getNormalHorizontalVelocity());
+				this.setHorizontalAcceleration(this.getNormalHorizontalAcceleration());
 			}
 			else {
 				this.setHorizontalAcceleration(0);
@@ -298,8 +290,8 @@ public class Mazub extends GameObject {
 			if (this.isMovingRight())
 				this.setSecondaryDirection(Direction.RIGHT);
 			if (this.getHorizontalVelocity() >= -this.getMaxHorizontalVelocity()) { 
-				this.setHorizontalVelocity(-this.normalHorizontalVelocity);
-				this.setHorizontalAcceleration(-this.normalHorizontalAcceleration);
+				this.setHorizontalVelocity(-this.getNormalHorizontalVelocity());
+				this.setHorizontalAcceleration(-this.getNormalHorizontalAcceleration());
 			}
 			else {
 				this.setHorizontalAcceleration(0);
@@ -391,7 +383,7 @@ public class Mazub extends GameObject {
 	 * @throws	IllegalArgumentException
 	 * 			| !isValidDt(dt)
 	 */
-	private double horizontalMovement(double dt, int[] oldPosition) throws IllegalArgumentException {
+	private double horizontalMovement(double dt) throws IllegalArgumentException {
 		if (Math.abs(this.getHorizontalVelocity()) >= this.getMaxHorizontalVelocity()) {
 			this.setHorizontalAcceleration(0);
 			if (this.getHorizontalVelocity() < 0) {
@@ -400,12 +392,6 @@ public class Mazub extends GameObject {
 			else
 				this.setHorizontalVelocity(this.getMaxHorizontalVelocity());
 		}
-/*		if (this.crossBoundaries()) {
-			this.crossBoundariesActions();
-		}
-		else if ((this.crossImpassableLeft()) || (this.crossImpassableRight())) {
-			this.crossImpassableActions(oldPosition);
-		}*/
 		this.setHorizontalVelocity(this.getHorizontalVelocity() + this.getHorizontalAcceleration() * dt);
 		double newPositionX = this.getHorizontalVelocity() * dt 
 				- this.getHorizontalAcceleration() * Math.pow(dt, 2) 
@@ -449,12 +435,7 @@ public class Mazub extends GameObject {
 	 * @throws	IllegalArgumentException
 	 * 			| !isValidDt(dt)
 	 */ 
-	private double verticalMovement(double dt, int[] oldPosition) throws IllegalArgumentException {
-/*		if (this.crossBoundaries()) {
-			this.crossBoundariesActions();
-		}
-		else if ((this.crossImpassableBottom()) || (this.crossImpassableTop()))
-			this.crossImpassableActions(oldPosition);*/
+	private double verticalMovement(double dt) throws IllegalArgumentException {
 		this.setVerticalVelocity(this.getVerticalVelocity() + this.getVerticalAcceleration()*dt);
 		double newPositionY = this.getVerticalVelocity() * dt 
 				- this.getVerticalAcceleration() * Math.pow(dt, 2)
@@ -487,11 +468,11 @@ public class Mazub extends GameObject {
 					this.makeImmune();
 					}
 				else {
-					if (this.timeImmune <= 0.60) 
-						this.timeImmune += newDt;
+					if (this.getTimeImmune() <= 0.60) 
+						this.setTimeImmune(this.getTimeImmune() + newDt);
 					else {
 						this.makeVulnerable();
-						this.timeImmune = 0;
+						this.setTimeImmune(0);
 					}
 				}
 			}
@@ -509,11 +490,11 @@ public class Mazub extends GameObject {
 					this.makeImmune();
 					}
 				else {
-					if (this.timeImmune <= 0.60) 
-						this.timeImmune += newDt;
+					if (this.getTimeImmune() <= 0.60) 
+						this.setTimeImmune(this.getTimeImmune() + newDt);
 					else {
 						this.makeVulnerable();
-						this.timeImmune = 0;
+						this.setTimeImmune(0);
 					}
 				}
 			}
@@ -526,31 +507,31 @@ public class Mazub extends GameObject {
 	 */
 	private void isInFluidActions(double newDt) {
 		if (this.isInWater()) {
-			if (timeInWater >= 0.2) {
+			if (this.getTimeInWater() >= 0.2) {
 				this.changeNbHitPoints(-2);
-				this.timeInWater = 0;
+				this.setTimeInWater(0);
 			}
 			else 
-				this.timeInWater += newDt;
+				this.setTimeInWater(this.getTimeInWater() + newDt);
 		}
 		else if (this.isInMagma()) {
-			this.timeInMagma += newDt;
+			this.setTimeInMagma(this.getTimeInMagma() + newDt);
 			if (!this.isImmuneForMagma()) {
 				this.changeNbHitPoints(-50);
 				this.makeImmuneForMagma();
 			}
 			else {
-				if (this.timeImmuneForMagma < 0.20) 
-					this.timeImmuneForMagma += newDt;
+				if (this.getTimeImmuneForMagma() < 0.20) 
+					this.setTimeImmuneForMagma(this.getTimeImmuneForMagma() + newDt);
 				else {
 					this.makeVulnerableForMagma();
-					this.timeImmuneForMagma = 0;
+					this.setTimeImmuneForMagma(0);
 				}
 			}
 		}
 		else {
-			this.timeInWater = 0;
-			this.timeInMagma = 0;
+			this.setTimeInWater(0);
+			this.setTimeInMagma(0);
 		}
 	}
 	
@@ -570,8 +551,6 @@ public class Mazub extends GameObject {
 	 * 			| !isValidDt(dt)
 	 */
 	public void advanceTime(double dt) throws IllegalArgumentException {
-		if (!this.isValidDt(dt))
-			throw new IllegalArgumentException("The given period of time dt is invalid!");
 		double sumDt = 0;
 		while (sumDt < dt) {
 			double newDt = this.getNewDt(dt);
@@ -587,23 +566,23 @@ public class Mazub extends GameObject {
 			}
 			this.collidesWithActions(newDt, oldPosition);
 			if (!this.isMovingHorizontally()) {
-			    this.timeStalled += newDt;
+			    this.setTimeStalled(this.getTimeStalled() + newDt);
 				this.timeMovingHorizontally = 0;
 			}
 			if (this.isMovingHorizontally()) {
-				this.timeStalled = 0;
+				this.setTimeStalled(0);
 				this.timeMovingHorizontally += newDt;
 			}
 			if ((this.isInWater()) || (this.isInMagma())) {
 				this.isInFluidActions(newDt);
 			}
-			if (!this.touchImpassableBottom()) {
-				this.setVerticalAcceleration(this.normalVerticalAcceleration);
-			}
 			if ((!this.crossImpassableBottom()) && (!this.crossImpassableLeft())
 					&& (!this.crossImpassableTop()) && (!this.crossImpassableRight())) {
-				this.setPosition(this.getPosition()[0] + 100*this.horizontalMovement(newDt, oldPosition),
-					this.getPosition()[1] + 100*this.verticalMovement(newDt, oldPosition));
+				if (!this.touchImpassableBottom()) {
+					this.setVerticalAcceleration(this.getNormalVerticalAcceleration());
+				}
+				this.setPosition(oldPosition[0] + 100*this.horizontalMovement(newDt),
+					oldPosition[1] + 100*this.verticalMovement(newDt));
 			}
 			sumDt += newDt;
 		}

@@ -37,21 +37,21 @@ public class GameObject {
 		
 	private double horizontalVelocity;
 	private double horizontalAcceleration;
-	protected double normalHorizontalVelocity;
-	protected double normalHorizontalAcceleration;
-	protected double maxHorizontalVelocity;
+	private double normalHorizontalVelocity;
+	private double normalHorizontalAcceleration;
+	private double maxHorizontalVelocity;
 	private double verticalVelocity;
 	private double verticalAcceleration;
-	protected double normalVerticalAcceleration = -10;
+	private double normalVerticalAcceleration;
 	private double positionX;
 	private double positionY;
 	private Sprite[] spriteList;
-	protected double timeStalled;
-	protected double timeInWater;
-	protected double timeInAir;
-	protected double timeInMagma;
-	protected double timeImmune;
-	protected double timeImmuneForMagma;
+	private double timeStalled;
+	private double timeInWater;
+	private double timeInAir;
+	private double timeInMagma;
+	private double timeImmune;
+	private double timeImmuneForMagma;
 	private Direction lastDirection;
 	private Direction nextDirection;
 	private int hitPoints = 0;
@@ -84,13 +84,14 @@ public class GameObject {
 		this.setHorizontalAcceleration(0);
 	    this.setVerticalVelocity(0);
 		this.setVerticalAcceleration(0);
+		this.setNormalVerticalAcceleration(-10);
 		this.spriteList = spriteList;
-	    this.timeStalled = 0;
-	    this.timeInAir = 0;
-	    this.timeInWater = 0;
-	    this.timeInMagma = 0;
-	    this.timeImmune = 0;
-	    this.timeImmuneForMagma = 0;
+	    this.setTimeStalled(0);;
+	    this.setTimeInAir(0);
+	    this.setTimeInWater(0);
+	    this.setTimeInMagma(0);
+	    this.setTimeImmune(0);
+	    this.setTimeImmuneForMagma(0);
 	    this.lastDirection = Direction.STALLED;
 	    this.nextDirection = Direction.STALLED;
 		this.isImmune = false;
@@ -222,14 +223,28 @@ public class GameObject {
 	 */
 	@Basic
 	protected void setHorizontalVelocity(double horizontalVelocity) {
-		if (Math.abs(horizontalVelocity) < this.getMaxHorizontalVelocity())
-			this.horizontalVelocity = horizontalVelocity;
-		else {
-			if (horizontalVelocity > 0)
-				this.horizontalVelocity = this.getMaxHorizontalVelocity();
-			else
-				this.horizontalVelocity = -(this.getMaxHorizontalVelocity());
-		}
+		this.horizontalVelocity = horizontalVelocity;
+	}
+	
+	protected double getNormalHorizontalVelocity() {
+		return this.normalHorizontalVelocity;
+	}
+	
+	protected void setNormalHorizontalVelocity(double velocity) {
+		this.normalHorizontalVelocity = velocity;
+	}
+	
+	/**
+	 * @return	The maximum of the velocity of the game object in the x-direction.
+	 * 
+	 */
+	@Basic
+	public double getMaxHorizontalVelocity() {
+		return this.maxHorizontalVelocity;
+	}
+	
+	protected void setMaxHorizontalVelocity(double velocity) {
+		this.maxHorizontalVelocity = velocity;
 	}
 
 	/**
@@ -253,14 +268,13 @@ public class GameObject {
 	protected void setHorizontalAcceleration(double horizontalAcceleration) {
 		this.horizontalAcceleration = horizontalAcceleration;
 	}
-
-	/**
-	 * @return	The maximum of the velocity of the game object in the x-direction.
-	 * 
-	 */
-	@Basic
-	public double getMaxHorizontalVelocity() {
-		return this.maxHorizontalVelocity;
+	
+	protected double getNormalHorizontalAcceleration() {
+		return this.normalHorizontalAcceleration;
+	}
+	
+	protected void setNormalHorizontalAcceleration(double acceleration) {
+		this.normalHorizontalAcceleration = acceleration;
 	}
 
 	/**
@@ -304,6 +318,14 @@ public class GameObject {
 	@Basic
 	protected void setVerticalAcceleration(double verticalAcceleration) {
 		this.verticalAcceleration = verticalAcceleration;
+	}
+	
+	protected double getNormalVerticalAcceleration() {
+		return this.normalVerticalAcceleration;
+	}
+	
+	protected void setNormalVerticalAcceleration(double acceleration) {
+		this.normalVerticalAcceleration = acceleration;
 	}
 	
 	/**
@@ -352,6 +374,54 @@ public class GameObject {
 		for (int y=0; y < this.getCurrentSprite().getHeight(); y++)
 			bottomPixels.add(this.getPosition()[1] + y);
 		return bottomPixels;
+	}
+	
+	protected double getTimeStalled() {
+		return this.timeStalled;
+	}
+	
+	protected void setTimeStalled(double timeStalled) {
+		this.timeStalled = timeStalled;
+	}
+	
+	protected double getTimeInWater() {
+		return this.timeInWater;
+	}
+	
+	protected void setTimeInWater(double timeInWater) {
+		this.timeInWater = timeInWater;
+	}
+	
+	protected double getTimeInAir() {
+		return this.timeInAir;
+	}
+	
+	protected void setTimeInAir(double timeInAir) {
+		this.timeInAir = timeInAir;
+	}
+	
+	protected double getTimeInMagma() {
+		return this.timeInMagma;
+	}
+	
+	protected void setTimeInMagma(double timeInMagma) {
+		this.timeInMagma = timeInMagma;
+	}
+	
+	protected double getTimeImmune() {
+		return this.timeImmune;
+	}
+	
+	protected void setTimeImmune(double timeImmune) {
+		this.timeImmune = timeImmune;
+	}
+	
+	protected double getTimeImmuneForMagma() {
+		return this.timeImmuneForMagma;
+	}
+	
+	protected void setTimeImmuneForMagma(double timeImmuneForMagma) {
+		this.timeImmuneForMagma = timeImmuneForMagma;
 	}
 
 	/**
@@ -420,7 +490,7 @@ public class GameObject {
 	 * @return	True if and only if the time stalled is smaller than or equal to 30.
 	 */
 	public boolean hasJustMovedHorizontally() {
-		return (this.timeStalled <= 0.30);
+		return (this.getTimeStalled() <= 0.30);
 	}
 
 	/**
@@ -477,7 +547,19 @@ public class GameObject {
 	 * @return	True if and only if the geological feature at the game object's position is 0 (air).
 	 */
 	protected boolean isInAir() {
-		return (this.world.getGeologicalFeature(this.getPosition()[0], this.getPosition()[1]) == 0);
+		for (int verticalPixel: this.getVerticalPixels()) {
+			if ((this.getWorld().getGeologicalFeature(this.getPosition()[0], verticalPixel) == 0) ||
+					this.getWorld().getGeologicalFeature
+					(this.getPosition()[0] + this.getCurrentSprite().getWidth(), verticalPixel) == 0)
+				return true;
+		}
+		for (int horizontalPixel: this.getHorizontalPixels()) {
+			if ((this.getWorld().getGeologicalFeature(horizontalPixel, this.getPosition()[1]) == 0) ||
+					(this.getWorld().getGeologicalFeature(horizontalPixel, 
+							this.getPosition()[1] + this.getCurrentSprite().getHeight()) == 0))
+				return true;
+		}
+		return false;	
 	}
 	
 	/**
@@ -486,20 +568,19 @@ public class GameObject {
 	 * @return	True if and only if the geological feature at the game object's position is 2 (water).
 	 */
 	protected boolean isInWater() {
-		int pixelsTouching = 0;
 		for (int verticalPixel: this.getVerticalPixels()) {
-			if ((this.world.getGeologicalFeature(this.getPosition()[0], verticalPixel) == 2) ||
-					this.world.getGeologicalFeature
+			if ((this.getWorld().getGeologicalFeature(this.getPosition()[0], verticalPixel) == 2) ||
+					this.getWorld().getGeologicalFeature
 					(this.getPosition()[0] + this.getCurrentSprite().getWidth(), verticalPixel) == 2)
-				pixelsTouching += 1;
+				return true;
 		}
 		for (int horizontalPixel: this.getHorizontalPixels()) {
-			if ((this.world.getGeologicalFeature(horizontalPixel, this.getPosition()[1]) == 2) ||
-					(this.world.getGeologicalFeature(horizontalPixel, 
+			if ((this.getWorld().getGeologicalFeature(horizontalPixel, this.getPosition()[1]) == 2) ||
+					(this.getWorld().getGeologicalFeature(horizontalPixel, 
 							this.getPosition()[1] + this.getCurrentSprite().getHeight()) == 2))
-				pixelsTouching += 1;
+				return true;
 		}
-		return (pixelsTouching > 0);
+		return false;
 	}
 	
 	/**
@@ -508,20 +589,19 @@ public class GameObject {
 	 * @return	True if and only if the geological feature at the game object's position is 3 (magma).
 	 */
 	protected boolean isInMagma() {
-		int pixelsTouching = 0;
 		for (int verticalPixel: this.getVerticalPixels()) {
-			if ((this.world.getGeologicalFeature(this.getPosition()[0], verticalPixel) == 3) ||
-					this.world.getGeologicalFeature
+			if ((this.getWorld().getGeologicalFeature(this.getPosition()[0], verticalPixel) == 3) ||
+					this.getWorld().getGeologicalFeature
 					(this.getPosition()[0] + this.getCurrentSprite().getWidth(), verticalPixel) == 3)
-				pixelsTouching += 1;
+				return true;
 		}
 		for (int horizontalPixel: this.getHorizontalPixels()) {
-			if ((this.world.getGeologicalFeature(horizontalPixel, this.getPosition()[1]) == 3) ||
-					(this.world.getGeologicalFeature(horizontalPixel, 
+			if ((this.getWorld().getGeologicalFeature(horizontalPixel, this.getPosition()[1]) == 3) ||
+					(this.getWorld().getGeologicalFeature(horizontalPixel, 
 							this.getPosition()[1] + this.getCurrentSprite().getHeight()) == 3))
-				pixelsTouching += 1;
+				return true;
 		}
-		return (pixelsTouching > 0);
+		return false;
 	}
 	
 	/**
@@ -575,16 +655,15 @@ public class GameObject {
 	 * 			game object equals the y-position of the given object - 1.
 	 */
 	protected boolean bottomCollidesWithTop(GameObject object) {
-		int pixelsColliding = 0;
 		for (Integer thisHorizontalPosition: this.getHorizontalPixels()) {
 			for (Integer objectHorizontalPosition: object.getHorizontalPixels()) {
 				if ((this.collidesWith(object)) && (this.getPosition()[1] 
 						== object.getPosition()[1] + object.getCurrentSprite().getHeight() - 1) 
-						&& (thisHorizontalPosition == objectHorizontalPosition)) 
-					pixelsColliding += 1;
+						&& (thisHorizontalPosition == objectHorizontalPosition))
+					return true;
 			}
 		}
-		return (pixelsColliding > 0);
+		return false;
 	}
 	
 	/**
@@ -605,50 +684,54 @@ public class GameObject {
 	 * @return
 	 */
 	protected boolean touchImpassableRight() {
-		int pixelsTouching = 0;
 		for (int rightPixel: this.getVerticalPixels()) {
 			if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
 					this.getPosition()[0] + this.getCurrentSprite().getWidth(), rightPixel)))
 					&& (rightPixel != this.getPosition()[1])
+					&& (rightPixel != this.getPosition()[1] + 1)
+					&& (rightPixel != this.getPosition()[1] + this.getCurrentSprite().getHeight() - 1)
 					&& (rightPixel != this.getPosition()[1] + this.getCurrentSprite().getHeight()))
-				pixelsTouching += 1;
+				return true;
 		}
-		return (pixelsTouching > 0);
+		return false;
 	}
 	
 	protected boolean touchImpassableTop() {
-		int pixelsTouching = 0;
 		for (int topPixel: this.getHorizontalPixels()) {
 			if (this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(topPixel, 
 					this.getPosition()[1] + this.getCurrentSprite().getHeight()))
 					&& (topPixel != this.getPosition()[0])
+					&& (topPixel != this.getPosition()[0] + 1)
+					&& (topPixel != this.getPosition()[0] + this.getCurrentSprite().getWidth() - 1)
 					&& (topPixel != this.getPosition()[0] + this.getCurrentSprite().getWidth()))
-				pixelsTouching += 1;
+				return true;
 		}
-		return (pixelsTouching > 0);
+		return false;
 	}
 	
 	protected boolean touchImpassableLeft() {
-		int pixelsTouching = 0;
 		for (int leftPixel: this.getVerticalPixels()) {
 			if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
 					this.getPosition()[0], leftPixel))) && (leftPixel != this.getPosition()[1])
+					&& (leftPixel != this.getPosition()[1] + 1)
+					&& (leftPixel != this.getPosition()[1] + this.getCurrentSprite().getHeight() - 1)
 					&& (leftPixel != this.getPosition()[1] + this.getCurrentSprite().getHeight()))
-				pixelsTouching += 1;
+				return true;
 		}
-		return (pixelsTouching > 0);
+		return false;
 	}
 	
 	
 	protected boolean touchImpassableBottom() {
-		int pixelsTouching = 0;
 		for (int bottomPixel: this.getHorizontalPixels()) {
 			if (this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(bottomPixel, 
 					this.getPosition()[1])) && (bottomPixel != this.getPosition()[0])
+					&& (bottomPixel != this.getPosition()[0] + 1)
+					&& (bottomPixel != this.getPosition()[0] + this.getCurrentSprite().getWidth() - 1)
 					&& (bottomPixel != this.getPosition()[0] + this.getCurrentSprite().getWidth()))
-				pixelsTouching += 1;
+				return true;
 		}
-		return (pixelsTouching > 0);
+		return false;
 	}
 	
 	protected boolean crossImpassableRight() {
@@ -675,24 +758,25 @@ public class GameObject {
 	 * @param	direction
 	 * 			The given direction in which the alien has to move.
 	 */
-	public void startMoveHorizontally(Direction direction) {
+	public void startMoveHorizontally(Direction direction, double initalVelocity, 
+			double initialAcceleration) {
 		assert (isValidMovingDirection(direction));
 		if (direction == Direction.RIGHT) {
 			this.setLastDirection(Direction.RIGHT);
-			if (this.getHorizontalVelocity() <= this.getMaxHorizontalVelocity()) { 
-				this.setHorizontalVelocity(this.normalHorizontalVelocity);
-				this.setHorizontalAcceleration(this.normalHorizontalAcceleration);
+			if (this.getHorizontalVelocity() <= this.getMaxHorizontalVelocity()) {
+				this.setHorizontalVelocity(initalVelocity);
+				this.setHorizontalAcceleration(initialAcceleration);
 			}
 			else {
 				this.setHorizontalAcceleration(0);
 				this.setHorizontalVelocity(this.getMaxHorizontalVelocity());
 			}
 		}
-		else{
+		else {
 			this.setLastDirection(Direction.LEFT);
 			if (this.getHorizontalVelocity() >= -this.getMaxHorizontalVelocity()) { 
-				this.setHorizontalVelocity(-this.normalHorizontalVelocity);
-				this.setHorizontalAcceleration(-this.normalHorizontalAcceleration);
+				this.setHorizontalVelocity(-initalVelocity);
+				this.setHorizontalAcceleration(-initialAcceleration);
 			}
 			else {
 				this.setHorizontalAcceleration(0);
@@ -757,7 +841,7 @@ public class GameObject {
 			this.setPosition(oldPosition[0], oldPosition[1]);
 		}
 		if (this.crossImpassableTop()) {
-			this.setVerticalAcceleration(this.normalVerticalAcceleration);
+			this.setVerticalAcceleration(this.getNormalVerticalAcceleration());
 			this.setVerticalVelocity(0);
 			this.setPosition(oldPosition[0], oldPosition[1]);
 		}

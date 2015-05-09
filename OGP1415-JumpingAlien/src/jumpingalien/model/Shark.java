@@ -35,9 +35,9 @@ public class Shark extends GameObject {
 	 */
 	public Shark(int positionX, int positionY, Sprite[] spriteList) {
 		super(positionX, positionY, spriteList);
-		this.normalHorizontalVelocity = 0;
-		this.normalHorizontalAcceleration = 1.5;
-		this.maxHorizontalVelocity = 4;
+		this.setNormalHorizontalVelocity(0);
+		this.setNormalHorizontalAcceleration(1.5);
+		this.setMaxHorizontalVelocity(4);
 		this.normalVerticalVelocity = 2;
 		this.setLastDirection(this.getRandomDirection());
 	    this.timeMovingHorizontally = 0;	
@@ -160,31 +160,35 @@ public class Shark extends GameObject {
 			if ((direction == Direction.RIGHT) || (direction == Direction.LEFT)) {
 				this.endMoveHorizontally(this.getLastDirection());
 				this.endMoveVertically();
-				this.startMoveHorizontally(direction);
+				this.startMoveHorizontally(direction, this.getNormalHorizontalVelocity(),
+						this.getNormalHorizontalAcceleration());
 				this.timesNotJumped += 1;
 			}
 			else if (direction == Direction.UPRIGHT) {
 				this.endMoveHorizontally(this.getLastDirection());
 				this.endMoveVertically();
-				this.startMoveHorizontally(Direction.RIGHT);
+				this.startMoveHorizontally(Direction.RIGHT, this.getNormalHorizontalVelocity(),
+						this.getNormalHorizontalAcceleration());
 				this.startMoveVertically(Direction.UP);
 			}
 			else if (direction == Direction.UPLEFT) {
 				this.endMoveHorizontally(this.getLastDirection());
 				this.endMoveVertically();
-				this.startMoveHorizontally(Direction.LEFT);
+				this.startMoveHorizontally(Direction.LEFT, this.getNormalHorizontalVelocity(),
+						this.getNormalHorizontalAcceleration());
 				this.startMoveVertically(Direction.UP);
 			}
 			else if (direction == Direction.DOWNRIGHT) {
 				this.endMoveHorizontally(this.getLastDirection());
 				this.endMoveVertically();
-				this.startMoveHorizontally(Direction.RIGHT);
+				this.startMoveHorizontally(Direction.RIGHT, this.getNormalHorizontalVelocity(),
+						this.getNormalHorizontalAcceleration());
 				this.startMoveVertically(Direction.DOWN);
 			}
 			else if (direction == Direction.DOWNLEFT) {
-				this.endMoveHorizontally(this.getLastDirection());
 				this.endMoveVertically();
-				this.startMoveHorizontally(Direction.LEFT);
+				this.startMoveHorizontally(Direction.LEFT, this.getNormalHorizontalVelocity(),
+						this.getNormalHorizontalAcceleration());
 				this.startMoveVertically(Direction.DOWN);
 			}
 		}
@@ -198,7 +202,7 @@ public class Shark extends GameObject {
 	private void startJump() {
 		if (!this.isFalling()) {
 			this.setVerticalVelocity(this.normalVerticalVelocity);
-			this.setVerticalAcceleration(this.normalVerticalAcceleration);
+			this.setVerticalAcceleration(this.getNormalVerticalAcceleration());
 		}
 	}
 	
@@ -385,7 +389,7 @@ public class Shark extends GameObject {
 	 * @throws	IllegalArgumentException
 	 * 			| !isValidDt(dt)
 	 */
-	private double horizontalMovement(double dt, int[] oldPosition) throws IllegalArgumentException {
+	private double horizontalMovement(double dt) throws IllegalArgumentException {
 		if (Math.abs(this.getHorizontalVelocity()) >= this.getMaxHorizontalVelocity()) {
 			this.setHorizontalAcceleration(0);
 			if (this.getHorizontalVelocity() < 0) {
@@ -394,12 +398,6 @@ public class Shark extends GameObject {
 			else
 				this.setHorizontalVelocity(this.getMaxHorizontalVelocity());
 		}
-/*		if (this.crossBoundaries()) {
-			this.crossBoundariesActions();
-		}
-		else if ((this.crossImpassableLeft()) || (this.crossImpassableRight())) {
-			this.crossImpassableActions(oldPosition);
-		}*/
 		this.setHorizontalVelocity(this.getHorizontalVelocity() + this.getHorizontalAcceleration() * dt);
 		double newPositionX = this.getHorizontalVelocity() * dt 
 				- this.getHorizontalAcceleration() * Math.pow(dt, 2) 
@@ -448,12 +446,7 @@ public class Shark extends GameObject {
 	 * @throws	IllegalArgumentException
 	 * 			| !isValidDt(dt)
 	 */
-	private double verticalMovement(double dt, int[] oldPosition) throws IllegalArgumentException {
-/*		if (this.crossBoundaries()) {
-			this.crossBoundariesActions();
-		}
-		else if ((this.crossImpassableBottom()) || (this.crossImpassableTop()))
-			this.crossImpassableActions(oldPosition);*/
+	private double verticalMovement(double dt) throws IllegalArgumentException {
 		this.setVerticalVelocity(this.getVerticalVelocity() + this.getVerticalAcceleration()*dt);
 		double newPositionY = this.getVerticalVelocity() * dt 
 				- this.getVerticalAcceleration() * Math.pow(dt, 2)
@@ -477,7 +470,7 @@ public class Shark extends GameObject {
 				this.makeImmune();
 			}
 			else
-				this.timeImmune += newDt;
+				this.setTimeImmune(this.getTimeImmune() + newDt);
 		}
 		for (Shark shark: this.getWorld().getSharks()) {
 			if ((this.collidesWith(shark)) && (!this.bottomCollidesWithTop(shark))) {
@@ -502,7 +495,7 @@ public class Shark extends GameObject {
 					this.makeImmune();
 				}
 				else
-					this.timeImmune += newDt;
+					this.setTimeImmune(this.getTimeImmune() + newDt);
 			}
 		}
 
@@ -514,27 +507,31 @@ public class Shark extends GameObject {
 	 */
 	private void isInFluidActions(double newDt) {
 		if (this.isInAir()) {
-			this.timeInAir += newDt;
-			this.changeNbHitPoints((int)(-6 * ((10*this.timeInAir)/2)));
+			if (this.getTimeInAir() >= 0.2) {
+				this.changeNbHitPoints(-6);
+				this.setTimeInAir(0);
+			}
+			else 
+				this.setTimeInAir(this.getTimeInAir() + newDt);
 		}
 		else if (this.isInMagma()) {
+			this.setTimeInMagma(this.getTimeInMagma() + newDt);
 			if (!this.isImmuneForMagma()) {
-				this.timeInMagma += newDt;
-				this.changeNbHitPoints((int)(-50 *((10*this.timeInMagma + 0.2))/2));
+				this.changeNbHitPoints(-50);
 				this.makeImmuneForMagma();
 			}
 			else {
-				if (this.timeImmuneForMagma <= 0.20) 
-					this.timeImmuneForMagma += newDt;
+				if (this.getTimeImmuneForMagma() < 0.20) 
+					this.setTimeImmuneForMagma(this.getTimeImmuneForMagma() + newDt);
 				else {
 					this.makeVulnerableForMagma();
-					this.timeImmuneForMagma = 0;
+					this.setTimeImmuneForMagma(0);
 				}
 			}
 		}
 		else {
-			this.timeInAir = 0;
-			this.timeInMagma = 0;
+			this.setTimeInAir(0);
+			this.setTimeInMagma(0);
 		}
 	}
 	
@@ -553,29 +550,33 @@ public class Shark extends GameObject {
 	 * 			| !isValidDt(dt)
 	 */
 	public void advanceTime(double dt) throws IllegalArgumentException {
-		if (!this.isValidDt(dt)) 
-			throw new IllegalArgumentException("The given period of time dt is invalid!");
 		double sumDt = 0;
 		int movingTime = this.getRandomMovingTime();
-		this.moveHorizontally(movingTime, dt);
-		if ((this.isInAir()) || (this.isInMagma()))
-			this.isInFluidActions(dt);
 		while (sumDt < dt) {
 			double newDt = this.getNewDt(dt);
 			int[] oldPosition = this.getPosition();
-			if (this.crossBoundaries())
-				this.crossBoundariesActions();
-			if ((this.crossImpassableLeft()) || (this.crossImpassableBottom())
-					|| (this.crossImpassableRight()) || (this.crossImpassableTop())) {
+			if (!this.isValidDt(newDt))
+				throw new IllegalArgumentException("The given period of time dt is invalid!");
+			if ((this.crossImpassableBottom()) || (this.crossImpassableLeft()) 
+					|| (this.crossImpassableTop()) || (this.crossImpassableRight()))  {
 				this.crossImpassableActions(oldPosition);
 			}
-			this.collidesWithActions(newDt, oldPosition);
-			if ((!this.crossImpassableLeft()) && (!this.crossImpassableBottom())
-					&& (!this.crossImpassableRight()) && (!this.crossImpassableTop())) {
-				this.setPosition(this.getPosition()[0] + (100 * this.horizontalMovement(
-						newDt, oldPosition)), this.getPosition()[1] + (100 * this.verticalMovement(
-								newDt, oldPosition)));
+			if (this.crossBoundaries()) {
+				this.crossBoundariesActions();
 			}
+			this.collidesWithActions(newDt, oldPosition);
+			if ((this.isInAir()) || (this.isInMagma()))
+				this.isInFluidActions(newDt);
+			this.moveHorizontally(movingTime, newDt);
+			if ((!this.crossImpassableBottom()) && (!this.crossImpassableLeft())
+					&& (!this.crossImpassableTop()) && (!this.crossImpassableRight())) {
+				if ((!this.touchImpassableBottom()) && (!this.isSubmergedInWater())) {
+					this.setVerticalAcceleration(this.getNormalVerticalAcceleration());
+				}
+				this.setPosition(oldPosition[0] + 100*this.horizontalMovement(newDt),
+					oldPosition[1] + 100*this.verticalMovement(newDt));
+			}
+			sumDt += newDt;
 		}
 	}
 }

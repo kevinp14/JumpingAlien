@@ -33,7 +33,7 @@ public class Plant extends GameObject {
 	public Plant(int positionX, int positionY, Sprite[] spriteList){
 		super(positionX, positionY, spriteList);
 		this.setLastDirection(this.getRandomDirection());
-		this.normalHorizontalVelocity = 0.5;
+		this.setNormalHorizontalVelocity(0.5);
 	    this.timeMovingHorizontally = 0;
 	    this.changeNbHitPoints(1);
 	}
@@ -69,18 +69,17 @@ public class Plant extends GameObject {
 		}
 	}
 	
-	@Override
 	public void startMoveHorizontally(Direction direction) {
 		assert (isValidMovingDirection(direction));
 		if (direction == Direction.RIGHT) {
 			this.setLastDirection(Direction.RIGHT);
 			this.setNextDirection(Direction.LEFT);
-			this.setHorizontalVelocity(this.normalHorizontalVelocity);
+			this.setHorizontalVelocity(this.getNormalHorizontalVelocity());
 		}
 		else {
 			this.setLastDirection(Direction.LEFT);
 			this.setNextDirection(Direction.RIGHT);
-			this.setHorizontalVelocity(-this.normalHorizontalVelocity);
+			this.setHorizontalVelocity(-this.getNormalHorizontalVelocity());
 		}
 	}
 	
@@ -134,13 +133,7 @@ public class Plant extends GameObject {
 	 * 			The plant's new x-position after horizontal movement.
 	 * 			| newPositionX = this.getHorizontalVelocity() * dt
 	 */
-	private double horizontalMovement(double dt, int[] oldPosition) throws IllegalArgumentException {
-/*		if (this.crossBoundaries()) {
-			this.crossBoundariesActions();
-		}
-		else if ((this.crossImpassableLeft()) || (this.crossImpassableRight())) {
-			this.crossImpassableActions(oldPosition)
-		}*/
+	private double horizontalMovement(double dt) throws IllegalArgumentException {
 		double newPositionX = this.getHorizontalVelocity() * dt;
 		return newPositionX;
 	}
@@ -168,28 +161,30 @@ public class Plant extends GameObject {
 	 * 			| !isValidDt(dt)
 	 */
 	public void advanceTime(double dt) throws IllegalArgumentException {
-		if (!this.isValidDt(dt))
-			throw new IllegalArgumentException("The given period of time dt is invalid!");
 		double sumDt = 0;
-		if (this.timeMovingHorizontally >= 0.50) {
-			this.timeMovingHorizontally = 0;
-			this.endMoveHorizontally(this.getLastDirection());
-			this.startMoveHorizontally(this.getNextDirection());
-		}
-		else if (this.timeMovingHorizontally < 0.50) {
-			this.timeMovingHorizontally += dt;
-		}
 		while (sumDt < dt) {
 			double newDt = this.getNewDt(dt);
 			int[] oldPosition = this.getPosition();
-			if (this.crossBoundaries())
-				this.crossBoundariesActions();
-			if ((this.crossImpassableLeft()) || (this.crossImpassableRight()))
+			if (!this.isValidDt(newDt))
+				throw new IllegalArgumentException("The given period of time dt is invalid!");
+			if (this.timeMovingHorizontally >= 0.50) {
+				this.timeMovingHorizontally = 0;
+				this.endMoveHorizontally(this.getLastDirection());
+				this.startMoveHorizontally(this.getNextDirection());
+			}
+			else if (this.timeMovingHorizontally < 0.50) {
+				this.timeMovingHorizontally += newDt;
+			}
+			if ((this.crossImpassableLeft()) || (this.crossImpassableRight()))  {
 				this.crossImpassableActions(oldPosition);
+			}
+			if (this.crossBoundaries()) {
+				this.crossBoundariesActions();
+			}
 			this.collidesWithActions(newDt, oldPosition);
 			if ((!this.crossImpassableLeft()) && (!this.crossImpassableRight())) {
-				this.setPosition(this.getPosition()[0] + (100 * this.horizontalMovement(
-						newDt, oldPosition)), this.getPosition()[1]);
+				this.setPosition(oldPosition[0] + (100 * this.horizontalMovement(
+						newDt)), oldPosition[1]);
 			}
 			sumDt += newDt;
 		}

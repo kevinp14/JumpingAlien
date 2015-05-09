@@ -37,9 +37,9 @@ public class Slime extends GameObject {
 	 */
 	public Slime (int positionX, int positionY, Sprite[] spriteList, School school) {
 		super(positionX, positionY, spriteList);
-		this.normalHorizontalVelocity = 0;
-		this.normalHorizontalAcceleration = 0.7;
-		this.maxHorizontalVelocity = 2.5;
+		this.setNormalHorizontalVelocity(0);
+		this.setNormalHorizontalAcceleration(0.7);
+		this.setMaxHorizontalVelocity(2.5);
 	    this.timeMovingHorizontally = 0;
 	    this.setLastDirection(this.getRandomDirection());
 		this.school = school;
@@ -167,7 +167,7 @@ public class Slime extends GameObject {
 	 * 			The slime's new x-position after horizontal movement.
 	 * 			| newPositionX = this.getHorizontalVelocity() * dt
 	 */
-	private double horizontalMovement(double dt, int[] oldPosition) throws IllegalArgumentException {
+	private double horizontalMovement(double dt) throws IllegalArgumentException {
 		if (Math.abs(this.getHorizontalVelocity()) >= this.getMaxHorizontalVelocity()) {
 			this.setHorizontalAcceleration(0);
 			if (this.getHorizontalVelocity() < 0) {
@@ -175,12 +175,6 @@ public class Slime extends GameObject {
 			} else
 				this.setHorizontalVelocity(this.getMaxHorizontalVelocity());
 		}
-/*		if (this.crossBoundaries()) {
-			this.crossBoundariesActions();
-		}
-		else if ((this.crossImpassableLeft()) || (this.crossImpassableRight())) {
-			this.crossImpassableActions(oldPosition);
-		}*/
 		this.setHorizontalVelocity(this.getHorizontalVelocity() + this.getHorizontalAcceleration() * dt);
 		double newPositionX = this.getHorizontalVelocity() * dt - 
 				this.getHorizontalAcceleration() * Math.pow(dt, 2) + 
@@ -218,9 +212,7 @@ public class Slime extends GameObject {
 	 * @throws	IllegalArgumentException
 	 * 			| !isValidDt(dt)
 	 */
-	private double verticalMovement(double dt, int[] oldPosition) throws IllegalArgumentException {
-/*		if (this.crossImpassableBottom())
-			this.crossImpassableActions(oldPosition);*/
+	private double verticalMovement(double dt) throws IllegalArgumentException {
 		this.setVerticalVelocity(this.getVerticalVelocity() + this.getVerticalAcceleration()*dt);
 		double newPositionY = this.getVerticalVelocity() * dt 
 				- this.getVerticalAcceleration() * Math.pow(dt, 2)
@@ -272,7 +264,7 @@ public class Slime extends GameObject {
 					this.makeImmune();
 				}
 				else
-					this.timeImmune += newDt;
+					this.setTimeImmune(this.getTimeImmune() + newDt);
 			}
 		}
 		if ((this.collidesWith(this.getWorld().getMazub())) 
@@ -289,7 +281,7 @@ public class Slime extends GameObject {
 				this.makeImmune();
 			}
 			else
-				this.timeImmune += newDt;
+				this.setTimeImmune(this.getTimeImmune() + newDt);
 		}
 	}
 	
@@ -299,27 +291,31 @@ public class Slime extends GameObject {
 	 */
 	private void isInFluidActions(double newDt) {
 		if (this.isInWater()) {
-			this.timeInWater += newDt;
-			this.changeNbHitPoints((int)(-2 * ((10*this.timeInWater)/2)));
+			if (this.getTimeInWater() >= 0.2) {
+				this.changeNbHitPoints(-2);
+				this.setTimeInWater(0);
+			}
+			else 
+				this.setTimeInWater(this.getTimeInWater() + newDt);
 		}
 		else if (this.isInMagma()) {
+			this.setTimeInMagma(this.getTimeInMagma() + newDt);
 			if (!this.isImmuneForMagma()) {
-				this.timeInMagma += newDt;
-				this.changeNbHitPoints((int)(-50 *((10*this.timeInMagma + 0.2))/2));
+				this.changeNbHitPoints(-50);
 				this.makeImmuneForMagma();
 			}
 			else {
-				if (this.timeImmuneForMagma <= 0.20) 
-					this.timeImmuneForMagma += newDt;
+				if (this.getTimeImmuneForMagma() < 0.20) 
+					this.setTimeImmuneForMagma(this.getTimeImmuneForMagma() + newDt);
 				else {
 					this.makeVulnerableForMagma();
-					this.timeImmuneForMagma = 0;
+					this.setTimeImmuneForMagma(0);
 				}
 			}
 		}
 		else {
-			this.timeInWater = 0;
-			this.timeInMagma = 0;
+			this.setTimeInWater(0);
+			this.setTimeInMagma(0);
 		}
 	}
 	
@@ -339,34 +335,43 @@ public class Slime extends GameObject {
 	 * 			| !isValidDt(dt)
 	 */
 	public void advanceTime(double dt) throws IllegalArgumentException {
-		if (!this.isValidDt(dt)) 
-			throw new IllegalArgumentException("The given period of time dt is invalid!");
 		double sumDt = 0;
 		int movingTime = this.getRandomMovingTime();
-		if (this.timeMovingHorizontally >= movingTime) {
-			this.timeMovingHorizontally = 0;
-			this.endMoveHorizontally(this.getLastDirection());
-			this.startMoveHorizontally(this.getRandomDirection());
-		}
-		if (this.timeMovingHorizontally < movingTime)
-			this.timeMovingHorizontally += dt;
-		if ((this.isInWater()) || (this.isInMagma()))
-			this.isInFluidActions(dt);
 		while (sumDt < dt) {
 			double newDt = this.getNewDt(dt);
 			int[] oldPosition = this.getPosition();
-			if (this.crossBoundaries())
-				this.crossBoundariesActions();
+			if (!this.isValidDt(newDt))
+				throw new IllegalArgumentException("The given period of time dt is invalid!");
+			if (this.timeMovingHorizontally >= movingTime) {
+				this.timeMovingHorizontally = 0;
+				this.endMoveHorizontally(this.getLastDirection());
+				this.startMoveHorizontally(this.getRandomDirection(), this.getNormalHorizontalVelocity(),
+						this.getNormalHorizontalAcceleration());
+			}
+			if (this.timeMovingHorizontally < movingTime) {
+				this.timeMovingHorizontally += newDt;
+			}
+			if ((this.isInWater()) || (this.isInMagma()))
+				this.isInFluidActions(dt);
 			if ((this.crossImpassableLeft()) || (this.crossImpassableBottom()) 
 					|| (this.crossImpassableRight()))
 				this.crossImpassableActions(oldPosition);
-			this.collidesWithActions(newDt, oldPosition);
-			if ((!this.crossImpassableLeft()) && (!this.crossImpassableBottom())
-					&& (!this.crossImpassableRight())) {
-				this.setPosition(this.getPosition()[0] + (100 * this.horizontalMovement(newDt, 
-						oldPosition)),this.getPosition()[1] + (100 * this.verticalMovement(
-								newDt, oldPosition)));
+			if (this.crossBoundaries()) {
+				this.crossBoundariesActions();
 			}
+			this.collidesWithActions(newDt, oldPosition);
+			if ((this.isInWater()) || (this.isInMagma())) {
+				this.isInFluidActions(newDt);
+			}
+			if ((!this.crossImpassableBottom()) && (!this.crossImpassableLeft())
+					&& (!this.crossImpassableTop()) && (!this.crossImpassableRight())) {
+				if (!this.touchImpassableBottom()) {
+					this.setVerticalAcceleration(this.getNormalVerticalAcceleration());
+				}
+				this.setPosition(oldPosition[0] + 100*this.horizontalMovement(newDt),
+					oldPosition[1] + 100*this.verticalMovement(newDt));
+			}
+			sumDt += newDt;
 		}
 	}
 }

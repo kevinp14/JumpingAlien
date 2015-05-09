@@ -97,6 +97,11 @@ public class World {
 		this.gameState = GameState.STARTED;
 	}
 	
+	protected int[] getTargetTile() {
+		int[] targetTile = {this.targetTileX, this.targetTileY};
+		return targetTile;
+	}
+	
 	/**
 	 * @return	The alien in this world
 	 */
@@ -536,6 +541,10 @@ public class World {
 				);
 	}
 	
+	protected boolean alienOnTargetTile() {
+		return (this.getMazub().touchTargetTile());
+	}
+	
 	public void advanceTime(double dt) {
 		this.getMazub().advanceTime(dt);
 		if ((this.getMazub().getNbHitPoints() == 0) 
@@ -543,13 +552,12 @@ public class World {
 			this.gameOver = true;
 			this.gameState = GameState.STOPPED;
 		}
-		if ((this.getMazub().getPosition()[0] == this.targetTileX) 
-				&& (this.getMazub().getPosition()[1] == this.targetTileY)) {
+		if (this.alienOnTargetTile()) {
 			this.won = true;
 			this.gameOver = true;
 			this.gameState = GameState.STOPPED;
 		}
-/*		for (Shark shark: this.getSharks()){
+		for (Shark shark: this.getSharks()){
 			shark.advanceTime(dt);
 			if ((shark.getNbHitPoints() == 0) || (!shark.isValidPosition(shark.getPosition())))
 				this.sharks.remove(shark);
@@ -558,7 +566,7 @@ public class World {
 			slime.advanceTime(dt);
 			if ((slime.getNbHitPoints() == 0) || (!slime.isValidPosition(slime.getPosition())))
 				this.slimes.remove(slime);
-		}*/
+		}
 		for(Plant plant: this.getPlants()){
 			plant.advanceTime(dt);
 			if ((plant.getNbHitPoints() == 0) || (!plant.isValidPosition(plant.getPosition())))
