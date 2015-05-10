@@ -155,8 +155,8 @@ public class Facade implements IFacade {
 	 *            The alien that has to start jumping.
 	 */
 	public void startJump(Mazub alien) throws ModelException { 
-		if (alien.isJumping())
-			throw new ModelException("The alien can not jump while in the air!");
+//		if (alien.isJumping())
+//			throw new ModelException("The alien can not jump while in the air!");
 		alien.startJump();}
 	
 	/**
@@ -166,8 +166,8 @@ public class Facade implements IFacade {
 	 *            The alien that has to stop jumping.
 	 */
 	public void endJump(Mazub alien) throws ModelException {
-		if (!alien.isJumping())
-			throw new ModelException("The alien has already stopped jumping!");
+//		if (!alien.isJumping())
+//			throw new ModelException("The alien has already stopped jumping!");
 		alien.endJump();
 	}
 	
