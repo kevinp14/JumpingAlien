@@ -149,9 +149,10 @@ public class Mazub extends GameObject {
 	 * 			in this world. (used for accurate collision detection).
 	 */
 	private double getNewDt(double dt){
-		double velocity = Math.sqrt(Math.pow((this.getHorizontalVelocity() 
-				- this.getHorizontalAcceleration()), 2) + 
-				Math.pow((this.getVerticalVelocity()), 2));
+		double velocity = Math.sqrt(Math.pow((Math.abs(this.getHorizontalVelocity()) 
+				- Math.abs(this.getHorizontalAcceleration()) * dt), 2) + 
+				Math.pow((Math.abs(this.getVerticalVelocity())
+						- Math.abs(this.getVerticalAcceleration()) * dt), 2));
 		double acceleration = Math.sqrt(Math.pow(this.getHorizontalAcceleration(), 2) + 
 				Math.pow(this.getVerticalAcceleration(), 2));
 		double newDt = 0.01 / (velocity + (acceleration * dt));
@@ -176,15 +177,6 @@ public class Mazub extends GameObject {
 				pixelsTouching += 1;
 		}
 		return (pixelsTouching > 0);
-	}
-	
-	/**
-	 * Check whether the alien is jumping or not.
-	 * 
-	 * @return	True if and only if the alien's vertical velocity is bigger than 0.
-	 */
-	public boolean isJumping() {
-		return (this.getVerticalVelocity() > 0);
 	}
 	
 	/**
@@ -598,7 +590,7 @@ public class Mazub extends GameObject {
 					this.setVerticalAcceleration(this.getNormalVerticalAcceleration());
 				}
 				this.setPosition(oldPosition[0] + 100*this.horizontalMovement(newDt),
-					oldPosition[1] + 100*this.verticalMovement(newDt));
+						oldPosition[1] + 100*this.verticalMovement(newDt));
 			}
 			sumDt += newDt;
 		}
