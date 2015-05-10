@@ -29,6 +29,7 @@ public class Mazub extends GameObject {
 	private double normalVerticalVelocity;
 	private Sprite[] spriteList;
 	private double timeMovingHorizontally;
+	private double timeForcedDuck;
 	private Direction secondaryDirection;
 	
 	/**
@@ -51,6 +52,7 @@ public class Mazub extends GameObject {
 		this.setMaxHorizontalVelocity(3);
 		this.normalVerticalVelocity = 8;
 	    this.timeMovingHorizontally = 0;
+	    this.timeForcedDuck = 0;
 	    this.changeNbHitPoints(100);
 	}
 
@@ -147,12 +149,13 @@ public class Mazub extends GameObject {
 	 * 			in this world. (used for accurate collision detection).
 	 */
 	private double getNewDt(double dt){
-		double velocity = Math.pow((Math.pow(this.getHorizontalVelocity(), 2) + 
-				Math.pow(this.getVerticalVelocity(),2)), 1/2);
-		double acceleration = Math.pow((Math.pow(this.getHorizontalAcceleration(), 2) + 
-				Math.pow(this.getVerticalAcceleration(),2)), 1/2);
-		double newDt = 0.01 / (velocity + acceleration*dt);
-		if ((velocity + acceleration*dt) == 0)
+		double velocity = Math.sqrt(Math.pow((this.getHorizontalVelocity() 
+				- this.getHorizontalAcceleration()), 2) + 
+				Math.pow((this.getVerticalVelocity()), 2));
+		double acceleration = Math.sqrt(Math.pow(this.getHorizontalAcceleration(), 2) + 
+				Math.pow(this.getVerticalAcceleration(), 2));
+		double newDt = 0.01 / (velocity + (acceleration * dt));
+		if ((velocity + (acceleration * dt)) == 0)
 			return 0.01;
 		else {
 			return newDt;
@@ -218,11 +221,20 @@ public class Mazub extends GameObject {
 		return true;
 	}
 	
+	/**
+	 * Check whether the alien is touching the target tile or not.
+	 * 
+	 * @return	True if and only if the alien's tile is touching the target position's tile.
+	 */
 	protected boolean touchTargetTile() {
-		return ((((this.getPosition()[0] + this.getCurrentSprite().getWidth()) 
+		return (((((this.getPosition()[0] + this.getCurrentSprite().getWidth()) 
 				/ this.getWorld().getTileLength()) == this.getWorld().getTargetTile()[0])
 				&& (((this.getPosition()[1] + this.getCurrentSprite().getWidth()) 
-						/ this.getWorld().getTileLength()) == this.getWorld().getTargetTile()[1]));
+						/ this.getWorld().getTileLength()) == this.getWorld().getTargetTile()[1]))
+						|| ((((this.getPosition()[0] + this.getCurrentSprite().getWidth()) 
+								/ this.getWorld().getTileLength()) == this.getWorld().getTargetTile()[0])
+								&& (((this.getPosition()[1] / this.getWorld().getTileLength())
+										== this.getWorld().getTargetTile()[1]))));
 	}
 	
 
@@ -257,8 +269,7 @@ public class Mazub extends GameObject {
 	 * End the ducking of the alien.
 	 */
 	public void endDuck() {
-		if (this.canEndDuck())
-			this.setMaxHorizontalVelocity(this.maxRunningVelocity);
+		this.setMaxHorizontalVelocity(this.maxRunningVelocity);
 	}
 	
 	/**
@@ -436,14 +447,15 @@ public class Mazub extends GameObject {
 	 * 			| !isValidDt(dt)
 	 */ 
 	private double verticalMovement(double dt) throws IllegalArgumentException {
-		this.setVerticalVelocity(this.getVerticalVelocity() + this.getVerticalAcceleration()*dt);
+		this.setVerticalVelocity(this.getVerticalVelocity() + this.getVerticalAcceleration() * dt);
 		double newPositionY = this.getVerticalVelocity() * dt 
 				- this.getVerticalAcceleration() * Math.pow(dt, 2)
-				+ this.getVerticalAcceleration() * Math.pow(dt, 2)/2;
+				+ this.getVerticalAcceleration() * Math.pow(dt, 2) / 2;
 		return newPositionY;
 	}
 		
 	/**
+	 * The actions the alien has to take when colliding with another game object.
 	 * 
 	 * @param newDt
 	 * @param oldPosition
@@ -502,6 +514,7 @@ public class Mazub extends GameObject {
 	}
 	
 	/**
+	 * The actions the alien has to take when in a fluid.
 	 * 
 	 * @param newDt
 	 */
@@ -561,9 +574,6 @@ public class Mazub extends GameObject {
 					|| (this.crossImpassableTop()) || (this.crossImpassableRight()))  {
 				this.crossImpassableActions(oldPosition);
 			}
-			if (this.crossBoundaries()) {
-				this.crossBoundariesActions();
-			}
 			this.collidesWithActions(newDt, oldPosition);
 			if (!this.isMovingHorizontally()) {
 			    this.setTimeStalled(this.getTimeStalled() + newDt);
@@ -576,6 +586,12 @@ public class Mazub extends GameObject {
 			if ((this.isInWater()) || (this.isInMagma())) {
 				this.isInFluidActions(newDt);
 			}
+			if ((this.canEndDuck()) && (this.timeForcedDuck > 0)) {
+				this.endDuck();
+				this.timeForcedDuck = 0;
+			}
+			if (!this.canEndDuck())
+				this.timeForcedDuck += newDt;
 			if ((!this.crossImpassableBottom()) && (!this.crossImpassableLeft())
 					&& (!this.crossImpassableTop()) && (!this.crossImpassableRight())) {
 				if (!this.touchImpassableBottom()) {

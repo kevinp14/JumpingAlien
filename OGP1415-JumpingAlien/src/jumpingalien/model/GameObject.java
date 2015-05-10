@@ -165,7 +165,6 @@ public class GameObject {
 	 * 			The position in the x-direction of the game object.
 	 * @param 	positionY
 	 * 			The position in the y-direction of the game object.
-	 * 
 	 */
 	@Basic
 	protected void setPosition(double positionX, double positionY) {
@@ -183,7 +182,7 @@ public class GameObject {
 
 	/**
 	 * Add the given hitpoints difference to the current number of hitpoints of the game object if its
-	 * hitpoints stay bigger than 0 by doing this.
+	 * hitpoints stay bigger than 0 and smaller than 500 by doing this.
 	 * 
 	 * @pre	
 	 * @post	
@@ -226,30 +225,44 @@ public class GameObject {
 		this.horizontalVelocity = horizontalVelocity;
 	}
 	
+	/**
+	 * @return	The normal horizontal velocity.
+	 */
+	@Basic
 	protected double getNormalHorizontalVelocity() {
 		return this.normalHorizontalVelocity;
 	}
 	
-	protected void setNormalHorizontalVelocity(double velocity) {
-		this.normalHorizontalVelocity = velocity;
+	/**
+	 * Set the normal horizontal velocity to the given one.
+	 * 
+	 * @param normalHorizontalVelocity
+	 */
+	@Basic
+	protected void setNormalHorizontalVelocity(double normalHorizontalVelocity) {
+		this.normalHorizontalVelocity = normalHorizontalVelocity;
 	}
 	
 	/**
 	 * @return	The maximum of the velocity of the game object in the x-direction.
-	 * 
 	 */
 	@Basic
 	public double getMaxHorizontalVelocity() {
 		return this.maxHorizontalVelocity;
 	}
 	
-	protected void setMaxHorizontalVelocity(double velocity) {
-		this.maxHorizontalVelocity = velocity;
+	/**
+	 * Set the maximum horizontal velocity to the given one.
+	 * 
+	 * @param maxHorizontalVelocity
+	 */
+	@Basic
+	protected void setMaxHorizontalVelocity(double maxHorizontalVelocity) {
+		this.maxHorizontalVelocity = maxHorizontalVelocity;
 	}
 
 	/**
 	 * @return	The acceleration of the game object in the x-direction.
-	 *
 	 */
 	@Basic
 	public double getHorizontalAcceleration() {
@@ -269,12 +282,22 @@ public class GameObject {
 		this.horizontalAcceleration = horizontalAcceleration;
 	}
 	
+	/**
+	 * @return	The normal horizontal acceleration.
+	 */
+	@Basic
 	protected double getNormalHorizontalAcceleration() {
 		return this.normalHorizontalAcceleration;
 	}
 	
-	protected void setNormalHorizontalAcceleration(double acceleration) {
-		this.normalHorizontalAcceleration = acceleration;
+	/**
+	 * Set the normal horizontal acceleration to the given one.
+	 * 
+	 * @param normalHorizontalAcceleration
+	 */
+	@Basic
+	protected void setNormalHorizontalAcceleration(double normalHorizontalAcceleration) {
+		this.normalHorizontalAcceleration = normalHorizontalAcceleration;
 	}
 
 	/**
@@ -320,12 +343,22 @@ public class GameObject {
 		this.verticalAcceleration = verticalAcceleration;
 	}
 	
+	/**
+	 * @return	The normal vertical acceleration.
+	 */
+	@Basic
 	protected double getNormalVerticalAcceleration() {
 		return this.normalVerticalAcceleration;
 	}
 	
-	protected void setNormalVerticalAcceleration(double acceleration) {
-		this.normalVerticalAcceleration = acceleration;
+	/**
+	 * Set the normal horizontal acceleration to the given one.
+	 * 
+	 * @param normalHorizontalAcceleration
+	 */
+	@Basic
+	protected void setNormalVerticalAcceleration(double normalHorizontalAcceleration) {
+		this.normalVerticalAcceleration = normalHorizontalAcceleration;
 	}
 	
 	/**
@@ -362,6 +395,9 @@ public class GameObject {
 		this.nextDirection = direction;
 	}
 	
+	/**
+	 * @return	A list of x-pixels of the game object.
+	 */
 	protected ArrayList<Integer> getHorizontalPixels() {
 		ArrayList<Integer> bottomPixels = new ArrayList<Integer>();
 		for (int x=0; x < this.getCurrentSprite().getWidth(); x++)
@@ -369,6 +405,9 @@ public class GameObject {
 		return bottomPixels;
 	}
 	
+	/**
+	 * @return	A list of y-pixels of the game object
+	 */
 	private ArrayList<Integer> getVerticalPixels() {
 		ArrayList<Integer> bottomPixels = new ArrayList<Integer>();
 		for (int y=0; y < this.getCurrentSprite().getHeight(); y++)
@@ -376,50 +415,98 @@ public class GameObject {
 		return bottomPixels;
 	}
 	
+	/**
+	 * @return	The time the game object is stalled.
+	 */
 	protected double getTimeStalled() {
 		return this.timeStalled;
 	}
 	
+	/**
+	 * Set the time stalled to the given one.
+	 * 
+	 * @param timeStalled
+	 */
 	protected void setTimeStalled(double timeStalled) {
 		this.timeStalled = timeStalled;
 	}
 	
+	/**
+	 * @return	The time the game object is in water.
+	 */
 	protected double getTimeInWater() {
 		return this.timeInWater;
 	}
 	
+	/**
+	 * Set the time the game object is in water to the given one.
+	 * 
+	 * @param timeInWater
+	 */
 	protected void setTimeInWater(double timeInWater) {
 		this.timeInWater = timeInWater;
 	}
 	
+	/**
+	 * @return	The time the game object is in air.
+	 */
 	protected double getTimeInAir() {
 		return this.timeInAir;
 	}
 	
+	/**
+	 * Set the time the game object is in air to the given one.
+	 * 
+	 * @param timeInAir
+	 */
 	protected void setTimeInAir(double timeInAir) {
 		this.timeInAir = timeInAir;
 	}
 	
+	/**
+	 * @return	The time the game object is in magma.
+	 */
 	protected double getTimeInMagma() {
 		return this.timeInMagma;
 	}
 	
+	/**
+	 * Set the time the game object is in magma to the given one.
+	 * 
+	 * @param timeInMagma
+	 */
 	protected void setTimeInMagma(double timeInMagma) {
 		this.timeInMagma = timeInMagma;
 	}
 	
+	/**
+	 * @return	The time the game object is immune.
+	 */
 	protected double getTimeImmune() {
 		return this.timeImmune;
 	}
 	
+	/**
+	 * Set the time the game object is immune to the given one.
+	 * 
+	 * @param timeImmune
+	 */
 	protected void setTimeImmune(double timeImmune) {
 		this.timeImmune = timeImmune;
 	}
 	
+	/**
+	 * @return	The time the game object is immune for magma.
+	 */
 	protected double getTimeImmuneForMagma() {
 		return this.timeImmuneForMagma;
 	}
 	
+	/**
+	 * Set the time the game object is immune for magma to the given one.
+	 * 
+	 * @param timeImmuneForMagma
+	 */
 	protected void setTimeImmuneForMagma(double timeImmuneForMagma) {
 		this.timeImmuneForMagma = timeImmuneForMagma;
 	}
@@ -544,7 +631,7 @@ public class GameObject {
 	/**
 	 * Check whether the game object is in air or not.
 	 * 
-	 * @return	True if and only if the geological feature at the game object's position is 0 (air).
+	 * @return	True if and only if the geological feature at the game object's tile is 0 (air).
 	 */
 	protected boolean isInAir() {
 		for (int verticalPixel: this.getVerticalPixels()) {
@@ -565,7 +652,7 @@ public class GameObject {
 	/**
 	 * Check whether the game object is in water or not.
 	 * 
-	 * @return	True if and only if the geological feature at the game object's position is 2 (water).
+	 * @return	True if and only if the geological feature at the game object's tile is 2 (water).
 	 */
 	protected boolean isInWater() {
 		for (int verticalPixel: this.getVerticalPixels()) {
@@ -586,7 +673,7 @@ public class GameObject {
 	/**
 	 * Check whether the game object is in magma or not.
 	 * 
-	 * @return	True if and only if the geological feature at the game object's position is 3 (magma).
+	 * @return	True if and only if the geological feature at the game object's tile is 3 (magma).
 	 */
 	protected boolean isInMagma() {
 		for (int verticalPixel: this.getVerticalPixels()) {
@@ -606,22 +693,32 @@ public class GameObject {
 	
 	/**
 	 * Makes the game object immune for enemies.
+	 * 
 	 */
 	protected void makeImmune() {
 		this.isImmune = true;
 	}
 	
+	/**
+	 * Makes the game object vulnerable for enemies.
+	 * 
+	 */
 	protected void makeVulnerable() {
 		this.isImmune = false;
 	}
 	
 	/**
 	 * Makes the game object immune for magma.
+	 * 
 	 */
 	protected void makeImmuneForMagma() {
 		this.isImmuneForMagma = true;
 	}
 	
+	/**
+	 * Makes the game object vulnerable for magma.
+	 * 
+	 */
 	protected void makeVulnerableForMagma() {
 		this.isImmuneForMagma = false;
 	}
@@ -667,21 +764,9 @@ public class GameObject {
 	}
 	
 	/**
+	 * Checks whether the game object is touching an impassable tile to right or not.
 	 * 
-	 * @return
-	 */
-	protected boolean crossBoundaries() {
-		return (((this.getPosition()[0] <= 0) 
-						&& (this.getHorizontalVelocity() < 0)) 
-				|| ((this.getPosition()[0] >= (this.getMaxPosition()[0])) 
-						&& (this.getHorizontalVelocity() > 0))
-				|| ((this.getPosition()[1] >= this.getMaxPosition()[1]) 
-						&& (this.getVerticalVelocity() > 0)));
-	}
-	
-	/**
-	 * 
-	 * @return
+	 * @return	True if and only if the game object's right perimeter is impassable.
 	 */
 	protected boolean touchImpassableRight() {
 		for (int rightPixel: this.getVerticalPixels()) {
@@ -696,6 +781,11 @@ public class GameObject {
 		return false;
 	}
 	
+	/**
+	 * Checks whether the game object is touching an impassable tile to top or not.
+	 * 
+	 * @return	True if and only if the game object's top perimeter is impassable.
+	 */
 	protected boolean touchImpassableTop() {
 		for (int topPixel: this.getHorizontalPixels()) {
 			if (this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(topPixel, 
@@ -709,6 +799,11 @@ public class GameObject {
 		return false;
 	}
 	
+	/**
+	 * Checks whether the game object is touching an impassable tile to left or not.
+	 * 
+	 * @return	True if and only if the game object's left perimeter is impassable.
+	 */
 	protected boolean touchImpassableLeft() {
 		for (int leftPixel: this.getVerticalPixels()) {
 			if ((this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
@@ -721,7 +816,11 @@ public class GameObject {
 		return false;
 	}
 	
-	
+	/**
+	 * Checks whether the game object is touching an impassable tile to bottom or not.
+	 * 
+	 * @return	True if and only if the game object's bottom perimeter is impassable.
+	 */
 	protected boolean touchImpassableBottom() {
 		for (int bottomPixel: this.getHorizontalPixels()) {
 			if (this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(bottomPixel, 
@@ -734,18 +833,42 @@ public class GameObject {
 		return false;
 	}
 	
+	/**
+	 * Checks whether the game object is trying to cross an impassable tile to the right or not.
+	 * 
+	 * @return	True if and only if the game object is toucing an impassable tile to the right and
+	 * 			its horizontal velocity is bigger than 0.
+	 */
 	protected boolean crossImpassableRight() {
 		return ((this.touchImpassableRight()) && (this.getHorizontalVelocity() > 0));
 	}
 	
+	/**
+	 * Checks whether the game object is trying to cross an impassable tile to the top or not.
+	 * 
+	 * @return	True if and only if the game object is toucing an impassable tile to the top and
+	 * 			its vertical velocity is bigger than 0.
+	 */
 	protected boolean crossImpassableTop() {
 		return ((this.touchImpassableTop()) && (this.getVerticalVelocity() > 0));
 	}
 	
+	/**
+	 * Checks whether the game object is trying to cross an impassable tile to the left or not.
+	 * 
+	 * @return	True if and only if the game object is toucing an impassable tile to the left and
+	 * 			its horizontal velocity is smaller than 0.
+	 */
 	protected boolean crossImpassableLeft() {
 		return ((this.touchImpassableLeft()) && (this.getHorizontalVelocity() < 0));
 	}
 	
+	/**
+	 * Checks whether the game object is trying to cross an impassable tile to the bottom or not.
+	 * 
+	 * @return	True if and only if the game object is toucing an impassable tile to the bottom and
+	 * 			its vertical velocity is smaller than 0.
+	 */
 	protected boolean crossImpassableBottom() {
 		return ((this.touchImpassableBottom()) && (this.getVerticalVelocity() < 0));
 	}
@@ -804,28 +927,7 @@ public class GameObject {
 	}
 	
 	/**
-	 * 
-	 */
-	protected void crossBoundariesActions() {
-		if ((this.getPosition()[0] <= 0) && (this.getHorizontalVelocity() < 0)) {
-			this.setHorizontalAcceleration(0);
-			this.setHorizontalVelocity(0);
-			this.setPosition(0, this.getPosition()[1]);
-		}
-		else if ((this.getPosition()[0] >= (this.getMaxPosition()[0])) && 
-				(this.getHorizontalVelocity() > 0)) {
-			this.setHorizontalAcceleration(0);
-			this.setHorizontalVelocity(0);
-			this.setPosition(this.getMaxPosition()[0], this.getPosition()[1]);
-		}
-		else if ((this.getPosition()[1] >= this.getMaxPosition()[1]) 
-				&& (this.getVerticalVelocity() > 0)) {
-			this.setHorizontalVelocity(0);
-			this.setPosition(this.getPosition()[0], this.getMaxPosition()[1]);
-		}
-	}
-	
-	/**
+	 * The actions the game object has to take when trying to cross an impassable tile.
 	 * 
 	 * @param oldPosition
 	 */

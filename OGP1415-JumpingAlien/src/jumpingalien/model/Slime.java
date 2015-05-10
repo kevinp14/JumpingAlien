@@ -99,17 +99,20 @@ public class Slime extends GameObject {
 	 * 			in this world. (used for accurate collision detection).
 	 */
 	private double getNewDt(double dt){
-		double velocity = Math.pow((Math.pow(this.getHorizontalVelocity(), 2) + 
-				Math.pow(this.getVerticalVelocity(),2)), 1/2);
-		double acceleration = Math.pow((Math.pow(this.getHorizontalAcceleration(), 2) + 
-				Math.pow(this.getVerticalAcceleration(),2)), 1/2);
-		double newDt = 0.01 / (velocity + acceleration*dt);
-		if ((velocity + acceleration*dt) == 0)
+		double velocity = Math.sqrt(Math.pow((this.getHorizontalVelocity() 
+				- this.getHorizontalAcceleration()), 2) + 
+				Math.pow((this.getVerticalVelocity()), 2));
+		double acceleration = Math.sqrt(Math.pow(this.getHorizontalAcceleration(), 2) + 
+				Math.pow(this.getVerticalAcceleration(), 2));
+		double newDt = 0.01 / (velocity + (acceleration * dt));
+		if ((velocity + (acceleration * dt)) == 0)
 			return 0.01;
 		else {
 			return newDt;
 		}
 	}
+	
+	
 	
 	/**
 	 * Return the new x-position in the game world of the slime after it moved horizontally. Also
@@ -221,6 +224,7 @@ public class Slime extends GameObject {
 	}
 	
 	/**
+	 * The actions the slime has to take when colliding with another game object.
 	 * 
 	 * @param newDt
 	 * @param oldPosition
@@ -286,6 +290,7 @@ public class Slime extends GameObject {
 	}
 	
 	/**
+	 * The actions the slime has to take when in a fluid.
 	 * 
 	 * @param newDt
 	 */
@@ -356,9 +361,6 @@ public class Slime extends GameObject {
 			if ((this.crossImpassableLeft()) || (this.crossImpassableBottom()) 
 					|| (this.crossImpassableRight()))
 				this.crossImpassableActions(oldPosition);
-			if (this.crossBoundaries()) {
-				this.crossBoundariesActions();
-			}
 			this.collidesWithActions(newDt, oldPosition);
 			if ((this.isInWater()) || (this.isInMagma())) {
 				this.isInFluidActions(newDt);

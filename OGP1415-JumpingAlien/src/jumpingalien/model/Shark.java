@@ -153,7 +153,13 @@ public class Shark extends GameObject {
 				+ this.getCurrentSprite().getHeight() - 1)) == 2);
 	}
 	
-	private void moveHorizontally(double movingTime, double dt) {
+	/**
+	 * Make the shark begin to move horizontally.
+	 * 
+	 * @param movingTime
+	 * @param dt
+	 */
+	private void startMoveHorizontally(double movingTime, double dt) {
 		if (this.timeMovingHorizontally >= movingTime) {
 			this.timeMovingHorizontally = 0;
 			Direction direction = this.getRandomDirection();
@@ -450,11 +456,12 @@ public class Shark extends GameObject {
 		this.setVerticalVelocity(this.getVerticalVelocity() + this.getVerticalAcceleration()*dt);
 		double newPositionY = this.getVerticalVelocity() * dt 
 				- this.getVerticalAcceleration() * Math.pow(dt, 2)
-				+ this.getVerticalAcceleration() * Math.pow(dt, 2)/2;
+				+ this.getVerticalAcceleration() * Math.pow(dt, 2) / 2;
 		return newPositionY;
 	}
 	
 	/**
+	 * The actions the shark has to take when colliding with another game object.
 	 * 
 	 * @param newDt
 	 * @param oldPosition
@@ -502,6 +509,7 @@ public class Shark extends GameObject {
 	}
 	
 	/**
+	 * The actions the shark has to take when in a fluid.
 	 * 
 	 * @param newDt
 	 */
@@ -561,13 +569,10 @@ public class Shark extends GameObject {
 					|| (this.crossImpassableTop()) || (this.crossImpassableRight()))  {
 				this.crossImpassableActions(oldPosition);
 			}
-			if (this.crossBoundaries()) {
-				this.crossBoundariesActions();
-			}
 			this.collidesWithActions(newDt, oldPosition);
 			if ((this.isInAir()) || (this.isInMagma()))
 				this.isInFluidActions(newDt);
-			this.moveHorizontally(movingTime, newDt);
+			this.startMoveHorizontally(movingTime, newDt);
 			if ((!this.crossImpassableBottom()) && (!this.crossImpassableLeft())
 					&& (!this.crossImpassableTop()) && (!this.crossImpassableRight())) {
 				if ((!this.touchImpassableBottom()) && (!this.isSubmergedInWater())) {

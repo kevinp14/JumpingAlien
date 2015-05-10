@@ -97,13 +97,16 @@ public class World {
 		this.gameState = GameState.STARTED;
 	}
 	
+	/**
+	 * @return	The tile on which the target position is.
+	 */
 	protected int[] getTargetTile() {
 		int[] targetTile = {this.targetTileX, this.targetTileY};
 		return targetTile;
 	}
 	
 	/**
-	 * @return	The alien in this world
+	 * @return	The alien in this world.
 	 */
 	public Mazub getMazub() {
 		return this.alien;
@@ -273,34 +276,17 @@ public class World {
 	public int[][] getTilePositionsIn(int pixelLeft, int pixelBottom,
 			   int pixelRight, int pixelTop){
 		ArrayList<int[]> tilePositions = new ArrayList<int[]>();
-		for(int rowPos = (pixelBottom/tileSize)*tileSize; rowPos <= pixelTop; rowPos+=tileSize){
-			for(int colPos = (pixelLeft/tileSize)*tileSize;colPos <= pixelRight;colPos+=tileSize){
-				if((this.tileSize*nbTilesY)-getTileLength()>=rowPos
-						&& (this.tileSize*nbTilesX)-getTileLength()>=colPos)
-					tilePositions.add(new int[]{colPos/tileSize,rowPos/tileSize});
+		for(int rowPosition = (pixelBottom / this.tileSize ) * this.tileSize; rowPosition <= pixelTop; 
+				rowPosition += this.tileSize){
+			for(int columnPosition = (pixelLeft / this.tileSize) * this.tileSize; columnPosition 
+					<= pixelRight; columnPosition += tileSize){
+				if((this.tileSize * this.nbTilesY) - this.getTileLength() >= rowPosition
+						&& (this.tileSize * this.nbTilesX) - this.getTileLength() >= columnPosition)
+					tilePositions.add(new int[]{columnPosition / tileSize, rowPosition / tileSize});
 				}
 			}
 	return tilePositions.toArray(new int[tilePositions.size()][]);
 	}
-/*	public int[][] getTilePositionsIn(int pixelLeft, int pixelBottom,
-			int pixelRight, int pixelTop){
-		int dimension = 0;
-		for (int x = (int)(pixelLeft/this.tileSize); x < pixelRight; x += this.tileSize ){
-			for (int y = (int)(pixelBottom/this.tileSize); y < pixelTop; y += this.tileSize){
-				dimension += 1;
-			}
-		}
-		int[][] positions = new int[dimension][2];
-		int placeInPositions = 0;
-		for (int x = (int)(pixelLeft/this.tileSize); x < pixelRight; x += this.tileSize ){
-			for (int y = (int)(pixelBottom/this.tileSize); y < pixelTop; y += this.tileSize){
-				positions[placeInPositions][0] = x;
-				positions[placeInPositions][1] = y;
-				placeInPositions += 1;
-			}
-		}
-		return positions;
-	}*/
 	
 	/**
 	 * Return the coordinates of the rectangular visible window that moves
@@ -541,6 +527,11 @@ public class World {
 				);
 	}
 	
+	/**
+	 * Check whether the alien is on the target tile or not.
+	 * 
+	 * @return	True if and only if the alien touches the target tile.
+	 */
 	protected boolean alienOnTargetTile() {
 		return (this.getMazub().touchTargetTile());
 	}

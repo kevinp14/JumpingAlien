@@ -654,7 +654,8 @@ public class Facade implements IFacadePart2 {
 	public void endDuck(Mazub alien) throws ModelException {
 //		if (!alien.canEndDuck())
 //			throw new ModelException("The alien can not stop ducking here!");
-		alien.endDuck();
+		if (alien.canEndDuck())
+			alien.endDuck();
 	}
 	
 	/**
