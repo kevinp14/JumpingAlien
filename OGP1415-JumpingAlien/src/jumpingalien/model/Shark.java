@@ -13,7 +13,7 @@ import jumpingalien.util.Sprite;
  * 
  * @invar //TODO
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
  * @version 5.0
  *
  */ //TODO: meeste @post veranderen in @effect en @invar bekijken
@@ -33,8 +33,8 @@ public class Shark extends GameObject {
 	 * @param 	spriteList
 	 * 			The list of sprites displaying how the shark should look depending on its behavior.
 	 */
-	public Shark(int positionX, int positionY, Sprite[] spriteList) {
-		super(positionX, positionY, spriteList);
+	public Shark(int positionX, int positionY, Sprite[] spriteList, Program program) {
+		super(positionX, positionY, spriteList, program);
 		this.setNormalHorizontalVelocity(0);
 		this.setNormalHorizontalAcceleration(1.5);
 		this.setMaxHorizontalVelocity(4);
