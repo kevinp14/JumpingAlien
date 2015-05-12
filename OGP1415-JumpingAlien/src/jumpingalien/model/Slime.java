@@ -14,7 +14,7 @@ import jumpingalien.util.Sprite;
  * 
  * @invar //TODO
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
  * @version 5.0
  *
  */ //TODO: meeste @post veranderen in @effect en @invar bekijken
@@ -35,8 +35,9 @@ public class Slime extends GameObject {
 	 * @param	school
 	 * 			The school to which the slime has to be assigned.
 	 */
-	public Slime (int positionX, int positionY, Sprite[] spriteList, School school) {
-		super(positionX, positionY, spriteList);
+	public Slime (int positionX, int positionY, Sprite[] spriteList, School school,
+		Program program) {
+		super(positionX, positionY, spriteList, program);
 		this.setNormalHorizontalVelocity(0);
 		this.setNormalHorizontalAcceleration(0.7);
 		this.setMaxHorizontalVelocity(2.5);
