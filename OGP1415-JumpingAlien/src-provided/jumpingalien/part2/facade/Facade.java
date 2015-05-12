@@ -265,7 +265,7 @@ public class Facade implements IFacadePart2 {
 	 *         given school. The returned slime should not belong to a world.
 	 */
 	public Slime createSlime(int pixelLeftX, int pixelBottomY, Sprite[] sprites, School school){
-		Slime slime = new Slime(pixelLeftX, pixelBottomY, sprites, school);
+		Slime slime = new Slime(pixelLeftX, pixelBottomY, sprites, school, null);
 		return slime;
 	}
 	
@@ -359,7 +359,7 @@ public class Facade implements IFacadePart2 {
 	 *         should not belong to a world.
 	 */
 	public Shark createShark(int pixelLeftX, int pixelBottomY, Sprite[] sprites){
-		Shark shark = new Shark(pixelLeftX, pixelBottomY, sprites);
+		Shark shark = new Shark(pixelLeftX, pixelBottomY, sprites, null);
 		return shark;
 	}
 	
@@ -431,7 +431,7 @@ public class Facade implements IFacadePart2 {
 	 *         should not belong to a world.
 	 */
 	public Plant createPlant(int pixelLeftX, int pixelBottomY, Sprite[] sprites){
-		Plant plant = new Plant(pixelLeftX, pixelBottomY, sprites);
+		Plant plant = new Plant(pixelLeftX, pixelBottomY, sprites, null);
 		return plant;
 	}
 	
@@ -501,7 +501,7 @@ public class Facade implements IFacadePart2 {
 	 * @return
 	 */
 	public Mazub createMazub(int pixelLeftX, int pixelBottomY, Sprite[] sprites) {
-		Mazub alien = new Mazub(pixelLeftX, pixelBottomY, sprites);
+		Mazub alien = new Mazub(pixelLeftX, pixelBottomY, sprites, null);
 		return alien;
 	}
 	
