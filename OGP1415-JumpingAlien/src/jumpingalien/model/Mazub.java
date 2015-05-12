@@ -19,7 +19,7 @@ import jumpingalien.util.*;
  * 
  * @invar //TODO
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
  * @version 8.0
  *
  */ //TODO: meeste @post veranderen in @effect en @invar bekijken
@@ -43,8 +43,8 @@ public class Mazub extends GameObject {
 	 * @param 	spriteList
 	 * 			The list of sprites displaying how the alien should look depending on its behavior.
 	 */
-	public Mazub(double positionX, double positionY, Sprite[] spriteList) {
-		super(positionX, positionY, spriteList);
+	public Mazub(double positionX, double positionY, Sprite[] spriteList, Program program) {
+		super(positionX, positionY, spriteList, program);
 		assert (isValidSpriteList(spriteList));
 		this.spriteList = spriteList;
 		this.setNormalHorizontalVelocity(1);
