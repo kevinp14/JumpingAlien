@@ -58,6 +58,7 @@ public class GameObject {
 	private boolean isImmune;
 	private boolean isImmuneForMagma;
 	private World world;
+	private Program program;
 
 	/**
 	 * Initialize the game object at the given x-position positionX, y-position positionY and with 
@@ -75,7 +76,7 @@ public class GameObject {
 	 */
 	@Model
 	@Raw
-	public GameObject(double positionX, double positionY, Sprite[] spriteList) {
+	public GameObject(double positionX, double positionY, Sprite[] spriteList, Program program) {
 		int[] position = { (int)(positionX/100), (int)(positionY/100) };
 		assert (isValidPosition(position));
 		assert (isValidSpriteList(spriteList));
@@ -97,6 +98,7 @@ public class GameObject {
 		this.isImmune = false;
 		this.isImmuneForMagma = false;
 		this.world = null;
+		this.progam = program;
 	}
 	
 	/**
