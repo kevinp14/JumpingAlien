@@ -11,7 +11,7 @@ import jumpingalien.util.Sprite;
  * 
  * @invar //TODO
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
  * @version 3.0
  *
  */ //TODO: meeste @post veranderen in @effect en @invar bekijken
@@ -30,8 +30,8 @@ public class Plant extends GameObject {
 	 * @param 	spriteList
 	 * 			The list of sprites displaying how the plant should look depending on its behavior.
 	 */
-	public Plant(int positionX, int positionY, Sprite[] spriteList){
-		super(positionX, positionY, spriteList);
+	public Plant(int positionX, int positionY, Sprite[] spriteList, Program program){
+		super(positionX, positionY, spriteList, program);
 		this.setLastDirection(this.getRandomDirection());
 		this.setNormalHorizontalVelocity(0.5);
 	    this.timeMovingHorizontally = 0;
