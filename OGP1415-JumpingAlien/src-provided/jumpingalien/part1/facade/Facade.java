@@ -6,7 +6,7 @@ import jumpingalien.util.*;
 
 /**
  * 
- * @author Kevin Peeters, Jasper Mariën
+ * @author Kevin Peeters, Jasper MariÃ«n
  * @version 1.0
  *
  */
@@ -29,7 +29,7 @@ public class Facade implements IFacade {
 	 * @return
 	 */
 	public Mazub createMazub(int pixelLeftX, int pixelBottomY, Sprite[] sprites) {
-		Mazub alien = new Mazub(pixelLeftX, pixelBottomY, sprites);
+		Mazub alien = new Mazub(pixelLeftX, pixelBottomY, sprites, null);
 		return alien;
 	}
 	
