@@ -42,6 +42,7 @@ public class World {
 	private Mazub alien;
 	private int[][] tiles;
 	private GameState gameState;
+	private Buzam buzam;
 	
 	/**
 	 * Initialize a world with the given size of tiles, number of tiles in x- and y-direction, the 
@@ -78,6 +79,7 @@ public class World {
 		this.won = false;
 		this.gameOver = false;
 		this.gameState = GameState.INITIATED;
+		this.buzam = null;
 	}
 	
 	/**
@@ -563,5 +565,9 @@ public class World {
 			if ((plant.getNbHitPoints() == 0) || (!plant.isValidPosition(plant.getPosition())))
 				this.plants.remove(plant);
 		}
+	}
+	
+	public void setBuzam(Buzam buzam){
+		this.buzam = buzam;
 	}
 }
