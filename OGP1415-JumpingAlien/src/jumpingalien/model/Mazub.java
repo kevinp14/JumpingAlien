@@ -5,7 +5,7 @@ import be.kuleuven.cs.som.annotate.Immutable;
 import jumpingalien.util.*;
 
 
-// Klassendiagram maken en meenemen naar verdediging
+//TODO: Klassendiagram maken en meenemen naar verdediging
 
 /**
  * A class of Mazub aliens involving some maximums for the horizontal velocity depending on its current
@@ -17,12 +17,20 @@ import jumpingalien.util.*;
  * and a method to advance time and adapt the time depending characteristics based on the period of 
  * time passed.
  * 
- * @invar //TODO
+ * @invar	The direction in which a game object is ordered to move in must be a valid one.
+ * 			| isValidMovingDirection(direction)
+ * @invar	The normal/initial velocity will never be smaller than 1.
+ * 			| this.getNormalHorizontalVelocity() >= 1
+ * @invar	The maximum horizontal velocity will never be smaller than the normal/initial velocity
+ * 			| this.getMaximumHorizontalVelocity() >= this.getNormalHorizontalVelocity()
+ * @invar	The absolute value of the horizontal acceleration will always be bigger than 0.
+ * 			| Math.abs(this.getHorizontalAcceleration()) > 0
+ * 
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
- * @version 8.0
+ * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * @version 11.0
  *
- */ //TODO: meeste @post veranderen in @effect en @invar bekijken
+ */
 public class Mazub extends GameObject {
 	private double maxRunningVelocity = 3;
 	private double maxDuckingVelocity = 1;
@@ -34,14 +42,28 @@ public class Mazub extends GameObject {
 	
 	/**
 	 * Initialize the Mazub alien at the given position in x- and y-direction with the given list of
-	 * sprites. Also sets the time moving horizontally to 0.
+	 * sprites.
 	 * 
 	 * @param 	positionX
 	 * 			The position in the x-direction where the alien should be.
 	 * @param 	positionY
 	 * 			The position in the y-direction where the alien should be.
 	 * @param 	spriteList
-	 * 			The list of sprites displaying how the alien should look depending on its behavior.
+	 * 			The list of sprites displaying how the alien should look depending on its behaviour.
+	 * @effect	The new normal horizontal velocity is set to 1.
+	 * 			| this.setNormalHorizontalVelocity(1)
+	 * @effect	The new normal horizontal acceleration is set to 0.9.
+	 * 			| this.setNormalHorizontalAcceleration(0.9)
+	 * @effect	The new maximum horizontal velocity is set to 3.
+	 * 			| this.setMaxHorizontalVelocity(3)
+	 * @post	The new normal vertical velocity is set to 8.
+	 * 			| (new this).normalVerticalVelocity = 8
+	 * @post	The new time moving horizontally is set to 0.
+	 * 			| (new this).timeMovingHorizontally = 0
+	 * @post	The new time forced ducking is set to 0.
+	 * 			| (new this).timeForcedDuck = 0
+	 * @effect	The number of hitpoints is increased with 100.
+	 * 			| this.changeNbHitPoints(100)
 	 */
 	public Mazub(double positionX, double positionY, Sprite[] spriteList, Program program) {
 		super(positionX, positionY, spriteList, program);
@@ -57,15 +79,17 @@ public class Mazub extends GameObject {
 	}
 
 	/**
-	 * Return the current sprite image for the given alien.
-	 * 
-	 * @return 	The current sprite image for the given alien, determined by its
-	 * 			state as defined in the assignment.
+	 * @pre	The alien's sprite list should be valid.
+	 * 		| isValidSpriteList(this.spriteList)
+	 * @post	The returned sprite should be in the list.
+	 * 			| spriteList[x] with x >= 0 and x <= spriteList.length
+	 * @return 	The current sprite image for the alien, based on its current actions.
 	 */
 	@Basic 
 	@Immutable
 	@Override
 	public Sprite getCurrentSprite() {
+		assert (this.isValidSpriteList(this.spriteList));
 		if (this.isMovingHorizontally()) {
 			if (this.isMovingLeft()) {
 				if (this.isDucking())
@@ -148,39 +172,35 @@ public class Mazub extends GameObject {
 	 * @return	The new period of time dt based on the current velocity and acceleration of the alien
 	 * 			in this world. (used for accurate collision detection).
 	 */
-	private double getNewDt(double dt){
-		double velocity = Math.sqrt(Math.pow((Math.abs(this.getHorizontalVelocity()) 
-				- Math.abs(this.getHorizontalAcceleration()) * dt), 2) + 
-				Math.pow((Math.abs(this.getVerticalVelocity())
-						- Math.abs(this.getVerticalAcceleration()) * dt), 2));
+	private double getNewDt(double dt) {
+		double velocity = Math.sqrt(Math.pow(this.getHorizontalVelocity(), 2) + 
+				Math.pow(this.getVerticalVelocity(), 2));
 		double acceleration = Math.sqrt(Math.pow(this.getHorizontalAcceleration(), 2) + 
 				Math.pow(this.getVerticalAcceleration(), 2));
 		double newDt = 0.01 / (velocity + (acceleration * dt));
 		if ((velocity + (acceleration * dt)) == 0)
 			return 0.01;
-		else {
+		else 
 			return newDt;
-		}
 	}
 	
 	/**
 	 * Check whether the alien can jump at the given position or not.
 	 * 
 	 * @param	position
-	 * @return	True if and only if the tile above the alien is passable.
+	 * @return	True if and only if the tile beneath the alien is not passable.
 	 */
 	public boolean isValidJumpingPosition(int[] position) {
-		int pixelsTouching = 0;
-		for (int bottomPixel: this.getHorizontalPixels()) {
-			if (this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(bottomPixel, 
+		for (int horizontalPixel: this.getHorizontalPixels()) {
+			if (this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(horizontalPixel, 
 					position[1])))
-				pixelsTouching += 1;
+				return true;
 		}
-		return (pixelsTouching > 0);
+		return false;
 	}
 	
 	/**
-	 * Check whether the alien is in the air or not.
+	 * Check whether the alien is airborne or not.
 	 * 
 	 * @return	True if and only if the alien's vertical velocity is not 0.
 	 */
@@ -216,7 +236,8 @@ public class Mazub extends GameObject {
 	/**
 	 * Check whether the alien is touching the target tile or not.
 	 * 
-	 * @return	True if and only if the alien's tile is touching the target position's tile.
+	 * @return	True if and only if the alien's tile is touching the target position's tile (with its
+	 * 			left or right perimeter).
 	 */
 	protected boolean touchTargetTile() {
 		return (((((this.getPosition()[0] + this.getCurrentSprite().getWidth()) 
@@ -232,7 +253,11 @@ public class Mazub extends GameObject {
 
 	/**
 	 * Make the alien begin to jump (move in the positive y-direction).
-	 */
+	 * 
+	 * @effect	The new vertical velocity and acceleration are set to the normal ones.
+	 * 			| this.setVerticalVelocity(this.normalVerticalVelocity)
+	 * 			| this.setVerticalAcceleration(this.getNormalVerticalAcceleration())
+	 */ //TODO: defensief, misschien zelf exception maken
 	public void startJump() {
 		if (this.isValidJumpingPosition(this.getPosition())) {
 			this.setVerticalVelocity(this.normalVerticalVelocity);
@@ -242,7 +267,12 @@ public class Mazub extends GameObject {
 	
 	/**
 	 * End the jumping of the alien.
-	 */
+	 * 
+	 * @effect	If the current vertical velocity is bigger than 0, the new vertical velocity is set to
+	 * 			0.
+	 * 			| if (this.getVerticalVelocity() > 0)
+	 * 			|	this.setVerticalVelocity(0)
+	 */ //TODO: defensief, misschien zelf exception maken
 	public void endJump() {
 		if (this.getVerticalVelocity() > 0) {
 			this.setVerticalVelocity(0);
@@ -250,8 +280,13 @@ public class Mazub extends GameObject {
 	}
 	
 	/**
-	 * Make the alien begin to duck (move in the negative y-direction).
-	 */
+	 * Make the alien begin to duck (shrink in the y-direction).
+	 * 
+	 * @effect	The new horizontal acceleration is set to 0 and the new maximum horizontal velocity is 
+	 * 			set to the maximum ducking velocity.
+	 * 			| this.setHorizontalAcceleration(0)
+	 * 			| this.setMaxHorizontalVelocity(this.getMaxDuckingVelocity())
+	 */ //TODO: defensief, misschien zelf exception maken
 	public void startDuck() {
 		this.setHorizontalAcceleration(0);
 		this.setMaxHorizontalVelocity(this.getMaxDuckingVelocity());
@@ -259,7 +294,10 @@ public class Mazub extends GameObject {
 	
 	/**
 	 * End the ducking of the alien.
-	 */
+	 * 
+	 * @effect	The new maximum horizontal velocity is set to the maximum running velocity.
+	 * 			| this.setMaxHorizontalVelocity(this.maxRunningVelocity)
+	 */ //TODO: defensief, misschien zelf exception maken
 	public void endDuck() {
 		this.setMaxHorizontalVelocity(this.maxRunningVelocity);
 	}
@@ -272,6 +310,12 @@ public class Mazub extends GameObject {
 	 * 
 	 * @param	direction
 	 * 			The given direction in which the alien has to move.
+	 * @pre	The given direction should be valid.
+	 * 		| isValidMovingDirection(direction)
+	 * @post	The new last direction should be valid.
+	 * 			| isValidMovingDirection((new this).getLastDirection())
+	 * @post	The new secondary direction should be valid.
+	 * 			| isValidMovingDirection((new this).getSecondaryDirection())
 	 */
 	public void startMoveHorizontally(Direction direction) {
 		assert (isValidMovingDirection(direction));
@@ -308,6 +352,8 @@ public class Mazub extends GameObject {
 	 *
 	 * @param	direction
 	 * 			The horizontal direction in which the alien was moving.
+	 * @pre	The given direction should be valid.
+	 * 		| isValidMovingDirection(direction)
 	 */
 	@Override
 	public void endMoveHorizontally(Direction direction) {
@@ -334,59 +380,30 @@ public class Mazub extends GameObject {
 	
 	/**
 	 * Return the new x-position in the game world of the alien after it moved horizontally. Also limit
-	 * the alien's velocity to the maximum and stop the alien from moving if the tile to which it wants 
-	 * to move is not passable.
+	 * the alien's velocity to the maximum.
+	 * 
 	 * @param	dt
 	 * 			The time passed dt.
-	 * @post	If the horizontal velocity is bigger than or equal to the maximum, the new horizontal 
+	 * @effect	If the horizontal velocity is bigger than or equal to the maximum, the new horizontal 
 	 * 			acceleration is set to 0 and the velocity to the maximum in the positive of negative 
 	 * 			direction, depending on the direction the alien was going in.
 	 * 			| if (Math.abs(this.getHorizontalVelocity()) >= this.getMaxHorizontalVelocity())
 	 * 			|	this.setHorizontalAcceleration(0)
 	 * 			|	if (this.getHorizontalVelocity() < 0)
-	 * 			|		(new this).setHorizontalVelocity(-this.getMaxHorizontalVelocity())
+	 * 			|		this.setHorizontalVelocity(-this.getMaxHorizontalVelocity())
 	 * 			|	else
-	 * 			|		(new this).setHorizontalVelocity(this.getMaxHorizontalVelocity())
-	 * @post	If the alien's x-position is the smaller than or equal to the minimum and the alien is 
-	 * 			trying to move in the negative x-direction, the new horizontal velocity and acceleration 
-	 * 			are set to 0 and the new x-position is set to the minimum.
-	 * 			| if ((this.getPosition()[0] <= 0) && (this.getHorizontalVelocity() < 0)) 
-	 * 			|	(new this).setHorizontalAcceleration(0) 
-	 * 			|	(new this).setHorizontalVelocity(0)
-	 * @post	If the alien's x-position is the bigger than or equal to the maximum and the alien is 
-	 * 			trying to move in the positive x-direction, the horizontal velocity and acceleration are
-	 * 			set to 0 and the x-position is set to the maximum.
-	 * 			| if ((this.getPosition()[0] >= (this.maxPositionX)) && 
-	 * 			|		(this.getHorizontalVelocity() > 0)) 
-	 * 			|	(new this).setHorizontalAcceleration(0) 
-	 * 			|	(new this).setHorizontalVelocity(0)
-	 * @post	If the alien's horizontal velocity is smaller than 0 and the tile to the left of the
-	 * 			alien is not passable, the new horizontal acceleration and velocity are set to 0.
-	 * 			| 		if ((this.world.isNotPassable(this.world.getGeologicalFeature(
-	 * 			|				this.getPosition()[0], this.getPosition()[1])))	
-	 * 			|				&& (this.getHorizontalVelocity() < 0)) 
-	 * 			|			(new this).setHorizontalAcceleration(0)
-	 * 			|			(new this).setHorizontalVelocity(0)
-	 * @post	If the alien's horizontal velocity is bigger than 0 and the tile to the right of the
-	 * 			alien is not passable, the new horizontal acceleration and velocity are set to 0.
-	 * 			| 		if ((this.world.isNotPassable(this.world.getGeologicalFeature(
-	 * 			|				this.getPosition()[0] + this.getCurrentSprite().getWidth(), 
-	 * 			|				this.getPosition()[1]))) && (this.getHorizontalVelocity() > 0)) 
-	 * 			|			(new this).setHorizontalAcceleration(0)
-	 * 			|			(new this).setHorizontalVelocity(0)
-	 * @post	The new horizontal velocity is set to the sum of the current horizontal velocity and the 
+	 * 			|		this.setHorizontalVelocity(this.getMaxHorizontalVelocity())
+	 * @effect	The new horizontal velocity is set to the sum of the current horizontal velocity and the 
 	 * 			product of the current horizontal acceleration and dt.
-	 * 			| (new this).setHorizontalVelocity(this.getHorizontalVelocity() + 
-	 * 			|	this.getHorizontalAcceleration()*dt)
+	 * 			| this.setHorizontalVelocity(this.getHorizontalVelocity() + 
+	 * 			|	this.getHorizontalAcceleration() * dt)
 	 * @return	newPositionX
 	 * 			The alien's new x-position after horizontal movement.
 	 * 			| newPositionX = this.getHorizontalVelocity() * dt 
 	 * 			|	- this.getHorizontalAcceleration() * Math.pow(dt, 2)
 	 * 			|	+ this.getHorizontalAcceleration() * Math.pow(dt, 2) / 2
-	 * @throws	IllegalArgumentException
-	 * 			| !isValidDt(dt)
 	 */
-	private double horizontalMovement(double dt) throws IllegalArgumentException {
+	private double horizontalMovement(double dt) {
 		if (Math.abs(this.getHorizontalVelocity()) >= this.getMaxHorizontalVelocity()) {
 			this.setHorizontalAcceleration(0);
 			if (this.getHorizontalVelocity() < 0) {
@@ -403,42 +420,21 @@ public class Mazub extends GameObject {
 	}
 
 	/**
-	 * Return the new y-position in the game world of the alien after it moved vertically. Also
-	 * stop the alien from moving if the tile to which he wants to move is not passable.
+	 * Return the new y-position in the game world of the alien after it moved vertically.
+	 * 
 	 * @param	dt
 	 * 			The time passed dt.
-	 * @post	If the given y-position is the bigger than or equal to the maximum and the alien is 
-	 * 			trying to move in the positive y-direction, the vertical velocity is set to 0 and the 
-	 * 			acceleration is set to -10.
-	 * 			| if ((this.getPosition()[1] >= this.maxPositionY) && 
-	 * 			|		(this.getVerticalVelocity() > 0))
-	 * 			|	(new this).setVerticalVelocity(0)
-	 * @post 	If the alien's vertical velocity is smaller than 0 and the tile beneath the alien is not
-	 * 			passable, the alien's new vertical acceleration and velocity are set to 0.
-	 * 			| 		if ((this.getVerticalVelocity() < 0) && (this.world.isNotPassable(
-	 * 			|				this.world.getGeologicalFeature((int)this.getPosition()[0], 
-	 * 			|				(int)this.getPosition()[1]))))
-	 * 			|			this.setVerticalAcceleration(0)
-	 * 			|			this.setVerticalVelocity(0)
-	 * @post 	If the alien's vertical velocity is bigger than 0 and the tile above the alien is not
-	 * 			passable, the alien's new vertical velocity is set to 0.
-	 * 			| 		if ((this.getVerticalVelocity() > 0) && (this.world.isNotPassable(
-	 * 			|				this.world.getGeologicalFeature((int)this.getPosition()[0], 
-	 * 			|				(int)this.getPosition()[1] + this.getCurrentSprite().getHeight()))))
-	 * 			|			this.setVerticalVelocity(0)
-	 * @post	The new vertical velocity is set to the sum of the current vertical velocity and the 
+	 * @effect	The new vertical velocity is set to the sum of the current vertical velocity and the 
 	 * 			product of the current vertical acceleration and dt.
-	 * 			| (new this).setVerticalVelocity(this.getVerticalVelocity() + 
+	 * 			| this.setVerticalVelocity(this.getVerticalVelocity() + 
 	 * 			|	this.getVerticalAcceleration()*dt)
 	 * @return	newPositionY
 	 * 			The alien's new y-position after vertical movement.
 	 * 			| newPositionY = this.getVerticalVelocity() * dt 
 	 * 			|	- this.getVerticalAcceleration() * Math.pow(dt, 2)
 	 * 			|	+ this.getVerticalAcceleration() * Math.pow(dt, 2)/2;
-	 * @throws	IllegalArgumentException
-	 * 			| !isValidDt(dt)
-	 */ 
-	private double verticalMovement(double dt) throws IllegalArgumentException {
+	 */
+	private double verticalMovement(double dt) {
 		this.setVerticalVelocity(this.getVerticalVelocity() + this.getVerticalAcceleration() * dt);
 		double newPositionY = this.getVerticalVelocity() * dt 
 				- this.getVerticalAcceleration() * Math.pow(dt, 2)
@@ -449,56 +445,71 @@ public class Mazub extends GameObject {
 	/**
 	 * The actions the alien has to take when colliding with another game object.
 	 * 
-	 * @param newDt
-	 * @param oldPosition
+	 * @param	newDt
+	 * 			The period of time on which collision has to be detected.
+	 * @param	oldPosition
+	 * 			The alien's old position.
+	 * @effect	If the alien collides with a plant in its game world and its current number of 
+	 * 			hitpoints is smaller than 500, it has to gain 50 hitpoints.
+	 * 			| for (Plant plant: this.getWorld().getPlants())
+	 * 			|	if ((this.collidesWith(plant)) && (this.getNbHitPoints() < 500))
+	 * 			|			this.changeNbHitPoints(50)
+	 * @effect	If the alien collides with a shark in its game world, its movement is blocked if it
+	 * 			is trying to move in the direction in which it collided, and it loses 50 hitpoints if
+	 * 			it didn't fall on top of the shark.
+	 * 			| for (Shark shark: this.getWorld().getSharks())
+	 * 			|	if (this.collidesWith(shark)) 
+	 * 			|		this.collisionBlockMovement(shark, oldPosition, newDt)
+	 * 			|		if ((!this.bottomCollidesWith(shark)) && (!this.isImmune()))
+	 * 			|			this.changeNbHitPoints(-50)
+	 * @effect	If the alien collides with a slime in its game world, its movement is blocked if it
+	 * 			is trying to move in the direction in which it collided, and it loses 50 hitpoints if
+	 * 			it didn't fall on top of the slime.
+	 * 			| for (Slime slime: this.getWorld().getSlimes())
+	 * 			|	if (this.collidesWith(slime)) 
+	 * 			|		this.collisionBlockMovement(slime, oldPosition, newDt)
+	 * 			|		if ((!this.bottomCollidesWith(slime)) && (!this.isImmune()))
+	 * 			|			this.changeNbHitPoints(-50)
 	 */
 	private void collidesWithActions(double newDt, int[] oldPosition) {
 		for (Plant plant: this.getWorld().getPlants()) {
-			if (this.collidesWith(plant)) {
-				if (this.getNbHitPoints() < 500)
+			if ((this.collidesWith(plant)) && (this.getNbHitPoints() < 500))
 					this.changeNbHitPoints(50);
-			}
 		}
 		for (Shark shark: this.getWorld().getSharks()) {
-			if ((this.collidesWith(shark)) && (!this.bottomCollidesWithTop(shark))) {
-				this.setHorizontalAcceleration(0);
-				this.setHorizontalVelocity(0);
-				this.setPosition(oldPosition[0], oldPosition[1]);
-				/*Is dit goed om beweging te blokkeren? Want in de opgave
-				staat: "Properties of the ongoing movement of the colliding game, e.g. direction, velocity 
-				and acceleration, may not change directly as a result of the collision."*/
-				if (!this.isImmune()) {
-					this.changeNbHitPoints(-50);
-					this.makeImmune();
-					}
-				else {
-					if (this.getTimeImmune() <= 0.60) 
-						this.setTimeImmune(this.getTimeImmune() + newDt);
+			if (this.collidesWith(shark)) {
+				this.collisionBlockMovement(shark, oldPosition, newDt);
+				if (!this.bottomCollidesWith(shark)) {
+					if (!this.isImmune()) {
+						this.changeNbHitPoints(-50);
+						this.makeImmune();
+						}
 					else {
-						this.makeVulnerable();
-						this.setTimeImmune(0);
+						if (this.getTimeImmune() <= 0.60) 
+							this.setTimeImmune(this.getTimeImmune() + newDt);
+						else {
+							this.makeVulnerable();
+							this.setTimeImmune(0);
+						}
 					}
 				}
 			}
 		}
 		for (Slime slime: this.getWorld().getSlimes()) {
-			if ((this.collidesWith(slime)) && (!this.bottomCollidesWithTop(slime))) {
-				this.setHorizontalAcceleration(0);
-				this.setHorizontalVelocity(0);
-				this.setPosition(oldPosition[0], oldPosition[1]);
-				/*Is dit goed om beweging te blokkeren? Want in de opgave
-				staat: "Properties of the ongoing movement of the colliding game, e.g. direction, velocity 
-				and acceleration, may not change directly as a result of the collision."*/
-				if (!this.isImmune()) {
-					this.changeNbHitPoints(-50);
-					this.makeImmune();
-					}
-				else {
-					if (this.getTimeImmune() <= 0.60) 
-						this.setTimeImmune(this.getTimeImmune() + newDt);
+			if (this.collidesWith(slime)) {
+				this.collisionBlockMovement(slime, oldPosition, newDt);
+				if (!this.bottomCollidesWith(slime)) {
+					if (!this.isImmune()) {
+						this.changeNbHitPoints(-50);
+						this.makeImmune();
+						}
 					else {
-						this.makeVulnerable();
-						this.setTimeImmune(0);
+						if (this.getTimeImmune() <= 0.60) 
+							this.setTimeImmune(this.getTimeImmune() + newDt);
+						else {
+							this.makeVulnerable();
+							this.setTimeImmune(0);
+						}
 					}
 				}
 			}
@@ -508,7 +519,15 @@ public class Mazub extends GameObject {
 	/**
 	 * The actions the alien has to take when in a fluid.
 	 * 
-	 * @param newDt
+	 * @param	newDt
+	 * 			The period of time with which the time is advanced.
+	 * @effect	If the alien is in water, its hitpoints are reduced with 2 every 0.2 seconds.
+	 * 			| if ((this.isInWater()) && (this.getTimeInWater() >= 0.2)) 
+	 * 			|		this.changeNbHitPoints(-2)
+	 * @effect	If the alien is in magma, its hitpoints are reduced with 50 upon contact and every 
+	 * 			0.2 seconds. However, the alien can not lose more than 50 hitpoints every 0.2 seconds.
+	 * 			| if (this.isInMagma()) 
+	 * 			|		this.changeNbHitPoints(-50)
 	 */
 	private void isInFluidActions(double newDt) {
 		if (this.isInWater()) {
@@ -526,9 +545,7 @@ public class Mazub extends GameObject {
 				this.makeImmuneForMagma();
 			}
 			else {
-				if (this.getTimeImmuneForMagma() < 0.20) 
-					this.setTimeImmuneForMagma(this.getTimeImmuneForMagma() + newDt);
-				else {
+				if (this.getTimeImmuneForMagma() >= 0.20) {
 					this.makeVulnerableForMagma();
 					this.setTimeImmuneForMagma(0);
 				}
@@ -541,32 +558,57 @@ public class Mazub extends GameObject {
 	}
 	
 	/**
-	 * Set the new position on the screen of the alien to new position in the game world, limit the
-	 * alien's position to the minimum (in x-direction) and the maximum (both in x- and y-direction),
+	 * Set the new position on the screen of the alien to new position in the game world,
 	 * block the alien's movement if it wants to move to a tile that is not passable, adapt the time
-	 * moving horizontally and the time not moving, increase the number of hitpoints if the alien 
-	 * collides with a plant, block the alien's movement, decrease its hitpoints and make it immune
-	 * if it collides with an enemy (only when it does not collide with its bottom perimeter), 
-	 * decrease the number of hitpoints if the alien is in water or magma, and make it immune for 
-	 * magma if it falls into magma.
+	 * moving horizontally and the time not moving, take the right actions when colliding with an enemy,
+	 * when trying to cross an impassable tile and when in a fluid.
+	 * 
 	 * @param 	dt
 	 * 			The time passed dt.
-	 * @effect //TODO
+	 * @effect	If the alien is trying to cross an impassable tile, take the corresponding actions.
+	 * 			| if ((this.crossImpassableBottom()) || (this.crossImpassableLeft()) 
+	 * 			|	|| (this.crossImpassableTop()) || (this.crossImpassableRight()))
+	 * 			|		this.crossImpassableActions(oldPosition)
+	 * @effect	If the alien is not moving horizontally the time stalled is increased with newDt.
+	 * 			| if (!this.isMovingHorizontally()) 
+	 * 			|	this.setTimeStalled(this.getTimeStalled() + newDt)
+	 * @effect	If the alien is moving horizontally the time moving horizontally is increased with newDt.
+	 * 			| if (this.isMovingHorizontally()) 
+	 * 			|	this.timeMovingHorizontally += newDt
+	 * @effect	If the alien is in a fluid, the corresponding actions are taken.
+	 * 			| if ((this.isInWater()) || (this.isInMagma())) 
+	 * 			|	this.isInFluidActions(newDt)
+	 * @effect	If the alien can end its ducking and it was forced to duck, its ducking is ended.
+	 * 			| if ((this.canEndDuck()) && (this.timeForcedDuck > 0))
+	 * 			|	this.endDuck()
+	 * @effect	If the alien is not standing on an impassable tile, its vertical acceleration is set
+	 * 			to the normal one.
+	 * 			| if (!this.touchImpassableBottom())
+	 * 			|	this.setVerticalAcceleration(this.getNormalVerticalAcceleration())
+	 * @effect	If the alien is not trying to cross an impassable tile, its position is increased
+	 * 			by 100 times the horizontal/vertical movement.
+	 * 			| if ((!this.crossImpassableBottom()) && (!this.crossImpassableLeft())
+	 * 			|	&& (!this.crossImpassableTop()) && (!this.crossImpassableRight()))
+	 * 			|		this.setPosition(oldPosition[0] + 100*this.horizontalMovement(newDt),
+	 * 			|			oldPosition[1] + 100*this.verticalMovement(newDt))
 	 * @throws	IllegalArgumentException
 	 * 			| !isValidDt(dt)
 	 */
 	public void advanceTime(double dt) throws IllegalArgumentException {
+		if (!this.isValidDt(dt))
+			throw new IllegalArgumentException("The given period of time dt is invalid!");
 		double sumDt = 0;
 		while (sumDt < dt) {
 			double newDt = this.getNewDt(dt);
 			int[] oldPosition = this.getPosition();
-			if (!this.isValidDt(newDt))
-				throw new IllegalArgumentException("The given period of time dt is invalid!");
 			if ((this.crossImpassableBottom()) || (this.crossImpassableLeft()) 
 					|| (this.crossImpassableTop()) || (this.crossImpassableRight()))  {
 				this.crossImpassableActions(oldPosition);
 			}
 			this.collidesWithActions(newDt, oldPosition);
+			if ((this.isInWater()) || (this.isInMagma())) {
+				this.isInFluidActions(newDt);
+			}
 			if (!this.isMovingHorizontally()) {
 			    this.setTimeStalled(this.getTimeStalled() + newDt);
 				this.timeMovingHorizontally = 0;
@@ -574,9 +616,6 @@ public class Mazub extends GameObject {
 			if (this.isMovingHorizontally()) {
 				this.setTimeStalled(0);
 				this.timeMovingHorizontally += newDt;
-			}
-			if ((this.isInWater()) || (this.isInMagma())) {
-				this.isInFluidActions(newDt);
 			}
 			if ((this.canEndDuck()) && (this.timeForcedDuck > 0)) {
 				this.endDuck();
@@ -589,8 +628,8 @@ public class Mazub extends GameObject {
 				if (!this.touchImpassableBottom()) {
 					this.setVerticalAcceleration(this.getNormalVerticalAcceleration());
 				}
-				this.setPosition(oldPosition[0] + 100*this.horizontalMovement(newDt),
-						oldPosition[1] + 100*this.verticalMovement(newDt));
+				this.setPosition(oldPosition[0] + 100 * this.horizontalMovement(newDt),
+						oldPosition[1] + 100 * this.verticalMovement(newDt));
 			}
 			sumDt += newDt;
 		}

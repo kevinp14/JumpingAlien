@@ -17,22 +17,20 @@ import jumpingalien.util.*;
  * what kind of geological feature the game object is in, methods to make the game object immune for 
  * enemies and magma, methods to detect collisions and a method to move the game object horizontally.
  * 
- * @invar dt must be between 0 and 0.2
- * 		  | isValidDt(dt)
- * @invar The position of the game object must be between the given boundaries of the world.
- * 		  | isValidPosition(position)
- * @invar The amount of hitpoints of a game object must be between 0 and 500.
- * 		  | 0 <= hitPoints && hitPoints <= 500
- * @invar The given list of sprites may not be empty.
- * 		  | isValidSpriteList(spriteList)
- * @invar The direction in which a game object is ordered to move must be a possible direction to move in.
- * 		  | isValidMovingDirection(direction)
+ * @invar	The period of time dt must be valid.
+ * 			| isValidDt(dt)
+ * @invar	The amount of hitpoints of a game object must be bigger than or equal to 0.
+ *			| 0 <= getNbHitpoints()
+ * @invar	The given list of sprites may not be null.
+ * 			| isValidSpriteList(spriteList)
+ * @invar	The direction in which a game object is ordered to move in must be a valid one.
+ * 			| isValidMovingDirection(direction)
  *
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
  * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
- * @version 4.0
+ * @version 10.0
  *
- */ //TODO: meeste @post veranderen in @effect en @invar bekijken
+ */
 public class GameObject {
 		
 	private double horizontalVelocity;
@@ -52,27 +50,66 @@ public class GameObject {
 	private double timeInMagma;
 	private double timeImmune;
 	private double timeImmuneForMagma;
+	private double timeBlocked;
+	private double timeDead;
 	private Direction lastDirection;
-	private Direction nextDirection;
 	private int hitPoints = 0;
 	private boolean isImmune;
 	private boolean isImmuneForMagma;
 	private World world;
 	private Program program;
 
+
 	/**
 	 * Initialize the game object at the given x-position positionX, y-position positionY and with 
-	 * the given list of sprites spriteList. Also set the horizontal and vertical accelerations and
-	 * velocities to 0, set the time stalled, time immune and time immune for magma to 0, set the last
-	 * and next direction to stalled, make the game object vulnerable to enemies and magma and set the
-	 * game object's world to null.
+	 * the given list of sprites spriteList.
 	 * 
 	 * @param 	positionX
 	 * 			The position in the x-direction where the game object should be.
 	 * @param 	positionY
 	 * 			The position in the y-direction where the game object should be.
 	 * @param 	spriteList
-	 * 			The list of sprites displaying how the game object should look depending on its behavior.
+	 * 			The list of sprites displaying how the game object should look depending on its 
+	 * 			behaviour.
+	 * @effect	The new position is set to the given one.
+	 * 			| this.setPosition(positionX, positionY)
+	 * @effect	The new horizontal velocity is set to 0.
+	 * 			| this.setHorizontalVelocity(0)
+	 * @effect	The new horizontal acceleration is set to 0.
+	 * 			| this.setHorizontalAcceleration(0)
+	 * @effect	The new vertical velocity is set to 0.
+	 * 			| this.setVerticalVelocity(0)
+	 * @effect	The new vertical acceleration is set to 0.
+	 * 			| this.setVerticalAcceleration(0)
+	 * @effect	The new normal vertical acceleration is set to -10.
+	 * 			| this.setNormalVerticalAcceleration(-10)
+	 * @post	The new sprite list is set to the given one.
+	 * 			| this.spriteList = spriteList
+	 * @effect	The new time stalled is set to 0.
+	 * 			| this.setTimeStalled(0)
+	 * @effect	The new time in air is set to 0.
+	 * 			| this.setTimeInAir(0)
+	 * @effect	The new time in water is set to 0.
+	 * 			| this.setTimeInWater(0)
+	 * @effect	The new time in magma is set to 0.
+	 * 			| this.setTimeInMagma(0)
+	 * @effect	The new time immune is set to 0.
+	 * 			| this.setTimeImmune(0)
+	 * @effect	The new time immune for magma is set to 0.
+	 * 			| this.setTimeImmuneForMagma(0)
+	 * @post	The new time blocked is set to 0.
+	 * 			| (new this).timeBlocked = 0
+	 * @effect	The new time dead is set to 0.
+	 * 			| this.setTimeDead(0)
+	 * @effect	The new last direction is set to stalled.
+	 * 			| this.setLastDirection(Direction.STALLED)
+	 * @post	The game object is made vulnerable.
+	 * 			| this.isImmune = false
+	 * @post	The game object is made vulnerable for magma.
+	 * 			| this.isImmuneForMagma = false
+	 * @post	The new world is set to null.
+	 * 			| (new this).world = null
+	 * 			
 	 */
 	@Model
 	@Raw
@@ -87,22 +124,24 @@ public class GameObject {
 		this.setVerticalAcceleration(0);
 		this.setNormalVerticalAcceleration(-10);
 		this.spriteList = spriteList;
-	    this.setTimeStalled(0);;
+	    this.setTimeStalled(0);
 	    this.setTimeInAir(0);
 	    this.setTimeInWater(0);
 	    this.setTimeInMagma(0);
 	    this.setTimeImmune(0);
 	    this.setTimeImmuneForMagma(0);
-	    this.lastDirection = Direction.STALLED;
-	    this.nextDirection = Direction.STALLED;
+		this.timeBlocked = 0;
+	    this.setTimeDead(0);
+	    this.setLastDirection(Direction.STALLED);
 		this.isImmune = false;
 		this.isImmuneForMagma = false;
 		this.world = null;
-		this.progam = program;
+		this.program = program;
 	}
 	
 	/**
 	 * @return	The world in which the game object is.
+	 * 
 	 */
 	@Basic
 	protected World getWorld() {
@@ -112,7 +151,8 @@ public class GameObject {
 	/**
 	 * Set the world of where the game object has to be to the give world.
 	 * 
-	 * @param world
+	 * @param	world
+	 * 			The world where the game object has to be intitialized.
 	 */
 	@Basic
 	public void setWorld(World world){
@@ -154,9 +194,8 @@ public class GameObject {
 	 */
 	@Basic
 	protected int[] getMaxPosition() {
-		double maxPositionX = (this.getWorld().getTileLength() * this.getWorld().nbTilesX) - 1;
-		double maxPositionY = (this.getWorld().getTileLength() * this.getWorld().nbTilesY) - 1;
-		int[] maxPosition = { (int)maxPositionX, (int)maxPositionY };
+		int[] maxPosition = { this.getWorld().getWorldSize()[0] - 1, 
+				this.getWorld().getWorldSize()[1] - 1 };
 	    return maxPosition;
 	}
 
@@ -175,6 +214,8 @@ public class GameObject {
 	}
 
 	/**
+	 * @post	The number of hitpoints should be bigger than or equal to 0.
+	 * 			| hitPoints >= 0
 	 * @return	The current number of hitpoints of the game object.
 	 */
 	@Basic
@@ -186,17 +227,22 @@ public class GameObject {
 	 * Add the given hitpoints difference to the current number of hitpoints of the game object if its
 	 * hitpoints stay bigger than 0 and smaller than 500 by doing this.
 	 * 
-	 * @pre	
-	 * @post	
+	 * @post	The new number of hitpoints should be between 0 and 500. If it exceeds this range it is
+	 * 			set to 0 or 500 depending on whether it was smaller than 0 or bigger then 500.
+	 * 			| if (newHitPoints < 0) 
+	 * 			|	this.hitPoints = 0
+	 * 			| else if (newHitPoints > 500) 
+	 * 			|	this.hitPoints = 500
 	 * @param 	hitPointsDifference
-	 */ //TODO totaal
+	 * 			The number of hitpoints that should be added to the game object's hitpoints.
+	 */
 	@Basic
 	protected void changeNbHitPoints(int hitPointsDifference) {
-		this.hitPoints += hitPointsDifference;
-		if (this.hitPoints < 0){
+		int newHitPoints = this.hitPoints += hitPointsDifference;
+		if (newHitPoints < 0) {
 			this.hitPoints = 0;
 		}
-		if (this.hitPoints > 500){
+		else if (newHitPoints > 500) {
 			this.hitPoints = 500;
 		}
 	}
@@ -212,15 +258,9 @@ public class GameObject {
 
 	/**
 	 * Set the velocity of the game object in the x-direction to the given horizontal velocity.
+	 * 
 	 * @param	horizontalVelocity
 	 * 			The horizontal velocity for the game object.
-	 * @post	If the given horizontal velocity is smaller than the maximum horizontal velocity, the new
-	 * 			horizontal velocity is set to the given one. If the given horizontal velocity is bigger
-	 * 			or equal to the maximum horizontal velocity, the new velocity is set to the maximum.
-	 * 			| if (Math.abs(horizontalVelocity) < this.getMaxHorizontalVelocity())
-	 * 			|	(new this).horizontalVelocity = horizontalVelocity;
-	 * 			| else
-	 * 			|	(new this).horizontalVelocity = this.getMaxHorizontalVelocity();
 	 */
 	@Basic
 	protected void setHorizontalVelocity(double horizontalVelocity) {
@@ -228,7 +268,8 @@ public class GameObject {
 	}
 	
 	/**
-	 * @return	The normal horizontal velocity.
+	 * @return	The normal/initial horizontal velocity.
+	 * 
 	 */
 	@Basic
 	protected double getNormalHorizontalVelocity() {
@@ -236,9 +277,10 @@ public class GameObject {
 	}
 	
 	/**
-	 * Set the normal horizontal velocity to the given one.
+	 * Set the normal/initial horizontal velocity to the given one.
 	 * 
-	 * @param normalHorizontalVelocity
+	 * @param 	normalHorizontalVelocity
+	 * 			The normal horizontal velocity the game object has to get.
 	 */
 	@Basic
 	protected void setNormalHorizontalVelocity(double normalHorizontalVelocity) {
@@ -247,6 +289,7 @@ public class GameObject {
 	
 	/**
 	 * @return	The maximum of the velocity of the game object in the x-direction.
+	 * 
 	 */
 	@Basic
 	public double getMaxHorizontalVelocity() {
@@ -256,7 +299,8 @@ public class GameObject {
 	/**
 	 * Set the maximum horizontal velocity to the given one.
 	 * 
-	 * @param maxHorizontalVelocity
+	 * @param	maxHorizontalVelocity
+	 * 			The maximum horizontal velocity the game object has to get.
 	 */
 	@Basic
 	protected void setMaxHorizontalVelocity(double maxHorizontalVelocity) {
@@ -265,6 +309,7 @@ public class GameObject {
 
 	/**
 	 * @return	The acceleration of the game object in the x-direction.
+	 * 
 	 */
 	@Basic
 	public double getHorizontalAcceleration() {
@@ -273,19 +318,20 @@ public class GameObject {
 
 	/**
 	 * Set the acceleration of the game object in the x-direction to the given vertical acceleration.
+	 * 
 	 * @param	horizontalAcceleration
 	 * 			The horizontal acceleration for the game object.
-	 * @pre	
 	 * @post	The new horizontal acceleration is set to the given one.
 	 * 			| (new this).horizontalAcceleration = horizontalAcceleration
-	 */ //TODO totaal
+	 */
 	@Basic
 	protected void setHorizontalAcceleration(double horizontalAcceleration) {
 		this.horizontalAcceleration = horizontalAcceleration;
 	}
 	
 	/**
-	 * @return	The normal horizontal acceleration.
+	 * @return	The normal/initial horizontal acceleration.
+	 * 
 	 */
 	@Basic
 	protected double getNormalHorizontalAcceleration() {
@@ -293,9 +339,10 @@ public class GameObject {
 	}
 	
 	/**
-	 * Set the normal horizontal acceleration to the given one.
+	 * Set the normal/initial horizontal acceleration to the given one.
 	 * 
-	 * @param normalHorizontalAcceleration
+	 * @param 	normalHorizontalAcceleration
+	 * 			The normal horizontal acceleration the game object has to get.
 	 */
 	@Basic
 	protected void setNormalHorizontalAcceleration(double normalHorizontalAcceleration) {
@@ -313,10 +360,9 @@ public class GameObject {
 	
 	/**
 	 * Set the velocity of the game object in the y-direction to the given vertical velocity.
+	 * 
 	 * @param	verticalVelocity
 	 * 			The vertical velocity for the game object.
-	 * @post	The new vertical velocity is set to the given one.
-	 * 			| (new this).verticalVelocity = verticalVelocity
 	 */
 	@Basic
 	protected void setVerticalVelocity(double verticalVelocity) {
@@ -336,17 +382,17 @@ public class GameObject {
 	 * Set the acceleration of the game object in the y-direction to the given vertical acceleration.
 	 * @param 	verticalAcceleration
 	 * 			The vertical acceleration for the game object.
-	 * @pre	
 	 * @post	The new vertical acceleration is set to the given one.
 	 * 			| (new this).verticalAcceleration = verticalAcceleration
-	 */ //TODO totaal
+	 */
 	@Basic
 	protected void setVerticalAcceleration(double verticalAcceleration) {
 		this.verticalAcceleration = verticalAcceleration;
 	}
 	
 	/**
-	 * @return	The normal vertical acceleration.
+	 * @return	The normal/initial vertical acceleration.
+	 * 
 	 */
 	@Basic
 	protected double getNormalVerticalAcceleration() {
@@ -354,17 +400,19 @@ public class GameObject {
 	}
 	
 	/**
-	 * Set the normal horizontal acceleration to the given one.
+	 * Set the normal/initial horizontal acceleration to the given one.
 	 * 
-	 * @param normalHorizontalAcceleration
+	 * @param 	normalVerticalAcceleration
+	 * 			The normal vertical acceleration the game object has to get.
 	 */
 	@Basic
-	protected void setNormalVerticalAcceleration(double normalHorizontalAcceleration) {
-		this.normalVerticalAcceleration = normalHorizontalAcceleration;
+	protected void setNormalVerticalAcceleration(double normalVerticalAcceleration) {
+		this.normalVerticalAcceleration = normalVerticalAcceleration;
 	}
 	
 	/**
 	 * @return The last direction in which the game object has moved.
+	 * 
 	 */
 	protected Direction getLastDirection() {
 		return this.lastDirection;
@@ -381,44 +429,32 @@ public class GameObject {
 	}
 	
 	/**
-	 * @return The next direction in which the game object has to move.
-	 */
-	protected Direction getNextDirection() {
-		return this.nextDirection;
-	}
-	
-	/**
-	 * Set the next direction in which game object has to move to the given direction.
+	 * @return	A list of x-pixels of the game object. Used to check the left or right perimeter/side of
+	 * 			pixels of a game object.
 	 * 
-	 * @param 	direction
-	 * 			The direction to which the next direction has to be set.
-	 */
-	protected void setNextDirection(Direction direction){
-		this.nextDirection = direction;
-	}
-	
-	/**
-	 * @return	A list of x-pixels of the game object.
 	 */
 	protected ArrayList<Integer> getHorizontalPixels() {
-		ArrayList<Integer> bottomPixels = new ArrayList<Integer>();
+		ArrayList<Integer> horizontalPixels = new ArrayList<Integer>();
 		for (int x=0; x < this.getCurrentSprite().getWidth(); x++)
-			bottomPixels.add(this.getPosition()[0] + x);
-		return bottomPixels;
+			horizontalPixels.add(this.getPosition()[0] + x);
+		return horizontalPixels;
 	}
 	
 	/**
-	 * @return	A list of y-pixels of the game object
+	 * @return	A list of y-pixels of the game object. Used to check the top or bottom perimeter/side of
+	 * 			pixels of a game object.
+	 * 
 	 */
-	private ArrayList<Integer> getVerticalPixels() {
-		ArrayList<Integer> bottomPixels = new ArrayList<Integer>();
+	protected ArrayList<Integer> getVerticalPixels() {
+		ArrayList<Integer> verticalPixels = new ArrayList<Integer>();
 		for (int y=0; y < this.getCurrentSprite().getHeight(); y++)
-			bottomPixels.add(this.getPosition()[1] + y);
-		return bottomPixels;
+			verticalPixels.add(this.getPosition()[1] + y);
+		return verticalPixels;
 	}
 	
 	/**
 	 * @return	The time the game object is stalled.
+	 * 
 	 */
 	protected double getTimeStalled() {
 		return this.timeStalled;
@@ -427,7 +463,8 @@ public class GameObject {
 	/**
 	 * Set the time stalled to the given one.
 	 * 
-	 * @param timeStalled
+	 * @param	timeStalled
+	 * 			The time the game object has to be stalled.
 	 */
 	protected void setTimeStalled(double timeStalled) {
 		this.timeStalled = timeStalled;
@@ -435,6 +472,7 @@ public class GameObject {
 	
 	/**
 	 * @return	The time the game object is in water.
+	 * 
 	 */
 	protected double getTimeInWater() {
 		return this.timeInWater;
@@ -443,7 +481,8 @@ public class GameObject {
 	/**
 	 * Set the time the game object is in water to the given one.
 	 * 
-	 * @param timeInWater
+	 * @param	timeInWater
+	 * 			The time the game object has to be in water.
 	 */
 	protected void setTimeInWater(double timeInWater) {
 		this.timeInWater = timeInWater;
@@ -451,6 +490,7 @@ public class GameObject {
 	
 	/**
 	 * @return	The time the game object is in air.
+	 * 
 	 */
 	protected double getTimeInAir() {
 		return this.timeInAir;
@@ -459,7 +499,8 @@ public class GameObject {
 	/**
 	 * Set the time the game object is in air to the given one.
 	 * 
-	 * @param timeInAir
+	 * @param	timeInAir
+	 * 			The time the game object has to be in air.
 	 */
 	protected void setTimeInAir(double timeInAir) {
 		this.timeInAir = timeInAir;
@@ -467,6 +508,7 @@ public class GameObject {
 	
 	/**
 	 * @return	The time the game object is in magma.
+	 * 
 	 */
 	protected double getTimeInMagma() {
 		return this.timeInMagma;
@@ -475,7 +517,8 @@ public class GameObject {
 	/**
 	 * Set the time the game object is in magma to the given one.
 	 * 
-	 * @param timeInMagma
+	 * @param	timeInMagma
+	 * 			The time the game object has to be in magma.
 	 */
 	protected void setTimeInMagma(double timeInMagma) {
 		this.timeInMagma = timeInMagma;
@@ -483,6 +526,7 @@ public class GameObject {
 	
 	/**
 	 * @return	The time the game object is immune.
+	 * 
 	 */
 	protected double getTimeImmune() {
 		return this.timeImmune;
@@ -491,7 +535,8 @@ public class GameObject {
 	/**
 	 * Set the time the game object is immune to the given one.
 	 * 
-	 * @param timeImmune
+	 * @param	timeImmune
+	 * 			The time the game object has to be immune.
 	 */
 	protected void setTimeImmune(double timeImmune) {
 		this.timeImmune = timeImmune;
@@ -499,6 +544,7 @@ public class GameObject {
 	
 	/**
 	 * @return	The time the game object is immune for magma.
+	 * 
 	 */
 	protected double getTimeImmuneForMagma() {
 		return this.timeImmuneForMagma;
@@ -507,26 +553,41 @@ public class GameObject {
 	/**
 	 * Set the time the game object is immune for magma to the given one.
 	 * 
-	 * @param timeImmuneForMagma
+	 * @param	timeImmuneForMagma
+	 * 			The time the game object has to be immune for magma.
 	 */
 	protected void setTimeImmuneForMagma(double timeImmuneForMagma) {
 		this.timeImmuneForMagma = timeImmuneForMagma;
 	}
-
+	
+	/**
+	 * @return	The time the game object is dead.
+	 * 
+	 */
+	protected double getTimeDead() {
+		return this.timeDead;
+	}
+	
+	/**
+	 * Set the time the game object is dead to the given one.
+	 * 
+	 * @param	timeDead
+	 * 			The time the game object has to be dead.
+	 */
+	protected void setTimeDead(double timeDead) {
+		this.timeDead = timeDead;
+	}
+	
 	/**
 	 * Check whether the given direction is a valid one to move in.
 	 * 
 	 * @param 	direction
 	 * 			The direction which has to be checked.
-	 * @return	True if and only if the direction is right, left, upleft, upright, downleft, downright.
+	 * @return	True if and only if the direction is right, left.
 	 */
 	protected boolean isValidMovingDirection(Direction direction) {
 		return ((direction == Direction.RIGHT) 
-				|| (direction == Direction.LEFT)
-				|| (direction == Direction.UPLEFT)
-				|| (direction == Direction.UPRIGHT)
-				|| (direction == Direction.DOWNLEFT)
-				|| (direction == Direction.DOWNRIGHT));
+				|| (direction == Direction.LEFT));
 	}
 
 	/**
@@ -734,14 +795,56 @@ public class GameObject {
 	 * 			given object's tile.
 	 */
 	protected boolean collidesWith(GameObject object){
-		return (!((this.getPosition()[0] + (this.getCurrentSprite().getWidth() - 1) 
+		return (!(((this.getPosition()[0] + this.getCurrentSprite().getWidth() - 1) 
 						< object.getPosition()[0])
-				|| (object.getPosition()[0] + (object.getCurrentSprite().getWidth() - 1) 
+				|| ((object.getPosition()[0] + object.getCurrentSprite().getWidth() - 1) 
 						< this.getPosition()[0]) 
-				|| (this.getPosition()[1] + (this.getCurrentSprite().getHeight() - 1) 
+				|| ((this.getPosition()[1] + this.getCurrentSprite().getHeight() - 1) 
 						< object.getPosition()[1])
-				|| (object.getPosition()[1] + (object.getCurrentSprite().getHeight() - 1) 
+				|| ((object.getPosition()[1] + object.getCurrentSprite().getHeight() - 1) 
 						< this.getPosition()[1])));
+	}
+	
+	/**
+	 * Check whether the left side of the game object's tile collides with the right side of the given
+	 * object's tile.
+	 *  
+	 * @param 	object
+	 * 			The object with which the game object could collide.
+	 * @return	True if and only if the game object collides with the given object and the left 
+	 * 			perimeter of the game object equals the right perimeter of the given object - 1.
+	 */
+	protected boolean leftCollidesWith(GameObject object) {
+		for (Integer thisVerticalPosition: this.getVerticalPixels()) {
+			for (Integer objectVerticalPosition: object.getVerticalPixels()) {
+				if ((this.collidesWith(object)) && (this.getPosition()[0] 
+						== object.getPosition()[0] + object.getCurrentSprite().getWidth() - 1) 
+						&& (thisVerticalPosition == objectVerticalPosition))
+					return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Check whether the right side of the game object's tile collides with the left side of the given
+	 * object's tile.
+	 *  
+	 * @param 	object
+	 * 			The object with which the game object could collide.
+	 * @return	True if and only if the game object collides with the given object and the right 
+	 * 			perimeter of the given object equals the left perimeter of the game object - 1.
+	 */
+	protected boolean rightCollidesWith(GameObject object) {
+		for (Integer thisVerticalPosition: this.getVerticalPixels()) {
+			for (Integer objectVerticalPosition: object.getVerticalPixels()) {
+				if ((this.collidesWith(object)) && (object.getPosition()[1] 
+						== this.getPosition()[1] + this.getCurrentSprite().getWidth() - 1) 
+						&& (thisVerticalPosition == objectVerticalPosition))
+					return true;
+			}
+		}
+		return false;
 	}
 	
 	/**
@@ -750,14 +853,35 @@ public class GameObject {
 	 *  
 	 * @param 	object
 	 * 			The object with which the game object could collide.
-	 * @return	True if and only if the game object collides with the object and the y-position of the
-	 * 			game object equals the y-position of the given object - 1.
+	 * @return	True if and only if the game object collides with the object and the bottom perimeter of 
+	 * 			the game object equals the top perimeter of the given object - 1.
 	 */
-	protected boolean bottomCollidesWithTop(GameObject object) {
+	protected boolean bottomCollidesWith(GameObject object) {
 		for (Integer thisHorizontalPosition: this.getHorizontalPixels()) {
 			for (Integer objectHorizontalPosition: object.getHorizontalPixels()) {
 				if ((this.collidesWith(object)) && (this.getPosition()[1] 
 						== object.getPosition()[1] + object.getCurrentSprite().getHeight() - 1) 
+						&& (thisHorizontalPosition == objectHorizontalPosition))
+					return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Check whether the top side of the game object's tile collides with the bottom side of the given
+	 * object's tile.
+	 *  
+	 * @param 	object
+	 * 			The object with which the game object could collide.
+	 * @return	True if and only if the game object collides with the object and the bottom perimeter of 
+	 * 			the given object equals the top perimeter of the game object - 1.
+	 */
+	protected boolean topCollidesWith(GameObject object) {
+		for (Integer thisHorizontalPosition: this.getHorizontalPixels()) {
+			for (Integer objectHorizontalPosition: object.getHorizontalPixels()) {
+				if ((this.collidesWith(object)) && (object.getPosition()[1] 
+						== this.getPosition()[1] + this.getCurrentSprite().getHeight() - 1) 
 						&& (thisHorizontalPosition == objectHorizontalPosition))
 					return true;
 			}
@@ -838,7 +962,7 @@ public class GameObject {
 	/**
 	 * Checks whether the game object is trying to cross an impassable tile to the right or not.
 	 * 
-	 * @return	True if and only if the game object is toucing an impassable tile to the right and
+	 * @return	True if and only if the game object is touching an impassable tile to the right and
 	 * 			its horizontal velocity is bigger than 0.
 	 */
 	protected boolean crossImpassableRight() {
@@ -877,11 +1001,15 @@ public class GameObject {
 	
 	/**
 	 * Make the game object begin to move in the x-direction to the left (negative x-direction) 
-	 * or to the right (positive x-direction) depending on the given direction and set the next
-	 * direction (only useful for plants). Also limit the velocity in the x-direction to its maximum.
+	 * or to the right (positive x-direction) depending on the given direction. Also limit the velocity 
+	 * in the x-direction to its maximum.
 	 * 
 	 * @param	direction
-	 * 			The given direction in which the alien has to move.
+	 * 			The given direction in which the game object has to move.
+	 * @pre	The given direction should be valid.
+	 * 		| isValidMovingDirection(direction)
+	 * @post	The new last direction should be valid.
+	 * 			| isValidMovingDirection((new this).getLastDirection())
 	 */
 	public void startMoveHorizontally(Direction direction, double initalVelocity, 
 			double initialAcceleration) {
@@ -915,6 +1043,8 @@ public class GameObject {
 	 *
 	 * @param	direction
 	 * 			The horizontal direction in which the game object was moving.
+	 * @pre	The given direction should be valid.
+	 * 		| isValidMovingDirection(direction)
 	 */
 	public void endMoveHorizontally(Direction direction) {
 		assert (isValidMovingDirection(direction));
@@ -932,6 +1062,27 @@ public class GameObject {
 	 * The actions the game object has to take when trying to cross an impassable tile.
 	 * 
 	 * @param oldPosition
+	 * @effect	If the game object is trying to cross an impassable tile to the left or right its horizontal
+	 * 			acceleration and velocity are set to 0 and its position is set back to its old 
+	 * 			position.
+	 * 			| if ((this.crossImpassableLeft()) || (this.crossImpassableRight())) 
+	 * 			|	this.setHorizontalAcceleration(0)
+	 * 			|	this.setHorizontalVelocity(0)
+	 * 			|	this.setPosition(oldPosition[0], oldPosition[1])
+	 * @effect	If the game object is trying to cross an impassable tile to the bottom its vertical
+	 * 			acceleration and velocity are set to 0 and its position is set back to its old 
+	 * 			position.
+	 * 			| if (this.crossImpassableBottom()) 
+	 * 			|	this.setVerticalAcceleration(0)
+	 * 			|	this.setVerticalVelocity(0)
+	 * 			|	this.setPosition(oldPosition[0], oldPosition[1])
+	 * @effect	If the game object is trying to cross an impassable tile to the top its vertical
+	 * 			acceleration is set to the normal vertical acceleration and its velocity is set to 0,
+	 * 			and its position is set back to its old position.
+	 * 			| if (this.crossImpassableBottom()) 
+	 * 			|	this.setVerticalAcceleration(this.getNormalVerticalAcceleration())
+	 * 			|	this.setVerticalVelocity(0)
+	 * 			|	this.setPosition(oldPosition[0], oldPosition[1])
 	 */
 	protected void crossImpassableActions(int[] oldPosition) {
 		if ((this.crossImpassableLeft()) || (this.crossImpassableRight())) {
@@ -948,6 +1099,81 @@ public class GameObject {
 			this.setVerticalAcceleration(this.getNormalVerticalAcceleration());
 			this.setVerticalVelocity(0);
 			this.setPosition(oldPosition[0], oldPosition[1]);
+		}
+	}
+	
+	/**
+	 * Block the movement of this game object if it collides with another one.
+	 * 
+	 * @param	object
+	 * 			The other game object with wich this game object is colliding.
+	 * @param	oldPosition
+	 * 			The old position of this game object.
+	 * @effect	If this game object's top collides with another game object, its vertical velocity is
+	 * 			set to 0 and it is returned to its old position.
+	 * 			| if (this.topCollidesWith(object))
+	 * 			|	this.setVerticalVelocity(0)
+	 * 			|	this.setPosition(oldPosition[0], oldPosition[1])
+	 * @effect	If this game object's bottom collides with another game object, its vertical velocity 
+	 * 			and acceleration are set to 0 and it is returned to its old position.
+	 * 			| if (this.bottomCollidesWith(object))
+	 * 			|	this.setVerticalAcceleration(0)
+	 * 			|	this.setVerticalVelocity(0)
+	 * 			|	this.setPosition(oldPosition[0], oldPosition[1])
+	 * @effect	If this game object's left side collides with another game object and it is trying
+	 * 			to move to the left, its horizontal velocity and acceleration are set to 0 and it 
+	 * 			is returned to its old position.
+	 * 			| if ((this.leftCollidesWith(object)) && (this.getLastDirection() == Direction.LEFT))
+	 * 			|	this.setHorizontalAcceleration(0)
+	 * 			|	this.setHorizontalVelocity(0)
+	 * 			|	this.setPosition(oldPosition[0], oldPosition[1])
+	 * @effect	If this game object's right side collides with another game object and it is trying
+	 * 			to move to the right, its horizontal velocity and acceleration are set to 0 and it 
+	 * 			is returned to its old position.
+	 * 			| if ((this.rightCollidesWith(object)) && (this.getLastDirection() == Direction.RIGHT))
+	 * 			|	this.setHorizontalAcceleration(0)
+	 * 			|	this.setHorizontalVelocity(0)
+	 * 			|	this.setPosition(oldPosition[0], oldPosition[1])
+	 */
+	protected void collisionBlockMovement(GameObject object, int[] oldPosition, double dt) {
+		if (this.topCollidesWith(object)) {
+			if (this.timeBlocked >= 0.6) {
+				this.timeBlocked = 0;
+				this.setVerticalVelocity(0);
+				this.setPosition(oldPosition[0], oldPosition[1]);
+			}
+			else
+				this.timeBlocked += dt;
+		}
+		if (this.bottomCollidesWith(object)) {//TODO: kan je springen als je op een enemy staat?
+			if (this.timeBlocked >= 0.6) {
+				this.timeBlocked = 0;
+				this.setVerticalAcceleration(0);
+				this.setVerticalVelocity(0);
+				this.setPosition(oldPosition[0], oldPosition[1]);
+			}
+			else
+				this.timeBlocked += dt;
+		}
+		if ((this.leftCollidesWith(object)) && (this.getLastDirection() == Direction.LEFT)) {
+			if (this.timeBlocked >= 0.6) {
+				this.timeBlocked = 0;
+				this.setHorizontalAcceleration(0);
+				this.setHorizontalVelocity(0);
+				this.setPosition(oldPosition[0], oldPosition[1]);
+			}
+			else
+				this.timeBlocked += dt;
+		}
+		if ((this.rightCollidesWith(object)) && (this.getLastDirection() == Direction.RIGHT)) {
+			if (this.timeBlocked >= 0.6) {
+				this.timeBlocked = 0;
+				this.setHorizontalAcceleration(0);
+				this.setHorizontalVelocity(0);
+				this.setPosition(oldPosition[0], oldPosition[1]);
+			}
+			else
+				this.timeBlocked += dt;
 		}
 	}
 }

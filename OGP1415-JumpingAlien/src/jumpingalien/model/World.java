@@ -2,7 +2,6 @@ package jumpingalien.model;
 
 import java.util.ArrayList;
 
-import jumpingalien.part2.facade.IFacadePart2;
 import be.kuleuven.cs.som.annotate.Basic;
 
 /**
@@ -17,15 +16,16 @@ import be.kuleuven.cs.som.annotate.Basic;
  * won the game or not, a method to inspect whether a tile is passable or not, and a method to advance 
  * the time.
  * 
- * @invar Every tile in the world must have a valid type.
- * 		  | isValidTileType(tileType)
- * @invar The world must have a valid ending point.
- * 		  | targetTileX <= this.getWorldSize()[0] && targetTileY <= this.getWorldSize()[1]
+ * @invar	Every tile in the world must have a valid type.
+ * 			| isValidTileType(tileType)
+ * @invar	The world must have a valid ending point.
+ * 			| isValidTargetTile(targetTileX, targetTileY)
+ * 
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
- * @version 5.0
- *
- */ //TODO: meeste @post veranderen in @effect en @invar bekijken
+ * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * @version 7.0
+ * 
+ */
 public class World {
 	private int tileSize;
 	protected int nbTilesX;
@@ -36,13 +36,13 @@ public class World {
 	private int targetTileY;
 	private boolean won;
 	private boolean gameOver;
-	private ArrayList<Plant> plants = new ArrayList<>();
-	private ArrayList<Shark> sharks = new ArrayList<>();
-	private	ArrayList<Slime> slimes = new ArrayList<>();
+	private ArrayList<Plant> plants = new ArrayList<Plant>();
+	private ArrayList<Shark> sharks = new ArrayList<Shark>();
+	private	ArrayList<Slime> slimes = new ArrayList<Slime>();
 	private Mazub alien;
+	private Buzam buzam;
 	private int[][] tiles;
 	private GameState gameState;
-	private Buzam buzam;
 	
 	/**
 	 * Initialize a world with the given size of tiles, number of tiles in x- and y-direction, the 
@@ -64,10 +64,33 @@ public class World {
 	 * @param	targetTileY
 	 * 			The target tile number in y-direction. The target tile is the place where the alien has
 	 * 			to stand on to win the game.
+	 * @post	The new tile size is set to the given one.
+	 * 			| (new this).tileSize = tileSize
+	 * @post	The new number of tiles in x-direction is set to the given one.
+	 * 			| (new this).nbTilesX = nbTilesX
+	 * @post	The new number of tiles in y-direction is set to the given one.
+	 * 			| (new this).nbTilesY = nbTilesY
+	 * @post	The new width of the visible window is set to the given one.
+	 * 			| (new this).visibleWindowWidth = visibleWindowWidth
+	 * @post	The new height of the visible window is set to the given one.
+	 * 			| (new this).visibleWindowHeight = visibleWindowHeight
+	 * @post	The new target tile in x-direction is set to the given one.
+	 * 			| (new this).targetTileX = targetTileX
+	 * @post	The new target tile in y-direction is set to the given one.
+	 * 			| (new this).targetTileY = targetTileY
+	 * @post	The new matrix of tiles is initialized.
+	 * 			| (new this).tiles = new int[this.nbTilesX][this.nbTilesY]
+	 * @post	The game is not won.
+	 * 			| (new this).won = false
+	 * @post	The game is not over.
+	 * 			| (new this).gameOver = false
+	 * @post	The new game state is set to initiated.
+	 * 			| (new this).gameState = GameState.INITIATED
 	 */
 	public World (int tileSize, int nbTilesX, int nbTilesY,
 			int visibleWindowWidth, int visibleWindowHeight, int targetTileX,
-			int targetTileY){
+			int targetTileY) {
+		assert (isValidTargetTile(targetTileX, targetTileY));
 		this.tileSize = tileSize;
 		this.nbTilesX = nbTilesX;
 		this.nbTilesY = nbTilesY;
@@ -79,21 +102,11 @@ public class World {
 		this.won = false;
 		this.gameOver = false;
 		this.gameState = GameState.INITIATED;
-		this.buzam = null;
 	}
 	
 	/**
-	 * Starts the game that is played in the given world.
-	 * After this method has been invoked, no further game objects will be added
-	 * via {@link IFacadePart2#addPlant(World, Plant)},
-	 * {@link IFacadePart2#addShark(World, Shark)},
-	 * {@link IFacadePart2#addSlime(World, Slime)}, or
-	 * {@link IFacadePart2#setMazub(World, Mazub)}), and no geological features
-	 * will be changed via
-	 * {@link IFacadePart2#setGeologicalFeature(World, int, int, int)}.
-	 * 
-	 * @param The
-	 *            world for which to start the game.
+	 * @post	The new game state is set to started.
+	 * 			| (new this).gameState = GameState.STARTED
 	 */
 	public void startGame(){
 		this.gameState = GameState.STARTED;
@@ -101,6 +114,7 @@ public class World {
 	
 	/**
 	 * @return	The tile on which the target position is.
+	 * 
 	 */
 	protected int[] getTargetTile() {
 		int[] targetTile = {this.targetTileX, this.targetTileY};
@@ -109,18 +123,15 @@ public class World {
 	
 	/**
 	 * @return	The alien in this world.
+	 * 
 	 */
 	public Mazub getMazub() {
 		return this.alien;
 	}
 	
 	/**
-	 * Sets the given alien as the player's character in the given world.
-	 * 
-	 * @param world
-	 *            The world for which to set the player's character.
-	 * @param mazub
-	 *            The alien to be set as the player's character.
+	 * @param	alien
+	 * 			The alien to be set as the player's character.
 	 */
 	public void setMazub(Mazub alien){
 		this.alien = alien;
@@ -128,41 +139,46 @@ public class World {
 	}
 	
 	/**
-	 * Check whether more game objects can be added to this world.
+	 * @return	The buzam, the evil twin of Mazub in this world.
 	 * 
+	 */
+	public Mazub getBuzam() {
+		return this.buzam;
+	}
+	
+	/**
+	 * @param	buzam
+	 * 			The buzam to be set as the evil twin of Mazub
+	 */
+	public void setBuzam(Buzam buzam){
+		this.buzam = buzam;
+		this.buzam.setWorld(this);
+	}
+	
+	/**
 	 * @return	True if and only if the amount of objects in this world is smaller than 100.
+	 * 
 	 */
 	private boolean canAddMore(){
 		int amountOfObjects = 0;
 		if (!(this.gameState == GameState.STARTED)) {
-			if (plants != null){
-				amountOfObjects += plants.size();
+			if (this.plants != null){
+				amountOfObjects += this.plants.size();
 			}
-			if  (sharks != null){
-				amountOfObjects += sharks.size();
+			if  (this.sharks != null){
+				amountOfObjects += this.sharks.size();
 			}
-			if (slimes != null){
-				amountOfObjects += slimes.size();
+			if (this.slimes != null){
+				amountOfObjects += this.slimes.size();
 			}
-			if (amountOfObjects == 100){
-				return false;
-			}
-			else{
-				return true;
-			}
+			return (amountOfObjects < 100);
 		}
-		else
-			return false;
+		return false;
 	}
 	
 	/**
-	 * Returns all the plants currently located in the given world.
+	 * @return An array list of plants in the current game world.
 	 * 
-	 * @param world
-	 *            The world for which to retrieve all plants.
-	 * @return All plants that are located somewhere in the given world. There
-	 *         are no restrictions on the type or order of the returned
-	 *         collection, but each plant may only be returned once.
 	 */
 	@Basic
 	public ArrayList<Plant> getPlants(){
@@ -170,12 +186,11 @@ public class World {
 	}
 	
 	/**
-	 * Add the given plant as a game object to the given world.
-	 * 
-	 * @param world
-	 *            The world to which the plant should be added.
-	 * @param plant
-	 *            The plant that needs to be added to the world.
+	 * @param 	plant
+	 *          The plant that needs to be added to the world.
+	 * @effect	If the world is not full yet, the plant is added to it.
+	 * 			| if (this.canAddMore())
+	 * 			|	this.plants.add(plant)
 	 */
 	public void addPlant(Plant plant){
 		if (this.canAddMore()){
@@ -184,13 +199,8 @@ public class World {
 	}
 	
 	/**
-	 * Returns all the sharks currently located in the given world.
+	 * @return An array list of sharks in the current game world.
 	 * 
-	 * @param world
-	 *            The world for which to retrieve all sharks.
-	 * @return All sharks that are located somewhere in the given world. There
-	 *         are no restrictions on the type or order of the returned
-	 *         collection, but each shark may only be returned once.
 	 */
 	@Basic
 	public ArrayList<Shark> getSharks(){
@@ -198,10 +208,11 @@ public class World {
 	}
 	
 	/**
-	 * Add the given shark as a game object to the given world.
-	 * 
-	 * @param shark
-	 *            The shark that needs to be added to the world.
+	 * @param 	shark
+	 *          The shark that needs to be added to the world.
+	 * @effect	If the world is not full yet, the shark is added to it.
+	 * 			| if (this.canAddMore())
+	 * 			|	this.sharks.add(shark)
 	 */
 	public void addShark(Shark shark){
 		if (this.canAddMore()){
@@ -210,13 +221,8 @@ public class World {
 	}
 	
 	/**
-	 * Returns all the slimes currently located in the given world.
+	 * @return An array list of slimes in the current game world.
 	 * 
-	 * @param world
-	 *            The world for which to retrieve all slimes.
-	 * @return All slimes that are located somewhere in the given world. There
-	 *         are no restrictions on the type or order of the returned
-	 *         collection, but each slime may only be returned once.
 	 */
 	@Basic
 	public ArrayList<Slime> getSlimes(){
@@ -224,12 +230,11 @@ public class World {
 	}
 
 	/**
-	 * Add the given slime as a game object to the given world.
-	 * 
-	 * @param world
-	 *            The world to which the slime should be added.
-	 * @param slime
-	 *            The slime that needs to be added to the world.
+	 * @param 	slime
+	 *          The slime that needs to be added to the world.
+	 * @effect	If the world is not full yet, the slime is added to it.
+	 * 			| if (this.canAddMore())
+	 * 			|	this.slimes.add(slime)
 	 */
 	public void addSlime(Slime slime){
 		if (this.canAddMore()){
@@ -238,13 +243,7 @@ public class World {
 	}
 	
 	/**
-	 * Returns the length of a square tile side in the given world.
-	 * 
-	 * @param world
-	 *            The game world for which to retrieve the tile length
-	 * 
-	 * @return The length of a square tile side, expressed as a number of
-	 *         pixels.
+	 * @return The length of a square tile side, expressed as a number of pixels.
 	 */
 	@Basic
 	public int getTileLength(){
@@ -252,50 +251,45 @@ public class World {
 	}
 	
 	/**
-	 * Returns the tile positions of all tiles within the given rectangular
-	 * region.
-	 * 
-	 * @param world
-	 *            The world from which the tile positions should be returned.
-	 * @param pixelLeft
-	 *            The x-coordinate of the left side of the rectangular region.
-	 * @param pixelBottom
-	 *            The y-coordinate of the bottom side of the rectangular region.
-	 * @param pixelRight
-	 *            The x-coordinate of the right side of the rectangular region.
-	 * @param pixelTop
-	 *            The y-coordinate of the top side of the rectangular region.
-	 * 
-	 * @return An array of tile positions, where each position (x_T, y_T) is
-	 *         represented as an array of 2 elements, containing the horizontal
-	 *         (x_T) and vertical (y_T) coordinate of a tile in that order.
-	 *         The returned array is ordered from left to right,
-	 *         bottom to top: all positions of the bottom row (ordered from
-	 *         small to large x_T) precede the positions of the row above that.
+	 * @param 	pixelLeft
+	 * 			The x-coordinate of the left side of the rectangular region.
+	 * @param	pixelBottom
+	 * 			The y-coordinate of the bottom side of the rectangular region.
+	 * @param	pixelRight
+	 *			The x-coordinate of the right side of the rectangular region.
+	 * @param	pixelTop
+	 *			The y-coordinate of the top side of the rectangular region.
+	 * @return	An array of tile positions, where each position (x_T, y_T) is
+	 * 			represented as an array of 2 elements, containing the horizontal
+	 *			(x_T) and vertical (y_T) coordinate of a tile in that order.
+	 *			The returned array is ordered from left to right,
+	 *			bottom to top: all positions of the bottom row (ordered from
+	 *			small to large x_T) precede the positions of the row above that.
 	 * 
 	 */
 	@Basic
 	public int[][] getTilePositionsIn(int pixelLeft, int pixelBottom,
 			   int pixelRight, int pixelTop){
 		ArrayList<int[]> tilePositions = new ArrayList<int[]>();
-		for(int rowPosition = (pixelBottom / this.tileSize ) * this.tileSize; rowPosition <= pixelTop; 
-				rowPosition += this.tileSize){
-			for(int columnPosition = (pixelLeft / this.tileSize) * this.tileSize; columnPosition 
-					<= pixelRight; columnPosition += tileSize){
-				if((this.tileSize * this.nbTilesY) - this.getTileLength() >= rowPosition
-						&& (this.tileSize * this.nbTilesX) - this.getTileLength() >= columnPosition)
-					tilePositions.add(new int[]{columnPosition / tileSize, rowPosition / tileSize});
+		for (int rowPosition = (pixelBottom / this.tileSize ) * this.tileSize; rowPosition <= pixelTop; 
+				rowPosition += this.tileSize) {
+			for (int columnPosition = (pixelLeft / this.tileSize) * this.tileSize; columnPosition 
+					<= pixelRight; columnPosition += tileSize) {
+				if ((this.tileSize * this.nbTilesY) - this.getTileLength() >= rowPosition
+						&& (this.tileSize * this.nbTilesX) - this.getTileLength() >= columnPosition) {
+					int[] tilePosition = new int[] {columnPosition / this.tileSize, 
+						rowPosition / this.tileSize};
+					tilePositions.add(tilePosition);
 				}
 			}
-	return tilePositions.toArray(new int[tilePositions.size()][]);
+		}
+		return tilePositions.toArray(new int[tilePositions.size()][]);
 	}
 	
 	/**
-	 * Return the coordinates of the rectangular visible window that moves
-	 * together with Mazub.
-	 * 
-	 * @return The pixel coordinates of the visible window, in the order
-	 *         <b>left, bottom, right, top</b>.
+	 * @return	The pixel coordinates of the visible window, in the order
+	 *			left, bottom, right, top. The visible window must always contain the alien so that
+	 *			it is always at least 200 pixels away from the edges of the window.
 	 */
 	@Basic
 	public int[] getVisibleWindow() {
@@ -359,87 +353,58 @@ public class World {
 	}
 	
 	/**
-	 * Returns the size of the given game world, in number of pixels.
-	 * 
-	 * @param world
-	 *            The world for which to return the size.
-	 * @return The size of the game world, in pixels, as an array of two
-	 *         elements: width (X) and height (Y), in that order.
+	 * @return	The size of the game world, in pixels, as an array of two
+	 *			elements: width (X) and height (Y), in that order.
 	 */
 	@Basic
-	public int[] getWorldSize(){
-		int[] worldSize = new int[]{nbTilesX*this.tileSize, nbTilesY*this.tileSize};
+	public int[] getWorldSize() {
+		int[] worldSize = new int[] {nbTilesX * this.tileSize, nbTilesY * this.tileSize };
 		return worldSize;
 	}
 	
 	/**
-	 * Returns the bottom left pixel coordinate of the tile at the given tile
-	 * position.
-	 * 
-	 * @param world
-	 *            The world from which to retrieve the tile.
-	 * @param tileX
-	 *            The x-position x_T of the tile
-	 * @param tileY
-	 *            The y-position y_T of the tile
-	 * @return An array which contains the x-coordinate and y-coordinate of the
-	 *         bottom left pixel of the given tile, in that order.
+	 * @param	tileX
+	 *			The x-position x_T of the tile
+	 * @param	tileY
+	 *			The y-position y_T of the tile
+	 * @return	An array which contains the x-coordinate and y-coordinate of the
+	 *			bottom left pixel of the given tile, in that order.
 	 */
-	public int[] getBottomLeftPixelOfTile(int tileX, int tileY){
-		int tilePositionX = tileX*this.tileSize;
-		int tilePositionY = tileY*this.tileSize;
-		int[] positionBottomLeftPixelOfTile = new int[]{tilePositionX, tilePositionY};
-		return positionBottomLeftPixelOfTile;
+	public int[] getBottomLeftPixelOfTile(int tileX, int tileY) {
+		int tilePositionX = tileX * this.tileSize;
+		int tilePositionY = tileY * this.tileSize;
+		int[] tilePosition = new int[] { tilePositionX, tilePositionY };
+		return tilePosition;
 	}
 	
 	/**
-	 * Returns the top right pixel coordinate of the tile at the given tile
-	 * position.
-	 * 
-	 * @param world
-	 *            The world from which to retrieve the tile.
-	 * @param tileX
-	 *            The x-position x_T of the tile
-	 * @param tileY
-	 *            The y-position y_T of the tile
-	 * @return An array which contains the x-coordinate and y-coordinate of the
-	 *         top right pixel of the given tile, in that order.
+	 * @param	tileX
+	 *			The x-position x_T of the tile
+	 * @param	tileY
+	 *			The y-position y_T of the tile
+	 * @return	An array which contains the x-coordinate and y-coordinate of the
+	 *			top right pixel of the given tile, in that order.
 	 */
 	protected int[] getTopRightPixelOfTile(int tileX, int tileY) {
-		int tilePositionX = (tileX + 1)*this.tileSize;
-		int tilePositionY = (tileY + 1)*this.tileSize;
-		int[] positionTopRightPixelOfTile = new int[]{tilePositionX, tilePositionY};
-		return positionTopRightPixelOfTile;
+		int tilePositionX = (tileX + 1) * this.tileSize;
+		int tilePositionY = (tileY + 1) * this.tileSize;
+		int[] tilePosition = new int[] { tilePositionX, tilePositionY };
+		return tilePosition;
 	}
 	
 	/**
-	 * Returns the geological feature of the tile with its bottom left pixel at
-	 * the given position.
+	 * @param	pixelX
+	 *			The x-position of the pixel at the bottom left of the tile for
+	 *			which the geological feature should be returned.
+	 * @param	pixelY
+	 *			The y-position of the pixel at the bottom left of the tile for
+	 * 			which the geological feature should be returned.
 	 * 
-	 * @param world
-	 *            The world containing the tile for which the
-	 *            geological feature should be returned.
-	 * 
-	 * @param pixelX
-	 *            The x-position of the pixel at the bottom left of the tile for
-	 *            which the geological feature should be returned.
-	 * @param pixelY
-	 *            The y-position of the pixel at the bottom left of the tile for
-	 *            which the geological feature should be returned.
-	 * 
-	 * @return The type of the tile with the given bottom left pixel position,
-	 *         where
-	 *         <ul>
-	 *         <li>the value 0 is returned for an <b>air</b> tile;</li>
-	 *         <li>the value 1 is returned for a <b>solid ground</b> tile;</li>
-	 *         <li>the value 2 is returned for a <b>water</b> tile;</li>
-	 *         <li>the value 3 is returned for a <b>magma</b> tile.</li>
-	 *         </ul>
-	 * 
-	 * @note This method must return its result in constant time.
-	 * 
-	 * @throw ModelException if the given position does not correspond to the
-	 *        bottom left pixel of a tile.
+	 * @return	The type of the tile with the given bottom left pixel position, where
+	 *			the value 0 is returned for an air tile
+	 * 			the value 1 is returned for a solid ground tile
+	 *			the value 2 is returned for a water tile
+	 * 			the value 3 is returned for a magma tile.
 	 */
 	@Basic
 	public int getGeologicalFeature(int pixelX, int pixelY){
@@ -447,26 +412,24 @@ public class World {
 	}
 	
 	/**
-	 * Modify the geological type of a specific tile in the given world to a
-	 * given type.
-	 * 
-	 * @param world
-	 *            The world in which the geological type of a tile needs to be
-	 *            modified
-	 * @param tileX
-	 *            The x-position x_T of the tile for which the type needs to be
-	 *            modified
-	 * @param tileY
-	 *            The y-position y_T of the tile for which the type needs to be
-	 *            modified
-	 * @param tileType
-	 *            The new type for the given tile, where
-	 *            <ul>
-	 *            <li>the value 0 is provided for an <b>air</b> tile;</li>
-	 *            <li>the value 1 is provided for a <b>solid ground</b> tile;</li>
-	 *            <li>the value 2 is provided for a <b>water</b> tile;</li>
-	 *            <li>the value 3 is provided for a <b>magma</b> tile.</li>
-	 *            </ul>
+	 * @param	tileX
+	 *			The x-position x_T of the tile for which the type needs to be
+	 * 			modified
+	 * @param	tileY
+	 * 			The y-position y_T of the tile for which the type needs to be
+	 * 			modified
+	 * @param	tileType
+	 * 			The new type for the given tile, where
+	 * 			the value 0 is returned for an air tile
+	 * 			the value 1 is returned for a solid ground tile
+	 *			the value 2 is returned for a water tile
+	 * 			the value 3 is returned for a magma tile.
+	 * @pre	The given tile type should be a valid one.
+	 * 		| isValidTileType(tileType)
+	 * @post	If the game is not started yet, the tile at the given position can be set to the
+	 * 			given type
+	 * 			| if (!(this.gameState == GameState.STARTED))
+	 * 			|	this.tiles[tileX][tileY] = tileType
 	 */
 	public void setGeologicalFeature(int tileX, int tileY, int tileType){
 		assert (isValidTileType(tileType));
@@ -475,37 +438,23 @@ public class World {
 	}
 	
 	/**
-	 * Returns whether the game played in the given world has finished and the
-	 * player has won. The player wins when Mazub has reached the target tile.
+	 * @return True if and only if the game is over.
 	 * 
-	 * @param world
-	 *            The world for which to check whether the player won
-	 * @return true if the game is over and the player has won; false otherwise.
-	 */
-	public boolean didPlayerWin(){
-		if (this.won){
-			return true;
-		}
-		else{
-			return false;
-		}
-	}
-	
-	/**
-	 * Returns whether the game, played in the given game world, is over.
-	 * The game is over when Mazub has died, or has reached the target tile.
-	 * 
-	 * @param world
-	 *            The world for which to check whether the game is over
-	 * @return true if the game is over, false otherwise.
 	 */
 	public boolean isGameOver(){
 		return (this.gameOver);
 	}
 	
+	
 	/**
-	 * Check whether the geological feature is passable or not.
+	 * @return True if and only if the game is over and the player has won.
 	 * 
+	 */
+	public boolean didPlayerWin(){
+		return ((this.isGameOver()) && (this.won));
+	}
+
+	/**
 	 * @param	geologicalFeature
 	 * 			The geological feature which has to be checked.
 	 * @return	True if and only if the geological feature equals 1.
@@ -515,11 +464,9 @@ public class World {
 	}
 	
 	/**
-	 * Check whether the given tileType is a valid one.
-	 * 
 	 * @param 	tileType
-	 * 			The tileType which has to be checked.
-	 * @return	True if and only if the direction is 0, 1, 2 or 3.
+	 * 			The tile type which has to be checked.
+	 * @return	True if and only if the given tile type is 0, 1, 2 or 3.
 	 */
 	private boolean isValidTileType(int tileType){
 		return ((tileType == 0)
@@ -530,44 +477,103 @@ public class World {
 	}
 	
 	/**
-	 * Check whether the alien is on the target tile or not.
-	 * 
+	 * @param	targetTileX
+	 * 			The x-position of the target tile that has to be checked.
+	 * @param	targetTileY
+	 * 			The y-position of the target tile that has to be checked.
+	 * @return	True if and only if the target tile is located in the game world.
+	 */
+	private boolean isValidTargetTile(int targetTileX, int targetTileY) {
+		return ((targetTileX <= this.getWorldSize()[0]) && (targetTileY <= this.getWorldSize()[1]));
+	}
+	
+	/**
 	 * @return	True if and only if the alien touches the target tile.
+	 * 
 	 */
 	protected boolean alienOnTargetTile() {
 		return (this.getMazub().touchTargetTile());
 	}
 	
+	/**
+	 * @post	If a shark in this game world has 0 hitpoints or is out of the game world, it is removed
+	 * 			from this game world with a delay of 0.6 seconds.
+	 * 			| for (Shark shark: this.getSharks())
+	 * 			|	if ((shark.getNbHitPoints() == 0) || (!shark.isValidPosition(shark.getPosition())))
+	 * 			|		if (shark.getTimeDead() >= 0.6)
+	 * 			|			this.sharks.remove(shark)
+	 * @post	If a slime in this game world has 0 hitpoints or is out of the game world, it is removed
+	 * 			from this game world with a delay of 0.6 seconds.
+	 * 			| for (Slime slime: this.getSlimes())
+	 * 			|	if ((slime.getNbHitPoints() == 0) || (!slime.isValidPosition(slime.getPosition())))
+	 * 			|		if (slime.getTimeDead() >= 0.6)
+	 * 			|			this.slimes.remove(slime)
+	 * @post	If a plant in this game world has 0 hitpoints or is out of the game world, it is removed
+	 * 			from this game world with a delay of 0.6 seconds.
+	 * 			| for (Plant plant: this.getPlants())
+	 * 			|	if ((plant.getNbHitPoints() == 0) || (!plant.isValidPosition(plant.getPosition())))
+	 * 			|		if (plant.getTimeDead() >= 0.6)
+	 * 			|			this.plants.remove(plant)
+	 */
+	public void removeDeadObjects(double dt) {
+		for (Shark shark: this.getSharks()) {
+			if ((shark.getNbHitPoints() == 0) || (!shark.isValidPosition(shark.getPosition()))) {
+				if (shark.getTimeDead() >= 0.6) {
+					shark.setTimeDead(0);
+					this.sharks.remove(shark);
+				}
+				else
+					shark.setTimeDead(shark.getTimeDead() + dt);
+			}
+		}
+		for (Slime slime: this.getSlimes()) {
+			if ((slime.getNbHitPoints() == 0) || (!slime.isValidPosition(slime.getPosition()))) {
+				if (slime.getTimeDead() >= 0.6) {
+					slime.setTimeDead(0);
+					this.slimes.remove(slime);
+				}
+				else
+					slime.setTimeDead(slime.getTimeDead() + dt);
+			}
+		}
+		for (Plant plant: this.getPlants()) {
+			if ((plant.getNbHitPoints() == 0) || (!plant.isValidPosition(plant.getPosition()))) {
+				if (plant.getTimeDead() >= 0.6) {
+					plant.setTimeDead(0);
+					this.plants.remove(plant);
+				}
+				else
+					plant.setTimeDead(plant.getTimeDead() + dt);
+			}
+		}
+	}
+	
 	public void advanceTime(double dt) {
-		this.getMazub().advanceTime(dt);
-		if ((this.getMazub().getNbHitPoints() == 0) 
-				|| (this.getMazub().getPosition()[1] < 0)) {
-			this.gameOver = true;
-			this.gameState = GameState.STOPPED;
+		Mazub alien = this.getMazub();
+		alien.advanceTime(dt);
+		if ((alien.getNbHitPoints() == 0) 
+				|| (alien.getPosition()[1] < 0)) {
+			if (alien.getTimeDead() >= 0.6) {
+				this.gameOver = true;
+				this.gameState = GameState.STOPPED;
+			}
+			else
+				alien.setTimeDead(alien.getTimeDead() + dt);
 		}
 		if (this.alienOnTargetTile()) {
 			this.won = true;
 			this.gameOver = true;
 			this.gameState = GameState.STOPPED;
 		}
-		for (Shark shark: this.getSharks()){
+		for (Shark shark: this.getSharks()) {
 			shark.advanceTime(dt);
-			if ((shark.getNbHitPoints() == 0) || (!shark.isValidPosition(shark.getPosition())))
-				this.sharks.remove(shark);
 		}
-		for (Slime slime: this.getSlimes()){
+		for (Slime slime: this.getSlimes()) {
 			slime.advanceTime(dt);
-			if ((slime.getNbHitPoints() == 0) || (!slime.isValidPosition(slime.getPosition())))
-				this.slimes.remove(slime);
 		}
-		for(Plant plant: this.getPlants()){
+		for (Plant plant: this.getPlants()) {
 			plant.advanceTime(dt);
-			if ((plant.getNbHitPoints() == 0) || (!plant.isValidPosition(plant.getPosition())))
-				this.plants.remove(plant);
 		}
-	}
-	
-	public void setBuzam(Buzam buzam){
-		this.buzam = buzam;
+		this.removeDeadObjects(dt);
 	}
 }

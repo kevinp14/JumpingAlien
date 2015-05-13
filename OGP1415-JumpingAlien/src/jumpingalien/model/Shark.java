@@ -11,35 +11,48 @@ import jumpingalien.util.Sprite;
  * methods to move vertically and a method to advance time and adapt the time depending characteristics 
  * based on the period of time passed.
  * 
- * @invar //TODO
+ * @invar
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
- * @version 5.0
+ * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * @version 9.0
  *
- */ //TODO: meeste @post veranderen in @effect en @invar bekijken
+ */
 public class Shark extends GameObject {
 	private double normalVerticalVelocity;
 	private double timeMovingHorizontally;
 	private double timesNotJumped;
 	
 	/**
-	 * Initialize the shark at the given position in x- and y-direction with the given list of
-	 * sprites. Also sets the time moving horizontally and the times not jumped to 0.
-	 * 
 	 * @param 	positionX
 	 * 			The position in the x-direction where the shark should be.
 	 * @param 	positionY
 	 * 			The position in the y-direction where the shark should be.
 	 * @param 	spriteList
 	 * 			The list of sprites displaying how the shark should look depending on its behavior.
+	 * @effect	The new last direction is set to a random direction.
+	 * 			| this.setLastDirection(this.getRandomDirection())
+	 * @effect	The new normal horizontal velocity is set to 0.
+	 * 			| this.setNormalHorizontalVelocity(0)
+	 * @effect	The new normal horizontal acceleration is set to 1.5.
+	 * 			| this.setNormalHorizontalAcceleration(1.5)
+	 * @effect	The new maximum horizontal velocity is set to 4.
+	 * 			| this.setMaxHorizontalVelocity(4)
+	 * @post	The new normal vertical velocity is set to 2.
+	 * 			| (new this).normalVerticalVelocity = 2
+	 * @post	The new time moving horizontally is set to 0.
+	 * 			| (new this).timeMovingHorizontally = 0
+	 * @post	The new times not jumped are set to 0.
+	 * 			| (new this).timesNotJumped = 0
+	 * @effect	The number of hitpoints is increased with 100.
+	 * 			| this.changeNbHitPoints(100)
 	 */
 	public Shark(int positionX, int positionY, Sprite[] spriteList, Program program) {
 		super(positionX, positionY, spriteList, program);
+		this.setLastDirection(this.getRandomDirection());
 		this.setNormalHorizontalVelocity(0);
 		this.setNormalHorizontalAcceleration(1.5);
 		this.setMaxHorizontalVelocity(4);
 		this.normalVerticalVelocity = 2;
-		this.setLastDirection(this.getRandomDirection());
 	    this.timeMovingHorizontally = 0;	
 	    this.timesNotJumped = 0;
 	    this.changeNbHitPoints(100);
@@ -47,6 +60,7 @@ public class Shark extends GameObject {
 	
 	/**
 	 * @return	A random time between 1 and 4 seconds during which the shark has to move.
+	 * 
 	 */
 	private int getRandomMovingTime() {
 		Random rand = new Random();
@@ -58,8 +72,9 @@ public class Shark extends GameObject {
 	}
 	
 	/**
-	 * @return A random direction (left, right, up and left, up and right, down and left or 
-	 * down and right) for the shark to move in.
+	 * @return	A random direction (left, right, up and left, up and right, down and left or 
+	 * 			down and right) for the shark to move in.
+	 * 
 	 */
 	private Direction getRandomDirection(){
 		Random rand = new Random();
@@ -86,8 +101,9 @@ public class Shark extends GameObject {
 	
 	/**
 	 * @return A random acceleration between 0 and 0.2 for the shark to dive with.
+	 * 
 	 */
-	private double getRandomDivingAcceleration() {
+	private double getRandomSwimAcceleration() {
 		Random rand = new Random();
 		double divingAcceleration = (double)((double)(rand.nextInt(2)) / 10);
 		return divingAcceleration;
@@ -99,22 +115,34 @@ public class Shark extends GameObject {
 	 * @return	The new period of time dt based on the current velocity and acceleration of the alien
 	 * 			in this world. (used for accurate collision detection).
 	 */
-	private double getNewDt(double dt){
-		double velocity = Math.pow((Math.pow(this.getHorizontalVelocity(), 2) + 
-				Math.pow(this.getVerticalVelocity(),2)), 1/2);
-		double acceleration = Math.pow((Math.pow(this.getHorizontalAcceleration(), 2) + 
-				Math.pow(this.getVerticalAcceleration(),2)), 1/2);
-		double newDt = 0.01 / (velocity + acceleration*dt);
-		if ((velocity + acceleration*dt) == 0)
+	private double getNewDt(double dt) {
+		double velocity = Math.sqrt(Math.pow(this.getHorizontalVelocity(), 2) + 
+				Math.pow(this.getVerticalVelocity(), 2));
+		double acceleration = Math.sqrt(Math.pow(this.getHorizontalAcceleration(), 2) + 
+				Math.pow(this.getVerticalAcceleration(), 2));
+		double newDt = 0.01 / (velocity + (acceleration * dt));
+		if ((velocity + (acceleration * dt)) == 0)
 			return 0.01;
-		else {
+		else 
 			return newDt;
-		}
 	}
 	
 	/**
-	 * Check whether the shark is jumping or not.
-	 * 
+	 * @param 	direction
+	 * 			The direction which has to be checked.
+	 * @return	True if and only if the direction is right, left, upleft, upright, downleft, downright.
+	 */
+	@Override
+	protected boolean isValidMovingDirection(Direction direction) {
+		return ((direction == Direction.RIGHT) 
+				|| (direction == Direction.LEFT)
+				|| (direction == Direction.UPLEFT)
+				|| (direction == Direction.UPRIGHT)
+				|| (direction == Direction.DOWNLEFT)
+				|| (direction == Direction.DOWNRIGHT));
+	}
+	
+	/**
 	 * @return	True if and only if the shark's vertical velocity is bigger than 0 and its vertical
 	 * 			acceleration is -10.
 	 */
@@ -123,8 +151,6 @@ public class Shark extends GameObject {
 	}
 	
 	/**
-	 * Check whether the shark is rising (in water) or not.
-	 * 
 	 * @return	True if and only if the shark's vertical velocity is bigger than 0 and its vertical
 	 * 			acceleration is not -10.
 	 */
@@ -133,8 +159,6 @@ public class Shark extends GameObject {
 	}
 	
 	/**
-	 * Check whether the shark is rising (in water) or not.
-	 * 
 	 * @return	True if and only if the shark's vertical velocity is smaller than 0 and its vertical
 	 * 			acceleration is not -10.
 	 */
@@ -143,8 +167,6 @@ public class Shark extends GameObject {
 	}
 	
 	/**
-	 * Check whether the shark is completely submerged in water or not.
-	 * 
 	 * @return	True if and only if the geological feature at the shark's tile's top perimeter 
 	 * 			equals 2 (water).
 	 */
@@ -154,45 +176,47 @@ public class Shark extends GameObject {
 	}
 	
 	/**
-	 * Make the shark begin to move horizontally.
-	 * 
-	 * @param movingTime
-	 * @param dt
+	 * @param	movingTime
+	 * 			The time during which the shark has to move in a given direction.
+	 * @param	dt
+	 * 			The period of time with which the time is being advanced.
+	 * @effect	If the shark is already moving longer than the moving time, all ongoing movements are
+	 * 			ended, and it starts moving in another random direction.
+	 * 			| if (this.timeMovingHorizontally >= movingTime)
+	 * 			|	this.endMoveHorizontally(this.getLastDirection())
+	 * 			|	this.endMoveVertically()
+	 * 			|	Direction direction = this.getRandomDirection()
+	 * 			|	this.startMoveHorizontally(direction, this.getNormalHorizontalVelocity(),
+	 * 			|		this.getNormalHorizontalAcceleration())
+	 * 			|		this.startMoveVertically(direction)
 	 */
-	private void startMoveHorizontally(double movingTime, double dt) {
+	private void move(double movingTime, double dt) {
 		if (this.timeMovingHorizontally >= movingTime) {
 			this.timeMovingHorizontally = 0;
+			this.endMoveHorizontally(this.getLastDirection());
+			this.endMoveVertically();
 			Direction direction = this.getRandomDirection();
 			if ((direction == Direction.RIGHT) || (direction == Direction.LEFT)) {
-				this.endMoveHorizontally(this.getLastDirection());
-				this.endMoveVertically();
 				this.startMoveHorizontally(direction, this.getNormalHorizontalVelocity(),
 						this.getNormalHorizontalAcceleration());
 				this.timesNotJumped += 1;
 			}
 			else if (direction == Direction.UPRIGHT) {
-				this.endMoveHorizontally(this.getLastDirection());
-				this.endMoveVertically();
 				this.startMoveHorizontally(Direction.RIGHT, this.getNormalHorizontalVelocity(),
 						this.getNormalHorizontalAcceleration());
 				this.startMoveVertically(Direction.UP);
 			}
 			else if (direction == Direction.UPLEFT) {
-				this.endMoveHorizontally(this.getLastDirection());
-				this.endMoveVertically();
 				this.startMoveHorizontally(Direction.LEFT, this.getNormalHorizontalVelocity(),
 						this.getNormalHorizontalAcceleration());
 				this.startMoveVertically(Direction.UP);
 			}
 			else if (direction == Direction.DOWNRIGHT) {
-				this.endMoveHorizontally(this.getLastDirection());
-				this.endMoveVertically();
 				this.startMoveHorizontally(Direction.RIGHT, this.getNormalHorizontalVelocity(),
 						this.getNormalHorizontalAcceleration());
 				this.startMoveVertically(Direction.DOWN);
 			}
 			else if (direction == Direction.DOWNLEFT) {
-				this.endMoveVertically();
 				this.startMoveHorizontally(Direction.LEFT, this.getNormalHorizontalVelocity(),
 						this.getNormalHorizontalAcceleration());
 				this.startMoveVertically(Direction.DOWN);
@@ -203,7 +227,10 @@ public class Shark extends GameObject {
 	}
 	
 	/**
-	 * Make the shark begin to jump (move in the positive y-direction out of the water).
+	 * @effect	If the shark is not falling, its new vertical velocity and acceleration are set to the
+	 * 			normal ones.
+	 * 			| this.setVerticalVelocity(this.normalVerticalVelocity)
+	 * 			| this.setVerticalAcceleration(this.getNormalVerticalAcceleration())
 	 */
 	private void startJump() {
 		if (!this.isFalling()) {
@@ -213,7 +240,10 @@ public class Shark extends GameObject {
 	}
 	
 	/**
-	 * End the jumping of the shark.
+	 * @effect	If the current vertical velocity is bigger than 0, the new vertical velocity is set to
+	 * 			0.
+	 * 			| if (this.getVerticalVelocity() > 0)
+	 * 			|	this.setVerticalVelocity(0)
 	 */
 	private void endJump() {
 		if (this.getVerticalVelocity() > 0) {
@@ -222,38 +252,50 @@ public class Shark extends GameObject {
 	}
 	
 	/**
-	 * Make the shark begin to dive (move in the negative y-direction while in of the water).
+	 * @effect	The new vertical acceleration is set to a random swimming acceleration.
+	 * 			| this.setVerticalAcceleration(-this.getRandomSwimAcceleration())
 	 */
 	private void startDive() {
-		this.setVerticalAcceleration(-this.getRandomDivingAcceleration());
+		this.setVerticalAcceleration(-this.getRandomSwimAcceleration());
 	}
 	
 	/**
-	 * End the diving of the shark.
+	 * @effect	The new vertical acceleration is set to 0 .
+	 * 			| this.setVerticalAcceleration(0)
 	 */
 	private void endDive() {
 		this.setVerticalAcceleration(0);
 	}
 	
 	/**
-	 * Make the shark begin to rise (move in the positive y-direction while in of the water).
+	 * @effect	The new vertical acceleration is set to a random swimming acceleration.
+	 * 			| this.setVerticalAcceleration(this.getRandomSwimAcceleration())
 	 */
 	private void startRise() {
-		this.setVerticalAcceleration(this.getRandomDivingAcceleration());
+		this.setVerticalAcceleration(this.getRandomSwimAcceleration());
 	}
 	
 	/**
-	 * End the rising of the shark.
+	 * @effect	The new vertical acceleration is set to 0 .
+	 * 			| this.setVerticalAcceleration(0)
 	 */
 	private void endRise() {
 		this.setVerticalAcceleration(0);
 	}
 	
 	/**
-	 * Make the alien vertically by making him jump, dive or rise.
-	 * 
 	 * @param 	direction
 	 * 			The vertical direction in which the alien has to move.
+	 * @effect	If the shark is submerged in water and the given direction is up, it starts rising.
+	 * 			| if ((direction == Direction.UP) && (this.isSubmergedInWater()))
+	 * 			|	this.startRise()
+	 * @effect	If the shark is not submerged in water and the given direction is up, and it didn't
+	 * 			jump for 4 consecutive movements, it starts jumping.
+	 * 			| if ((direction == Direction.UP) && (!this.isSubmergedInWater()))
+	 * 			|	this.startJump()
+	 * @effect	If the shark is submerged in water and the given direction is down, it starts diving.
+	 * 			| if ((direction == Direction.DOWN) && (this.isSubmergedInWater()))
+	 * 			|	this.startDive()
 	 */
 	private void startMoveVertically(Direction direction) {
 		if (direction == Direction.UP) {
@@ -276,7 +318,15 @@ public class Shark extends GameObject {
 	}
 	
 	/**
-	 * End the vertical movement of the alien.
+	 * @effect	If the shark is jumping, its jump is ended.
+	 * 			| if (this.isJumping())
+	 * 			|	this.endJump()
+	 * @effect	If the shark is rising, its rise is ended.
+	 * 			| if (this.isRising())
+	 * 			|	this.endRise()
+	 * @effect	If the shark is diving, its dive is ended.
+	 * 			| if (this.isDiving())
+	 * 			|	this.endDive()
 	 */
 	private void endMoveVertically() {
 		if (this.isJumping())
@@ -288,114 +338,28 @@ public class Shark extends GameObject {
 	}
 	
 	/**
-	 * Return the new x-position in the game world of the shark after it moved horizontally. Also limit
-	 * the shark's velocity to the maximum and stop the shark from moving if the tile to which it wants 
-	 * to move is not passable.
 	 * @param	dt
 	 * 			The time passed dt.
-	 * @post	If the horizontal velocity is bigger than or equal to the maximum, the new horizontal 
+	 * @effect	If the horizontal velocity is bigger than or equal to the maximum, the new horizontal 
 	 * 			acceleration is set to 0 and the velocity to the maximum in the positive of negative 
 	 * 			direction, depending on the direction the alien was going in.
 	 * 			| if (Math.abs(this.getHorizontalVelocity()) >= this.getMaxHorizontalVelocity())
 	 * 			|	this.setHorizontalAcceleration(0)
 	 * 			|	if (this.getHorizontalVelocity() < 0)
-	 * 			|		(new this).setHorizontalVelocity(-this.getMaxHorizontalVelocity())
+	 * 			|		this.setHorizontalVelocity(-this.getMaxHorizontalVelocity())
 	 * 			|	else
-	 * 			|		(new this).setHorizontalVelocity(this.getMaxHorizontalVelocity())
-	 * @post	If the shark's x-position is the smaller than or equal to the minimum and the shark is 
-	 * 			trying to move in the negative x-direction, the new horizontal velocity and acceleration 
-	 * 			are set to 0 and the new x-position is set to the minimum.
-	 * 			| if ((this.getPosition()[0] <= 0) && (this.getHorizontalVelocity() < 0)) 
-	 * 			|	(new this).setHorizontalAcceleration(0) 
-	 * 			|	(new this).setHorizontalVelocity(0)
-	 * @post	If the shark's x-position is the bigger than or equal to the maximum and the shark is 
-	 * 			trying to move in the positive x-direction, the horizontal velocity and acceleration are
-	 * 			set to 0 and the x-position is set to the maximum.
-	 * 			| if ((this.getPosition()[0] >= (this.maxPositionX)) && 
-	 * 			|		(this.getHorizontalVelocity() > 0)) 
-	 * 			|	(new this).setHorizontalAcceleration(0) 
-	 * 			|	(new this).setHorizontalVelocity(0)
-	 * @post	If the shark's horizontal velocity is smaller than 0 and the tile to the left of the
-	 * 			shark is not passable, the new horizontal acceleration and velocity are set to 0.
-	 * 			| 		if ((this.world.isNotPassable(this.world.getGeologicalFeature(
-	 * 			|				this.getPosition()[0], this.getPosition()[1])))	
-	 * 			|				&& (this.getHorizontalVelocity() < 0)) 
-	 * 			|			(new this).setHorizontalAcceleration(0)
-	 * 			|			(new this).setHorizontalVelocity(0)
-	 * @post	If the shark's horizontal velocity is bigger than 0 and the tile to the right of the
-	 * 			shark is not passable, the new horizontal acceleration and velocity are set to 0.
-	 * 			| 		if ((this.world.isNotPassable(this.world.getGeologicalFeature(
-	 * 			|				this.getPosition()[0] + this.getCurrentSprite().getWidth(), 
-	 * 			|				this.getPosition()[1]))) && (this.getHorizontalVelocity() > 0)) 
-	 * 			|			(new this).setHorizontalAcceleration(0)
-	 * 			|			(new this).setHorizontalVelocity(0)
-	 * @post	If the shark is already moving horizontally for more than a random moving time, the 
-	 * 			ongoing movements are ended and it starts to move in a random direction horizontally
-	 * 			as well as vertically (if the shark is said to jump, it only jumps if it has not jumped
-	 * 			for the last 4 times).
-	 * 			| if (this.isMovingHorizontally())
-	 * 			|	int movingTime = this.getRandomMovingTime()
-	 * 			|	if (!(this.timeMovingHorizontally <= movingTime)) 
-	 * 			|		Direction direction = this.getRandomDirection()
-	 * 			|		if ((direction == Direction.RIGHT) || (direction == Direction.LEFT))
-	 * 			|			this.endMoveHorizontally(this.getLastDirection())
-	 * 			|			this.endMoveVertically()
-	 * 			|			this.startMoveHorizontally(direction)
-	 * 			|			this.timesNotJumped += 1
-	 * 			|		if (direction == Direction.UPRIGHT)
-	 * 			|			this.endMoveHorizontally(this.getLastDirection())
-	 * 			|			this.endMoveVertically()
-	 * 			|			this.startMoveHorizontally(Direction.RIGHT)
-	 * 			|			this.startMoveVertically(Direction.UP)
-	 * 			|		if (direction == Direction.UPLEFT)
-	 * 			|			this.endMoveHorizontally(this.getLastDirection())
-	 * 			|			this.endMoveVertically()
-	 * 			|			this.startMoveHorizontally(Direction.LEFT)
-	 * 			|			this.startMoveVertically(Direction.UP)
-	 * 			|		if (direction == Direction.DOWNRIGHT)
-	 * 			|			this.endMoveHorizontally(this.getLastDirection())
-	 * 			|			this.endMoveVertically()
-	 * 			|			this.startMoveHorizontally(Direction.RIGHT)
-	 * 			|			this.startMoveVertically(Direction.DOWN)
-	 * 			|		if (direction == Direction.DOWNLEFT)
-	 * 			|			this.endMoveHorizontally(this.getLastDirection())
-	 * 			|			this.endMoveVertically()
-	 * 			|			this.startMoveHorizontally(Direction.LEFT)
-	 * 			|			this.startMoveVertically(Direction.DOWN)
-	 * @post	If the shark is not yet moving horizontally, it starts to move in a random direction 
-	 * 			horizontally as well as vertically.
-	 * 			| if (this.isMovingHorizontally())
-	 * 			|	int movingTime = this.getRandomMovingTime()
-	 * 			|	if (!(this.timeMovingHorizontally <= movingTime)) 
-	 * 			|		Direction direction = this.getRandomDirection()
-	 * 			|		if ((direction == Direction.RIGHT) || (direction == Direction.LEFT))
-	 * 			|			this.startMoveHorizontally(direction)
-	 * 			|			this.timesNotJumped += 1
-	 * 			|		if (direction == Direction.UPRIGHT)
-	 * 			|			this.startMoveHorizontally(Direction.RIGHT)
-	 * 			|			this.startMoveVertically(Direction.UP)
-	 * 			|		if (direction == Direction.UPLEFT)
-	 * 			|			this.startMoveHorizontally(Direction.LEFT)
-	 * 			|			this.startMoveVertically(Direction.UP)
-	 * 			|		if (direction == Direction.DOWNRIGHT)
-	 * 			|			this.startMoveHorizontally(Direction.RIGHT)
-	 * 			|			this.startMoveVertically(Direction.DOWN)
-	 * 			|		if (direction == Direction.DOWNLEFT)
-	 * 			|			this.startMoveHorizontally(Direction.LEFT)
-	 * 			|			this.startMoveVertically(Direction.DOWN)
-	 * @post	The new horizontal velocity is set to the sum of the current horizontal velocity and the 
+	 * 			|		this.setHorizontalVelocity(this.getMaxHorizontalVelocity())
+	 * @effect	The new horizontal velocity is set to the sum of the current horizontal velocity and the 
 	 * 			product of the current horizontal acceleration and dt.
-	 * 			| (new this).setHorizontalVelocity(this.getHorizontalVelocity() + 
-	 * 			|	this.getHorizontalAcceleration()*dt)
+	 * 			| this.setHorizontalVelocity(this.getHorizontalVelocity() + 
+	 * 			|	this.getHorizontalAcceleration() * dt)
 	 * @return	newPositionX
 	 * 			The shark's new x-position after horizontal movement.
 	 * 			| newPositionX = this.getHorizontalVelocity() * dt 
 	 * 			|	- this.getHorizontalAcceleration() * Math.pow(dt, 2)
 	 * 			|	+ this.getHorizontalAcceleration() * Math.pow(dt, 2) / 2
-	 * @throws	IllegalArgumentException
-	 * 			| !isValidDt(dt)
 	 */
-	private double horizontalMovement(double dt) throws IllegalArgumentException {
+	private double horizontalMovement(double dt) {
 		if (Math.abs(this.getHorizontalVelocity()) >= this.getMaxHorizontalVelocity()) {
 			this.setHorizontalAcceleration(0);
 			if (this.getHorizontalVelocity() < 0) {
@@ -412,47 +376,19 @@ public class Shark extends GameObject {
 	}
 	
 	/**
-	 * Return the new y-position in the game world of the shark after it moved vertically. Also
-	 * stop the shark from moving if the tile to which he wants to move is not passable.
 	 * @param	dt
 	 * 			The time passed dt.
-	 * @post	If the given y-position is the bigger than or equal to the maximum and the shark is 
-	 * 			trying to move in the positive y-direction, the vertical velocity is set to 0 and the 
-	 * 			acceleration is set to -10.
-	 * 			| if ((this.getPosition()[1] >= this.maxPositionY) && 
-	 * 			|		(this.getVerticalVelocity() > 0))
-	 * 			|	(new this).setVerticalVelocity(0)
-	 * @post 	If the shark's vertical velocity is smaller than 0 and the tile beneath the shark is not
-	 * 			passable, the shark's new vertical acceleration and velocity are set to 0.
-	 * 			| 		if ((this.getVerticalVelocity() < 0) && (this.world.isNotPassable(
-	 * 			|				this.world.getGeologicalFeature((int)this.getPosition()[0], 
-	 * 			|				(int)this.getPosition()[1]))))
-	 * 			|			this.setVerticalAcceleration(0)
-	 * 			|			this.setVerticalVelocity(0)
-	 * @post 	If the shark's vertical velocity is bigger than 0 and the tile above the shark is not
-	 * 			passable, the shark's new vertical velocity is set to 0.
-	 * 			| 		if ((this.getVerticalVelocity() > 0) && (this.world.isNotPassable(
-	 * 			|				this.world.getGeologicalFeature((int)this.getPosition()[0], 
-	 * 			|				(int)this.getPosition()[1] + this.getCurrentSprite().getHeight()))))
-	 * 			|			this.setVerticalVelocity(0)
-	 * @post	If the shark is falling and is completely submerged in water, it's vertical acceleration
-	 * 			and velocity are set to 0.
-	 * 			| if ((this.isFalling()) && (this.isSubmergedInWater()))
-	 * 			|	this.setVerticalAcceleration(0)
-	 * 			|	this.setVerticalVelocity(0)
-	 * @post	The new vertical velocity is set to the sum of the current vertical velocity and the 
+	 * @effect	The new vertical velocity is set to the sum of the current vertical velocity and the 
 	 * 			product of the current vertical acceleration and dt.
-	 * 			| (new this).setVerticalVelocity(this.getVerticalVelocity() + 
+	 * 			| this.setVerticalVelocity(this.getVerticalVelocity() + 
 	 * 			|	this.getVerticalAcceleration()*dt)
 	 * @return	newPositionY
-	 * 			The shark's new y-position after vertical movement.
+	 * 			The alien's new y-position after vertical movement.
 	 * 			| newPositionY = this.getVerticalVelocity() * dt 
 	 * 			|	- this.getVerticalAcceleration() * Math.pow(dt, 2)
-	 * 			|	+ this.getVerticalAcceleration() * Math.pow(dt, 2)/2;
-	 * @throws	IllegalArgumentException
-	 * 			| !isValidDt(dt)
+	 * 			|	+ this.getVerticalAcceleration() * Math.pow(dt, 2)/2
 	 */
-	private double verticalMovement(double dt) throws IllegalArgumentException {
+	private double verticalMovement(double dt) {
 		this.setVerticalVelocity(this.getVerticalVelocity() + this.getVerticalAcceleration()*dt);
 		double newPositionY = this.getVerticalVelocity() * dt 
 				- this.getVerticalAcceleration() * Math.pow(dt, 2)
@@ -461,42 +397,52 @@ public class Shark extends GameObject {
 	}
 	
 	/**
-	 * The actions the shark has to take when colliding with another game object.
-	 * 
-	 * @param newDt
-	 * @param oldPosition
+	 * @param	newDt
+	 * 			The period of time on which collision has to be detected.
+	 * @param	oldPosition
+	 * 			The shark's old position.
+	 * @effect	If the shark collides with an alien in its game world, its movement is blocked if it
+	 * 			is trying to move in the direction in which it collided, and it loses 50 hitpoints if
+	 * 			it didn't fall on top of the alien.
+	 * 			| if (this.collidesWith(alien))
+	 * 			|	this.collisionBlockMovement(alien, oldPosition, newDt)
+	 * 			|	if ((!this.bottomCollidesWith(alien)) && (!this.isImmune()))
+	 * 			|		this.changeNbHitPoints(-50)
+	 * @effect	If the shark collides with another shark in its game world, its movement is blocked if
+	 * 			it is trying to move in the direction in which it collided.
+	 * 			| for (Shark shark: this.getWorld().getSharks())
+	 * 			|	if ((this.collidesWith(shark)) && (!this.bottomCollidesWith(shark)))
+	 * 			|		this.collisionBlockMovement(shark, oldPosition, newDt)
+	 * @effect	If the shark collides with a slime in its game world, its movement is blocked if it
+	 * 			is trying to move in the direction in which it collided, and it loses 50 hitpoints if
+	 * 			it didn't fall on top of the slime.
+	 * 			| for (Slime slime: this.getWorld().getSlimes())
+	 * 			|	if (this.collidesWith(slime)) 
+	 * 			|		this.collisionBlockMovement(slime, oldPosition, newDt)
+	 * 			|		if ((!this.bottomCollidesWith(slime)) && (!this.isImmune()))
+	 * 			|			this.changeNbHitPoints(-50)
 	 */
 	private void collidesWithActions(double newDt, int[] oldPosition) {
-		if ((this.collidesWith(this.getWorld().getMazub())) 
-				&& (!this.bottomCollidesWithTop(this.getWorld().getMazub()))) {
-			this.setHorizontalAcceleration(0);
-			this.setHorizontalVelocity(0);
-			this.setPosition(oldPosition[0], oldPosition[1]);
-			if (!this.isImmune()) {
-				this.changeNbHitPoints(-50);
-				this.makeImmune();
+		Mazub alien = this.getWorld().getMazub();
+		if (this.collidesWith(alien)) {
+			this.collisionBlockMovement(alien, oldPosition, newDt);
+			if (!this.bottomCollidesWith(alien)) {
+				if (!this.isImmune()) {
+					this.changeNbHitPoints(-50);
+					this.makeImmune();
+				}
+				else
+					this.setTimeImmune(this.getTimeImmune() + newDt);
 			}
-			else
-				this.setTimeImmune(this.getTimeImmune() + newDt);
 		}
 		for (Shark shark: this.getWorld().getSharks()) {
-			if ((this.collidesWith(shark)) && (!this.bottomCollidesWithTop(shark))) {
-				this.setHorizontalAcceleration(0);
-				this.setHorizontalVelocity(0); 
-				this.setPosition(oldPosition[0], oldPosition[1]);
-				/*Is dit goed om beweging te blokkeren? Want in de opgave
-				staat: "Properties of the ongoing movement of the colliding game, e.g. direction, velocity 
-				and acceleration, may not change directly as a result of the collision."*/
+			if ((this.collidesWith(shark)) && (!this.bottomCollidesWith(shark))) {
+				this.collisionBlockMovement(shark, oldPosition, newDt);
 			}
 		}
 		for (Slime slime: this.getWorld().getSlimes()) {
-			if ((this.collidesWith(slime)) && (!this.bottomCollidesWithTop(slime))) {
-				this.setHorizontalAcceleration(0);
-				this.setHorizontalVelocity(0); 
-				this.setPosition(oldPosition[0], oldPosition[1]);
-				/*Is dit goed om beweging te blokkeren? Want in de opgave
-				staat: "Properties of the ongoing movement of the colliding game, e.g. direction, velocity 
-				and acceleration, may not change directly as a result of the collision."*/
+			if ((this.collidesWith(slime)) && (!this.bottomCollidesWith(slime))) {
+				this.collisionBlockMovement(slime, oldPosition, newDt);
 				if (!this.isImmune()) {
 					this.changeNbHitPoints(-50);
 					this.makeImmune();
@@ -509,9 +455,15 @@ public class Shark extends GameObject {
 	}
 	
 	/**
-	 * The actions the shark has to take when in a fluid.
-	 * 
-	 * @param newDt
+	 * @param	newDt
+	 * 			The period of time with which the time is advanced.
+	 * @effect	If the shark is in air, its hitpoints are reduced with 6 every 0.2 seconds.
+	 * 			| if ((this.isInAir()) && (this.getTimeInAir() >= 0.2)) 
+	 * 			|		this.changeNbHitPoints(-6)
+	 * @effect	If the shark is in magma, its hitpoints are reduced with 50 upon contact and every 
+	 * 			0.2 seconds. However, the alien can not lose more than 50 hitpoints every 0.2 seconds.
+	 * 			| if (this.isInMagma()) 
+	 * 			|		this.changeNbHitPoints(-50)
 	 */
 	private void isInFluidActions(double newDt) {
 		if (this.isInAir()) {
@@ -544,27 +496,36 @@ public class Shark extends GameObject {
 	}
 	
 	/**
-	 * Set the new position on the screen of the shark to new position in the game world, limit the
-	 * shark's position to the minimum (in x-direction) and the maximum (both in x- and y-direction),
-	 * block the shark's movement if it wants to move to a tile that is not passable, adapt the time
-	 * moving horizontally, block the shark's movement, decrease its hitpoints and make it immune
-	 * if it collides with an enemy (only when it does not collide with its bottom perimeter), block the
-	 * shark's movement if it collides with another shark, decrease the number of hitpoints if the 
-	 * shark is in water or magma, and make it immune for magma if it falls into magma.
 	 * @param 	dt
 	 * 			The time passed dt.
-	 * @effect //TODO
+	 * @effect	If the shark is trying to cross an impassable tile, take the corresponding actions.
+	 * 			| if ((this.crossImpassableBottom()) || (this.crossImpassableLeft()) 
+	 * 			|	|| (this.crossImpassableTop()) || (this.crossImpassableRight()))
+	 * 			|		this.crossImpassableActions(oldPosition)
+	 * @effect	If the shark is in a fluid, the corresponding actions are taken.
+	 * 			| if ((this.isInAir()) || (this.isInMagma())) 
+	 * 			|	this.isInFluidActions(newDt)
+	 * @effect	If the shark is not on an impassable tile and is not submerged in water, its vertical 
+	 * 			acceleration is set to the normal one.
+	 * 			| if ((!this.touchImpassableBottom()) && (!this.isSubmergedInWater()))
+	 * 			|	this.setVerticalAcceleration(this.getNormalVerticalAcceleration())
+	 * @effect	If the alien is not trying to cross an impassable tile, its position is increased
+	 * 			by 100 times the horizontal/vertical movement.
+	 * 			| if ((!this.crossImpassableBottom()) && (!this.crossImpassableLeft())
+	 * 			|	&& (!this.crossImpassableTop()) && (!this.crossImpassableRight()))
+	 * 			|		this.setPosition(oldPosition[0] + 100*this.horizontalMovement(newDt),
+	 * 			|			oldPosition[1] + 100*this.verticalMovement(newDt))
 	 * @throws	IllegalArgumentException
 	 * 			| !isValidDt(dt)
 	 */
 	public void advanceTime(double dt) throws IllegalArgumentException {
+		if (!this.isValidDt(dt))
+			throw new IllegalArgumentException("The given period of time dt is invalid!");
 		double sumDt = 0;
 		int movingTime = this.getRandomMovingTime();
 		while (sumDt < dt) {
 			double newDt = this.getNewDt(dt);
 			int[] oldPosition = this.getPosition();
-			if (!this.isValidDt(newDt))
-				throw new IllegalArgumentException("The given period of time dt is invalid!");
 			if ((this.crossImpassableBottom()) || (this.crossImpassableLeft()) 
 					|| (this.crossImpassableTop()) || (this.crossImpassableRight()))  {
 				this.crossImpassableActions(oldPosition);
@@ -572,7 +533,7 @@ public class Shark extends GameObject {
 			this.collidesWithActions(newDt, oldPosition);
 			if ((this.isInAir()) || (this.isInMagma()))
 				this.isInFluidActions(newDt);
-			this.startMoveHorizontally(movingTime, newDt);
+			this.move(movingTime, newDt);
 			if ((!this.crossImpassableBottom()) && (!this.crossImpassableLeft())
 					&& (!this.crossImpassableTop()) && (!this.crossImpassableRight())) {
 				if ((!this.touchImpassableBottom()) && (!this.isSubmergedInWater())) {
