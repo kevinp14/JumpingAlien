@@ -27,7 +27,7 @@ import jumpingalien.util.*;
  * 			| Math.abs(this.getHorizontalAcceleration()) > 0
  * 
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
  * @version 11.0
  *
  */
@@ -39,6 +39,7 @@ public class Mazub extends GameObject {
 	private double timeMovingHorizontally;
 	private double timeForcedDuck;
 	private Direction secondaryDirection;
+	private Program program;
 	
 	/**
 	 * Initialize the Mazub alien at the given position in x- and y-direction with the given list of
@@ -76,6 +77,7 @@ public class Mazub extends GameObject {
 	    this.timeMovingHorizontally = 0;
 	    this.timeForcedDuck = 0;
 	    this.changeNbHitPoints(100);
+	    this.program = program;
 	}
 
 	/**
