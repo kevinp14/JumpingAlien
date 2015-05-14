@@ -1176,4 +1176,12 @@ public class GameObject {
 				this.timeBlocked += dt;
 		}
 	}
+	
+	public boolean isDucking(){
+		return false;
+	}
+	
+	public boolean isJumping(){
+		return false;
+	}
 }
