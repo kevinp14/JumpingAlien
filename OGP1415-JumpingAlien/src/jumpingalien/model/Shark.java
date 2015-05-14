@@ -13,7 +13,7 @@ import jumpingalien.util.Sprite;
  * 
  * @invar
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
  * @version 9.0
  *
  */
@@ -21,6 +21,7 @@ public class Shark extends GameObject {
 	private double normalVerticalVelocity;
 	private double timeMovingHorizontally;
 	private double timesNotJumped;
+	private Program program;
 	
 	/**
 	 * @param 	positionX
@@ -56,6 +57,7 @@ public class Shark extends GameObject {
 	    this.timeMovingHorizontally = 0;	
 	    this.timesNotJumped = 0;
 	    this.changeNbHitPoints(100);
+	    this.program = program;
 	}
 	
 	/**
