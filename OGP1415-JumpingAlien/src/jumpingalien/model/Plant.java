@@ -11,7 +11,7 @@ import jumpingalien.util.Sprite;
  * 
  * @invar 
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
  * @version 5.0
  *
  */
@@ -19,6 +19,7 @@ public class Plant extends GameObject {
 	
 	private Direction nextDirection;
 	private double timeMovingHorizontally;
+	private Program program;
 	
 	/**
 	 * @param 	positionX
@@ -45,6 +46,7 @@ public class Plant extends GameObject {
 	    this.nextDirection = Direction.STALLED;
 	    this.timeMovingHorizontally = 0;
 	    this.changeNbHitPoints(1);
+	    this.program = program;
 	}
 	
 	/**
