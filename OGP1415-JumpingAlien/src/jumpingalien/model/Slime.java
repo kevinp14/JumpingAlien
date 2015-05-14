@@ -14,13 +14,14 @@ import jumpingalien.util.Sprite;
  * 
  * @invar
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
  * @version 8.0
  *
  */
 public class Slime extends GameObject {
 	private School school;
 	private double timeMovingHorizontally;
+	private Program program;
 
 	/**
 	 * @param 	positionX
@@ -55,6 +56,7 @@ public class Slime extends GameObject {
 	    this.timeMovingHorizontally = 0;
 		this.school = school;
 		this.changeNbHitPoints(100);
+		this.program = program;
 	}
 	
 	/**
