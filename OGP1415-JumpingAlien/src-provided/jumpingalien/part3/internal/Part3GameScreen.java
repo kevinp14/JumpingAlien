@@ -1,4 +1,4 @@
-package jumpingalien.part2.internal;
+package jumpingalien.part3.internal;
 
 import java.awt.Color;
 
@@ -12,6 +12,12 @@ import jumpingalien.common.gui.painters.HistoryPainter;
 import jumpingalien.common.gui.painters.PixelPainter;
 import jumpingalien.common.gui.painters.PlayerPainter;
 import jumpingalien.common.gui.painters.WorldBorderPainter;
+import jumpingalien.part2.internal.GameObjectPainter;
+import jumpingalien.part2.internal.GameOverPainter;
+import jumpingalien.part2.internal.HealthPainter;
+import jumpingalien.part2.internal.ImmunityPainter;
+import jumpingalien.part2.internal.Part2WorldInfoProvider;
+import jumpingalien.part2.internal.TilePainter;
 import ogp.framework.gui.InputMode;
 import ogp.framework.gui.MessagePainter;
 import ogp.framework.gui.Screen;
@@ -19,19 +25,19 @@ import ogp.framework.gui.SolidBackgroundPainter;
 import ogp.framework.gui.camera.Camera;
 import ogp.framework.gui.camera.SimpleCamera;
 
-public class Part2GameScreen extends
-		AlienGameScreen<JumpingAlienGamePart2, JumpingAlienGUIPart2> {
+public class Part3GameScreen extends
+		AlienGameScreen<JumpingAlienGamePart3, JumpingAlienGUIPart3> {
 
 	private Camera mainCamera, zoomCamera;
 
-	public Part2GameScreen(AlienScreenPanel<JumpingAlienGamePart2> panel,
-			JumpingAlienGUIPart2 gui,
-			Screen<JumpingAlienGamePart2, JumpingAlienGUIPart2> previous) {
+	public Part3GameScreen(AlienScreenPanel<JumpingAlienGamePart3> panel,
+			JumpingAlienGUIPart3 gui,
+			Screen<JumpingAlienGamePart3, JumpingAlienGUIPart3> previous) {
 		super(panel, gui, previous);
 	}
 
 	@Override
-	public Part2Options getOptions() {
+	public Part3Options getOptions() {
 		return getGUI().getGUIOptions();
 	}
 
@@ -146,11 +152,14 @@ public class Part2GameScreen extends
 		addPainter(new PlayerPainter(this));
 		addPainter(new ImmunityPainter(this, getGame().getAlienInfoProvider()));
 
+		addPainter(new PlayerPainter(this, getGame().getEvilTwinInfoProvider()));
+		addPainter(new ImmunityPainter(this, getGame().getEvilTwinInfoProvider()));
+		
 		addPainter(new WorldBorderPainter(this));
 
 		addPainter(new HealthPainter(this, getGame().getAlienInfoProvider()));
 
-		addPainter(new MessagePainter<Part2GameScreen>(this,
+		addPainter(new MessagePainter<Part3GameScreen>(this,
 				getGame()::getCurrentMessage));
 
 		addPainter(new GameOverPainter(this, getGame().getWorldInfoProvider()));
@@ -191,7 +200,7 @@ public class Part2GameScreen extends
 	}
 
 	@Override
-	protected InputMode<JumpingAlienGamePart2, JumpingAlienGUIPart2> createDefaultInputMode() {
+	protected InputMode<JumpingAlienGamePart3, JumpingAlienGUIPart3> createDefaultInputMode() {
 		return new AlienInputMode<>(this, null);
 	}
 }
