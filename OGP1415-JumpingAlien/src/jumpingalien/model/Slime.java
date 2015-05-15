@@ -14,14 +14,13 @@ import jumpingalien.util.Sprite;
  * 
  * @invar
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
+ * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
  * @version 8.0
  *
  */
 public class Slime extends GameObject {
 	private School school;
 	private double timeMovingHorizontally;
-	private Program program;
 
 	/**
 	 * @param 	positionX
@@ -56,7 +55,6 @@ public class Slime extends GameObject {
 	    this.timeMovingHorizontally = 0;
 		this.school = school;
 		this.changeNbHitPoints(100);
-		this.program = program;
 	}
 	
 	/**
@@ -88,13 +86,13 @@ public class Slime extends GameObject {
 	 * @return	A random time between 2 and 6 seconds during which the slime has to move.
 	 * 
 	 */
-	private int getRandomMovingTime() {
+	private double getRandomMovingTime() {
 		Random rand = new Random();
 		int movingTime = rand.nextInt(60);
 		if (movingTime > 20)
-			return (movingTime/10);
+			return (((double)movingTime) / 10);
 		else
-			return ((movingTime + 20)/10);
+			return (((double)(movingTime + 20)) / 10);
 	}
 	
 	/**
@@ -242,6 +240,16 @@ public class Slime extends GameObject {
 	 * 			|			for (Slime slime: this.getSchool().getSlimes())
 	 * 			|				if (!(slime == this))
 	 * 			|					slime.changeNbHitPoints(-1)
+	 * @effect	If the slime collides with buzam, its movement is blocked if it is trying to move in 
+	 * 			the direction in which it collided, and it loses 50 hitpoints if it didn't fall on 
+	 * 			top of bazum.
+	 * 			| if (this.collidesWith(bazum)) 
+	 * 			|	this.collisionBlockMovement(bazum, oldPosition, newDt)
+	 * 			|	if ((!this.bottomCollidesWith(bazum)) && (!this.isImmune()))
+	 * 			|		this.changeNbHitPoints(-50)
+	 * 			|		for (Slime slime: this.getSchool().getSlimes())
+	 * 			|			if (!(slime == this))
+	 * 			|				slime.changeNbHitPoints(-1)
 	 */
 	private void collidesWithActions(double newDt, int[] oldPosition) {
 		for (Slime slime: this.getWorld().getSlimes()) {
@@ -310,6 +318,22 @@ public class Slime extends GameObject {
 					this.setTimeImmune(this.getTimeImmune() + newDt);
 				}
 		}
+//		Buzam buzam = this.getWorld().getBuzam();
+//		if (this.collidesWith(buzam)) {
+//			this.collisionBlockMovement(buzam, oldPosition, newDt);
+//			if (!this.bottomCollidesWith(buzam)) {
+//				if (!this.isImmune()) {
+//					this.changeNbHitPoints(-50);
+//					for (Slime slime: this.getSchool().getSlimes()) {
+//						if (!(slime == this))
+//							slime.changeNbHitPoints(-1);
+//					}
+//					this.makeImmune();
+//				}
+//				else
+//					this.setTimeImmune(this.getTimeImmune() + newDt);
+//				}
+//		}
 	}
 	
 	/**
@@ -386,7 +410,7 @@ public class Slime extends GameObject {
 		if (!this.isValidDt(dt))
 			throw new IllegalArgumentException("The given period of time dt is invalid!");
 		double sumDt = 0;
-		int movingTime = this.getRandomMovingTime();
+		double movingTime = this.getRandomMovingTime();
 		while (sumDt < dt) {
 			double newDt = this.getNewDt(dt);
 			int[] oldPosition = this.getPosition();

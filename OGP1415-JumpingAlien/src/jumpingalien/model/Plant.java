@@ -11,7 +11,7 @@ import jumpingalien.util.Sprite;
  * 
  * @invar 
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
+ * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
  * @version 5.0
  *
  */
@@ -19,7 +19,6 @@ public class Plant extends GameObject {
 	
 	private Direction nextDirection;
 	private double timeMovingHorizontally;
-	private Program program;
 	
 	/**
 	 * @param 	positionX
@@ -46,7 +45,6 @@ public class Plant extends GameObject {
 	    this.nextDirection = Direction.STALLED;
 	    this.timeMovingHorizontally = 0;
 	    this.changeNbHitPoints(1);
-	    this.program = program;
 	}
 	
 	/**
@@ -153,10 +151,10 @@ public class Plant extends GameObject {
 	 * 			The period of time on which collision has to be detected.
 	 * @param	oldPosition
 	 * 			The plant's old position.
-	 * @effect	If the plant collides with an alien in it's game world and the alien's current number of 
-	 * 			hitpoints is smaller than 500, it loses 1 hitpoint.
-	 * 			| if ((this.collidesWith(this.getWorld().getMazub())) && 
-	 * 			|	(this.getWorld().getMazub().getNbHitPoints() < 500))
+	 * @effect	If the plant collides with an alien (Mazub or Buzam) in it's game world and the alien's 
+	 * 			current number of hitpoints is smaller than 500, it loses 1 hitpoint.
+	 * 			| if (((this.collidesWith(alien)) && (alien.getNbHitPoints() < 500))
+	 * 			|	|| ((this.collidesWith(buzam)) && (buzam.getNbHitPoints() < 500)))
 	 * 			|		this.changeNbHitPoints(-1)
 	 * @effect	If the plant collides with another plant in the game world, its movement is blocked.
 	 * 			| for (Plant plant: this.getWorld().getPlants())
@@ -164,8 +162,10 @@ public class Plant extends GameObject {
 	 * 			|		this.collisionBlockMovement(plant, oldPosition, newDt)
 	 */
 	private void collidesWithActions(double newDt, int[] oldPosition) {
-		if ((this.collidesWith(this.getWorld().getMazub())) && 
-				(this.getWorld().getMazub().getNbHitPoints() < 500))
+		Mazub alien = this.getWorld().getMazub();
+//		Buzam buzam = this.getWorld().getBuzam();
+		if (((this.collidesWith(alien)) && (alien.getNbHitPoints() < 500)))
+//				|| ((this.collidesWith(buzam)) && (buzam.getNbHitPoints() < 500)))
 			this.changeNbHitPoints(-1);
 		for (Plant plant: this.getWorld().getPlants()) {
 			if (this.collidesWith(plant))

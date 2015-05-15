@@ -73,6 +73,10 @@ public class GameObject {
 	 * 			behaviour.
 	 * @effect	The new position is set to the given one.
 	 * 			| this.setPosition(positionX, positionY)
+	 * @effect	The new program is set to the given one.
+	 * 			| this.setProgram(program)
+	 * @post	The new sprite list is set to the given one.
+	 * 			| (new this).spriteList = spriteList
 	 * @effect	The new horizontal velocity is set to 0.
 	 * 			| this.setHorizontalVelocity(0)
 	 * @effect	The new horizontal acceleration is set to 0.
@@ -83,8 +87,6 @@ public class GameObject {
 	 * 			| this.setVerticalAcceleration(0)
 	 * @effect	The new normal vertical acceleration is set to -10.
 	 * 			| this.setNormalVerticalAcceleration(-10)
-	 * @post	The new sprite list is set to the given one.
-	 * 			| this.spriteList = spriteList
 	 * @effect	The new time stalled is set to 0.
 	 * 			| this.setTimeStalled(0)
 	 * @effect	The new time in air is set to 0.
@@ -109,7 +111,6 @@ public class GameObject {
 	 * 			| this.isImmuneForMagma = false
 	 * @post	The new world is set to null.
 	 * 			| (new this).world = null
-	 * 			
 	 */
 	@Model
 	@Raw
@@ -118,12 +119,13 @@ public class GameObject {
 		assert (isValidPosition(position));
 		assert (isValidSpriteList(spriteList));
 		this.setPosition(positionX, positionY);
+		this.spriteList = spriteList;
+		this.setProgram(program);
 		this.setHorizontalVelocity(0);
 		this.setHorizontalAcceleration(0);
 	    this.setVerticalVelocity(0);
 		this.setVerticalAcceleration(0);
 		this.setNormalVerticalAcceleration(-10);
-		this.spriteList = spriteList;
 	    this.setTimeStalled(0);
 	    this.setTimeInAir(0);
 	    this.setTimeInWater(0);
@@ -136,7 +138,6 @@ public class GameObject {
 		this.isImmune = false;
 		this.isImmuneForMagma = false;
 		this.world = null;
-		this.program = program;
 	}
 	
 	/**
@@ -213,6 +214,24 @@ public class GameObject {
 		this.positionY = positionY;
 	}
 
+	/**
+	 * @return	The program which makes this game object move.
+	 * 
+	 */
+	@Basic
+	protected Program getProgram() {
+		return this.program;
+	}
+	
+	/**
+	 * @param	program
+	 * 			The program to which this game object's program needs to be set.
+	 */
+	@Basic
+	protected void setProgram(Program program) {
+		this.program = program;
+	}
+	
 	/**
 	 * @post	The number of hitpoints should be bigger than or equal to 0.
 	 * 			| hitPoints >= 0
@@ -1177,11 +1196,22 @@ public class GameObject {
 		}
 	}
 	
-	public boolean isDucking(){
-		return false;
-	}
 	
-	public boolean isJumping(){
-		return false;
+	/**
+	 * @effect	If this game object has 0 hitpoints or is out of the game world, it is removed
+	 * 			from its game world with a delay of 0.6 seconds.
+	 * 			| if ((this.getNbHitPoints() == 0) || (!this.isValidPosition(this.getPosition())))
+	 * 			|	if (this.getTimeDead() >= 0.6)
+	 * 			|		this.getWorld().removeObject(this, dt)
+	 */
+	protected void removeDeadObject(double dt) {
+		if ((this.getNbHitPoints() == 0) || (!this.isValidPosition(this.getPosition()))) {
+			if (this.getTimeDead() >= 0.6) {
+				this.setTimeDead(0);
+				this.getWorld().removeObject(this, dt);
+			}
+			else
+				this.setTimeDead(this.getTimeDead() + dt);
+		}
 	}
 }

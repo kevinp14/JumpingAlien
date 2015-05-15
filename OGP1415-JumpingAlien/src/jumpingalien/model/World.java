@@ -142,7 +142,7 @@ public class World {
 	 * @return	The buzam, the evil twin of Mazub in this world.
 	 * 
 	 */
-	public Mazub getBuzam() {
+	public Buzam getBuzam() {
 		return this.buzam;
 	}
 	
@@ -496,56 +496,30 @@ public class World {
 	}
 	
 	/**
-	 * @post	If a shark in this game world has 0 hitpoints or is out of the game world, it is removed
-	 * 			from this game world with a delay of 0.6 seconds.
-	 * 			| for (Shark shark: this.getSharks())
-	 * 			|	if ((shark.getNbHitPoints() == 0) || (!shark.isValidPosition(shark.getPosition())))
-	 * 			|		if (shark.getTimeDead() >= 0.6)
-	 * 			|			this.sharks.remove(shark)
-	 * @post	If a slime in this game world has 0 hitpoints or is out of the game world, it is removed
-	 * 			from this game world with a delay of 0.6 seconds.
-	 * 			| for (Slime slime: this.getSlimes())
-	 * 			|	if ((slime.getNbHitPoints() == 0) || (!slime.isValidPosition(slime.getPosition())))
-	 * 			|		if (slime.getTimeDead() >= 0.6)
-	 * 			|			this.slimes.remove(slime)
-	 * @post	If a plant in this game world has 0 hitpoints or is out of the game world, it is removed
-	 * 			from this game world with a delay of 0.6 seconds.
-	 * 			| for (Plant plant: this.getPlants())
-	 * 			|	if ((plant.getNbHitPoints() == 0) || (!plant.isValidPosition(plant.getPosition())))
-	 * 			|		if (plant.getTimeDead() >= 0.6)
-	 * 			|			this.plants.remove(plant)
+	 * @effect	If the given game object is a plant, it is removed from this world's plants.
+	 * 			| if (this.plants.contains(object))
+	 * 			|	this.plants.remove(object)
+	 * @effect	If the given game object is a shark, it is removed from this world's sharks.
+	 * 			| if (this.sharks.contains(object))
+	 * 			|	this.sharks.remove(object)
+	 * @effect	If the given game object is a slime, it is removed from this world's slimes.
+	 * 			| if (this.slimes.contains(object))
+	 * 			|	this.slimes.remove(object)
+	 * @effect	If the given game object is buzam, it is removed from this game world.
+	 * 			| if (object == this.getBuzam())
+	 * 			|	this.setBuzam(null)
 	 */
-	public void removeDeadObjects(double dt) {
-		for (Shark shark: this.getSharks()) {
-			if ((shark.getNbHitPoints() == 0) || (!shark.isValidPosition(shark.getPosition()))) {
-				if (shark.getTimeDead() >= 0.6) {
-					shark.setTimeDead(0);
-					this.sharks.remove(shark);
-				}
-				else
-					shark.setTimeDead(shark.getTimeDead() + dt);
-			}
-		}
-		for (Slime slime: this.getSlimes()) {
-			if ((slime.getNbHitPoints() == 0) || (!slime.isValidPosition(slime.getPosition()))) {
-				if (slime.getTimeDead() >= 0.6) {
-					slime.setTimeDead(0);
-					this.slimes.remove(slime);
-				}
-				else
-					slime.setTimeDead(slime.getTimeDead() + dt);
-			}
-		}
-		for (Plant plant: this.getPlants()) {
-			if ((plant.getNbHitPoints() == 0) || (!plant.isValidPosition(plant.getPosition()))) {
-				if (plant.getTimeDead() >= 0.6) {
-					plant.setTimeDead(0);
-					this.plants.remove(plant);
-				}
-				else
-					plant.setTimeDead(plant.getTimeDead() + dt);
-			}
-		}
+	public void removeObject(GameObject object, double dt) {
+		if (this.plants.contains(object))
+			this.plants.remove(object);
+		if (this.sharks.contains(object))
+			this.sharks.remove(object);
+		if (this.slimes.contains(object))
+			this.slimes.remove(object);
+		if (object == this.getBuzam())
+			this.setBuzam(null);
+			
+		
 	}
 	
 	public void advanceTime(double dt) {
@@ -565,6 +539,8 @@ public class World {
 			this.gameOver = true;
 			this.gameState = GameState.STOPPED;
 		}
+//		Buzam buzam = this.getBuzam();
+//		buzam.advanceTime(dt);
 		for (Shark shark: this.getSharks()) {
 			shark.advanceTime(dt);
 		}
@@ -574,6 +550,5 @@ public class World {
 		for (Plant plant: this.getPlants()) {
 			plant.advanceTime(dt);
 		}
-		this.removeDeadObjects(dt);
 	}
 }

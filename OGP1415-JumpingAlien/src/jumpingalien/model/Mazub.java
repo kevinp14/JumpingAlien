@@ -27,7 +27,7 @@ import jumpingalien.util.*;
  * 			| Math.abs(this.getHorizontalAcceleration()) > 0
  * 
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
+ * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
  * @version 11.0
  *
  */
@@ -39,7 +39,6 @@ public class Mazub extends GameObject {
 	private double timeMovingHorizontally;
 	private double timeForcedDuck;
 	private Direction secondaryDirection;
-	private Program program;
 	
 	/**
 	 * Initialize the Mazub alien at the given position in x- and y-direction with the given list of
@@ -77,7 +76,6 @@ public class Mazub extends GameObject {
 	    this.timeMovingHorizontally = 0;
 	    this.timeForcedDuck = 0;
 	    this.changeNbHitPoints(100);
-	    this.program = program;
 	}
 
 	/**
@@ -416,7 +414,7 @@ public class Mazub extends GameObject {
 		}
 		this.setHorizontalVelocity(this.getHorizontalVelocity() + this.getHorizontalAcceleration() * dt);
 		double newPositionX = this.getHorizontalVelocity() * dt 
-				- this.getHorizontalAcceleration() * Math.pow(dt, 2) 
+//				- this.getHorizontalAcceleration() * Math.pow(dt, 2) 
 				+ this.getHorizontalAcceleration() * Math.pow(dt, 2) / 2;
 		return newPositionX;
 	}
@@ -439,7 +437,7 @@ public class Mazub extends GameObject {
 	private double verticalMovement(double dt) {
 		this.setVerticalVelocity(this.getVerticalVelocity() + this.getVerticalAcceleration() * dt);
 		double newPositionY = this.getVerticalVelocity() * dt 
-				- this.getVerticalAcceleration() * Math.pow(dt, 2)
+//				- this.getVerticalAcceleration() * Math.pow(dt, 2)
 				+ this.getVerticalAcceleration() * Math.pow(dt, 2) / 2;
 		return newPositionY;
 	}
@@ -472,6 +470,13 @@ public class Mazub extends GameObject {
 	 * 			|		this.collisionBlockMovement(slime, oldPosition, newDt)
 	 * 			|		if ((!this.bottomCollidesWith(slime)) && (!this.isImmune()))
 	 * 			|			this.changeNbHitPoints(-50)
+	 * @effect	If the alien collides with buzam, its movement is blocked if it is trying to move in 
+	 * 			the direction in which it collided, and it loses 50 hitpoints if it didn't fall on 
+	 * 			top of bazum.
+	 * 			| if (this.collidesWith(bazum)) 
+	 * 			|	this.collisionBlockMovement(bazum, oldPosition, newDt)
+	 * 			|	if ((!this.bottomCollidesWith(bazum)) && (!this.isImmune()))
+	 * 			|		this.changeNbHitPoints(-50)
 	 */
 	private void collidesWithActions(double newDt, int[] oldPosition) {
 		for (Plant plant: this.getWorld().getPlants()) {
@@ -516,6 +521,24 @@ public class Mazub extends GameObject {
 				}
 			}
 		}
+//		Buzam buzam = this.getWorld().getBuzam();
+//		if (this.collidesWith(buzam)) {
+//			this.collisionBlockMovement(buzam, oldPosition, newDt);
+//			if (!this.bottomCollidesWith(buzam)) {
+//				if (!this.isImmune()) {
+//					this.changeNbHitPoints(-50);
+//					this.makeImmune();
+//					}
+//				else {
+//					if (this.getTimeImmune() <= 0.60) 
+//						this.setTimeImmune(this.getTimeImmune() + newDt);
+//					else {
+//						this.makeVulnerable();
+//						this.setTimeImmune(0);
+//					}
+//				}
+//			}
+//		}
 	}
 	
 	/**

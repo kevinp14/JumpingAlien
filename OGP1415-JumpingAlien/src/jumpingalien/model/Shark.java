@@ -13,7 +13,7 @@ import jumpingalien.util.Sprite;
  * 
  * @invar
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
+ * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
  * @version 9.0
  *
  */
@@ -21,7 +21,6 @@ public class Shark extends GameObject {
 	private double normalVerticalVelocity;
 	private double timeMovingHorizontally;
 	private double timesNotJumped;
-	private Program program;
 	
 	/**
 	 * @param 	positionX
@@ -57,20 +56,19 @@ public class Shark extends GameObject {
 	    this.timeMovingHorizontally = 0;	
 	    this.timesNotJumped = 0;
 	    this.changeNbHitPoints(100);
-	    this.program = program;
 	}
 	
 	/**
 	 * @return	A random time between 1 and 4 seconds during which the shark has to move.
 	 * 
 	 */
-	private int getRandomMovingTime() {
+	private double getRandomMovingTime() {
 		Random rand = new Random();
 		int movingTime = rand.nextInt(40);
 		if (movingTime > 10)
-			return (movingTime/10);
+			return (((double)movingTime) / 10);
 		else
-			return ((movingTime + 10)/10);
+			return (((double)(movingTime + 10)) / 10);
 	}
 	
 	/**
@@ -299,7 +297,7 @@ public class Shark extends GameObject {
 	 * 			| if ((direction == Direction.DOWN) && (this.isSubmergedInWater()))
 	 * 			|	this.startDive()
 	 */
-	private void startMoveVertically(Direction direction) {
+	public void startMoveVertically(Direction direction) {
 		if (direction == Direction.UP) {
 			if (this.isSubmergedInWater()) {
 				this.startRise();
@@ -330,7 +328,7 @@ public class Shark extends GameObject {
 	 * 			| if (this.isDiving())
 	 * 			|	this.endDive()
 	 */
-	private void endMoveVertically() {
+	public void endMoveVertically() {
 		if (this.isJumping())
 			this.endJump();
 		if (this.isRising())
@@ -423,6 +421,13 @@ public class Shark extends GameObject {
 	 * 			|		this.collisionBlockMovement(slime, oldPosition, newDt)
 	 * 			|		if ((!this.bottomCollidesWith(slime)) && (!this.isImmune()))
 	 * 			|			this.changeNbHitPoints(-50)
+	 * @effect	If the shark collides with buzam, its movement is blocked if it is trying to move in 
+	 * 			the direction in which it collided, and it loses 50 hitpoints if it didn't fall on 
+	 * 			top of bazum.
+	 * 			| if (this.collidesWith(bazum)) 
+	 * 			|	this.collisionBlockMovement(bazum, oldPosition, newDt)
+	 * 			|	if ((!this.bottomCollidesWith(bazum)) && (!this.isImmune()))
+	 * 			|		this.changeNbHitPoints(-50)
 	 */
 	private void collidesWithActions(double newDt, int[] oldPosition) {
 		Mazub alien = this.getWorld().getMazub();
@@ -437,6 +442,18 @@ public class Shark extends GameObject {
 					this.setTimeImmune(this.getTimeImmune() + newDt);
 			}
 		}
+//		Buzam buzam = this.getWorld().getBuzam();
+//		if (this.collidesWith(buzam)) {
+//			this.collisionBlockMovement(buzam, oldPosition, newDt);
+//			if (!this.bottomCollidesWith(buzam)) {
+//				if (!this.isImmune()) {
+//					this.changeNbHitPoints(-50);
+//					this.makeImmune();
+//				}
+//				else
+//					this.setTimeImmune(this.getTimeImmune() + newDt);
+//			}
+//		}
 		for (Shark shark: this.getWorld().getSharks()) {
 			if ((this.collidesWith(shark)) && (!this.bottomCollidesWith(shark))) {
 				this.collisionBlockMovement(shark, oldPosition, newDt);
@@ -524,7 +541,7 @@ public class Shark extends GameObject {
 		if (!this.isValidDt(dt))
 			throw new IllegalArgumentException("The given period of time dt is invalid!");
 		double sumDt = 0;
-		int movingTime = this.getRandomMovingTime();
+		double movingTime = this.getRandomMovingTime();
 		while (sumDt < dt) {
 			double newDt = this.getNewDt(dt);
 			int[] oldPosition = this.getPosition();
