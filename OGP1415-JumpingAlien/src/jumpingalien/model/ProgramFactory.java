@@ -1,355 +1,416 @@
 package jumpingalien.model;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import jumpingalien.part3.programs.ParseOutcome;
-import jumpingalien.part3.programs.ProgramParser;
-import jumpingalien.part3.programs.SourceLocation;
-import jumpingalien.part3.programs.IProgramFactory.Direction;
-import jumpingalien.part3.programs.IProgramFactory.Kind;
-import jumpingalien.part3.programs.IProgramFactory.SortDirection;
+import jumpingalien.model.expression.*;
+import jumpingalien.model.expression.RandomE;
+import jumpingalien.model.statement.*;
+import jumpingalien.model.type.*;
+import jumpingalien.part3.programs.*;
 
-public class ProgramFactory<E, S, T, P> {
 
-	public ProgramFactory() {
-	}
+public class ProgramFactory implements IProgramFactory<Expression, Statement, Type<?>, Program>{
 	
-	/* * Helper types * */
-
-	/** Direction enum */
-	public enum Direction {
-		LEFT, RIGHT, UP, DOWN
-	}
-
-	/** Kind enum */
-	public enum Kind {
-		MAZUB, BUZAM, SLIME, SHARK, PLANT, TERRAIN, ANY
-	}
-
-	/** Sort direction enum **/
-	public enum SortDirection {
-		ASCENDING, DESCENDING
-	}
+	public ProgramFactory(){}
 	
-	public ParseOutcome<?> parse(String text) {
-		IProgramFactory<E, S, T, P> factory = new ProgramFactory<>();
-		ProgramParser<E, S, T, P> parser = new ProgramParser<>(factory);
-		Optional<P> parseResult = parser.parse(text.toCharArray());
-	}
-
-	/* * Expressions * */
-
-	/**
-	 * An expression that evaluates to the value of the variable with the given
-	 * name and declared type
-	 */
-	public E createReadVariable(String variableName, T variableType,
+	@Override
+	public Expression createReadVariable(String variableName, Type<?> variableType,
 			SourceLocation sourceLocation) {
-		
+		ReadVariable readVariable = new ReadVariable(variableName, variableType, sourceLocation);
+		return readVariable;
 	}
 
-	/** An expression that evaluates to the given numeric value */
-	E createDoubleConstant(double value, SourceLocation sourceLocation);
+	@Override
+	public Expression createDoubleConstant(double value,
+			SourceLocation sourceLocation) {
+		DoubleConstant doubleConstant = new DoubleConstant(value, sourceLocation);
+		return doubleConstant;
+	}
 
-	/** An expression that evaluates to true */
-	E createTrue(SourceLocation sourceLocation);
+	@Override
+	public Expression createTrue(SourceLocation sourceLocation) {
+		BooleanE booleanE = new BooleanE(true, sourceLocation);
+		return booleanE;
+	}
 
-	/** An expression that evaluates to false */
-	E createFalse(SourceLocation sourceLocation);
+	@Override
+	public Expression createFalse(SourceLocation sourceLocation) {
+		BooleanE booleanE = new BooleanE(false, sourceLocation);
+		return booleanE;
+	}
 
-	/** An expression that evaluates to null */
-	E createNull(SourceLocation sourceLocation);
+	@Override
+	public Expression createNull(SourceLocation sourceLocation) {
+		NullE nullE = new NullE(sourceLocation);
+		return nullE;
+	}
 
-	/**
-	 * An expression that evaluates to the game object that is executing the
-	 * program
-	 */
-	E createSelf(SourceLocation sourceLocation);
+	
+	@Override
+	public Expression createSelf(SourceLocation sourceLocation) {
+		SelfE selfE = new SelfE(sourceLocation);
+		return selfE;
+	}
 
-	/** An expression that evaluates to the given direction */
-	E createDirectionConstant(Direction value, SourceLocation sourceLocation);
+	@Override
+	public Expression createDirectionConstant(Direction value,
+			SourceLocation sourceLocation) {
+		DirectionConstant directionConstant = new DirectionConstant(value, sourceLocation);
+		return directionConstant;
+	}
 
-	/** An expression that evaluates to the sum of the given expressions */
-	E createAddition(E left, E right, SourceLocation sourceLocation);
+	@Override
+	public Expression createAddition(Expression left, Expression right, 
+			SourceLocation sourceLocation) {		
+		Addition addition = new Addition(left, right, sourceLocation);
+		return addition;
+	}
 
-	/** An expression that evaluates to the difference of the given expressions */
-	E createSubtraction(E left, E right, SourceLocation sourceLocation);
+	@Override
+	public Expression createSubtraction(Expression left, Expression right,
+			SourceLocation sourceLocation) {
+		Subtraction subtraction = new Subtraction(left, right, sourceLocation);
+		return subtraction;
+	}
 
-	/** An expression that evaluates to the product of the given expressions */
-	E createMultiplication(E left, E right, SourceLocation sourceLocation);
+	@Override
+	public Expression createMultiplication(Expression left, Expression right,
+			SourceLocation sourceLocation) {
+		Multiplication multiplication = new Multiplication(left, right, sourceLocation);
+		return multiplication;
+	}
 
-	/** An expression that evaluates to the division of the given expressions */
-	E createDivision(E left, E right, SourceLocation sourceLocation);
+	@Override
+	public Expression createDivision(Expression left, Expression right,
+			SourceLocation sourceLocation) {
+		Division division = new Division(left, right, sourceLocation);
+		return division;
+	}
 
-	/** An expression that evaluates to the square root of the given expressions */
-	E createSqrt(E expr, SourceLocation sourceLocation);
+	@Override
+	public Expression createSqrt(Expression expr, SourceLocation sourceLocation) {
+		SqrtE sqrtE = new SqrtE(expr, sourceLocation);
+		return sqrtE;
+	}
 
-	/**
-	 * An expression that evaluates to a random value between 0 (inclusive) and
-	 * the given maximum value (exclusive)
-	 */
-	E createRandom(E maxValue, SourceLocation sourceLocation);
+	@Override
+	public Expression createRandom(Expression maxValue, SourceLocation sourceLocation) {
+		RandomE random = new RandomE(maxValue, sourceLocation);
+		return random;
+	}
 
-	/** An expression that evaluates to the conjunction of the given expressions */
-	E createAnd(E left, E right, SourceLocation sourceLocation);
+	@Override
+	public Expression createAnd(Expression left, Expression right,
+			SourceLocation sourceLocation) {
+		AndE andE = new AndE(left, right, sourceLocation);
+		return andE;
+	}
 
-	/** An expression that evaluates to the disjunction of the given expressions */
-	E createOr(E left, E right, SourceLocation sourceLocation);
+	@Override
+	public Expression createOr(Expression left, Expression right,
+			SourceLocation sourceLocation) {
+		OrE orE = new OrE(left, right, sourceLocation);
+		return orE;
+	}
 
-	/** An expression that evaluates to the negation of the given expression */
-	E createNot(E expr, SourceLocation sourceLocation);
+	@Override
+	public Expression createNot(Expression expr, SourceLocation sourceLocation) {
+		NotE notE = new NotE(expr, sourceLocation);
+		return notE;
+	}
 
-	/**
-	 * An expression that evaluates to true if the value of the left expression
-	 * is less than the value of the right expression
-	 */
-	E createLessThan(E left, E right, SourceLocation sourceLocation);
+	@Override
+	public Expression createLessThan(Expression left, Expression right,
+			SourceLocation sourceLocation) {
+		LessThan lessThan = new LessThan(left, right, sourceLocation);
+		return lessThan;
+	}
 
-	/**
-	 * An expression that evaluates to true if the value of the left expression
-	 * is less than or equal to the value of the right expression
-	 */
-	E createLessThanOrEqualTo(E left, E right, SourceLocation sourceLocation);
+	@Override
+	public Expression createLessThanOrEqualTo(Expression left, Expression right,
+			SourceLocation sourceLocation) {
+		LessThanOrEqual lessThanOrEqual = new LessThanOrEqual(left, right, sourceLocation);
+		return lessThanOrEqual;
+	}
 
-	/**
-	 * An expression that evaluates to true if the value of the left expression
-	 * is greater than the value of the right expression
-	 */
-	E createGreaterThan(E left, E right, SourceLocation sourceLocation);
+	@Override
+	public Expression createGreaterThan(Expression left, Expression right,
+			SourceLocation sourceLocation) {
+		GreaterThan greaterThan = new GreaterThan(left, right, sourceLocation);
+		return greaterThan;
+	}
 
-	/**
-	 * An expression that evaluates to true if the value of the left expression
-	 * is greater than or equal to the value of the right expression
-	 */
-	E createGreaterThanOrEqualTo(E left, E right, SourceLocation sourceLocation);
+	@Override
+	public Expression createGreaterThanOrEqualTo(Expression left, Expression right,
+			SourceLocation sourceLocation) {
+		GreaterThanOrEqual greaterThanOrEqual = new GreaterThanOrEqual(left, right, sourceLocation);
+		return greaterThanOrEqual;
+	}
 
-	/**
-	 * An expression that evaluates to true if the value of the left expression
-	 * equals the value of the right expression
-	 */
-	E createEquals(E left, E right, SourceLocation sourceLocation);
+	@Override
+	public Expression createEquals(Expression left, Expression right,
+			SourceLocation sourceLocation) {
+		Equals equals = new Equals(left, right, sourceLocation);
+		return equals;
+	}
 
-	/**
-	 * An expression that evaluates to true if the value of the left expression
-	 * does not equal the value of the right expression
-	 */
-	E createNotEquals(E left, E right, SourceLocation sourceLocation);
+	@Override
+	public Expression createNotEquals(Expression left, Expression right,
+			SourceLocation sourceLocation) {
+		NotEquals notEquals = new NotEquals(left, right, sourceLocation);
+		return notEquals;
+	}
 
-	/**
-	 * An expression that evaluates to the x-value of the object obtained from
-	 * the given expression
-	 */
-	E createGetX(E expr, SourceLocation sourceLocation);
+	@Override
+	public Expression createGetX(Expression expr, SourceLocation sourceLocation) {
+		GetX getX = new GetX(expr, sourceLocation);
+		return getX;
+	}
 
-	/**
-	 * An expression that evaluates to the y-value of the object obtained from
-	 * the given expression
-	 */
-	E createGetY(E expr, SourceLocation sourceLocation);
+	@Override
+	public Expression createGetY(Expression expr, SourceLocation sourceLocation) {
+		GetY getY = new GetY(expr, sourceLocation);
+		return getY;
+	}
 
-	/**
-	 * An expression that evaluates to the width of the object obtained from the
-	 * given expression
-	 */
-	E createGetWidth(E expr, SourceLocation sourceLocation);
+	@Override
+	public Expression createGetWidth(Expression expr, SourceLocation sourceLocation) {
+		GetWidth getWidth = new GetWidth(expr, sourceLocation);
+		return getWidth;
+	}
 
-	/**
-	 * An expression that evaluates to the height of the object obtained from
-	 * the given expression
-	 */
-	E createGetHeight(E expr, SourceLocation sourceLocation);
+	@Override
+	public Expression createGetHeight(Expression expr, SourceLocation sourceLocation) {
+		GetHeight getHeight = new GetHeight(expr, sourceLocation);
+		return getHeight;
+	}
 
-	/**
-	 * An expression that evaluates to the number of hitpoints of the object
-	 * obtained from the given expression
-	 */
-	E createGetHitPoints(E expr, SourceLocation sourceLocation);
+	@Override
+	public Expression createGetHitPoints(Expression expr, SourceLocation sourceLocation) {
+		GetHP getHP = new GetHP(expr, sourceLocation);
+		return getHP;
+	}
 
-	/**
-	 * An expression that evaluates to the tile in which the pixel with
-	 * coordinates (x, y) lies.
-	 */
-	E createGetTile(E x, E y, SourceLocation sourceLocation);
+	@Override
+	public Expression createGetTile(Expression x, Expression y,
+			SourceLocation sourceLocation) {
+		GetTile getTile = new GetTile(x, y, sourceLocation);
+		return getTile;
+	}
 
-	/**
-	 * An expression that evaluates to the first object that is encountered in
-	 * the given direction
-	 */
-	E createSearchObject(E direction, SourceLocation sourceLocation);
+	//TODO 
+	@Override
+	public Expression createSearchObject(Expression direction,
+			SourceLocation sourceLocation) {
+		SearchObject searchObject = new SearchObject(direction, sourceLocation);
+		return searchObject;
+	}
 
-	/**
-	 * An expression that evaluates to true if the object obtained from the
-	 * given expression is a Mazub
-	 */
-	E createIsMazub(E expr, SourceLocation sourceLocation);
+	@Override
+	public Expression createIsMazub(Expression expr, SourceLocation sourceLocation) {
+		IsMazub isMazub = new IsMazub(expr, sourceLocation);
+		return isMazub;
+	}
 
-	/**
-	 * An expression that evaluates to true if the object obtained from the
-	 * given expression is a Shark
-	 */
-	E createIsShark(E expr, SourceLocation sourceLocation);
+	@Override
+	public Expression createIsShark(Expression expr, SourceLocation sourceLocation) {
+		IsShark isShark = new IsShark(expr, sourceLocation);
+		return isShark;
+	}
 
-	/**
-	 * An expression that evaluates to true if the object obtained from the
-	 * given expression is a Slime
-	 */
-	E createIsSlime(E expr, SourceLocation sourceLocation);
+	@Override
+	public Expression createIsSlime(Expression expr, SourceLocation sourceLocation) {
+		IsSlime isSlime = new IsSlime(expr, sourceLocation);
+		return isSlime;
+	}
 
-	/**
-	 * An expression that evaluates to true if the object obtained from the
-	 * given expression is a Plant
-	 */
-	E createIsPlant(E expr, SourceLocation sourceLocation);
+	@Override
+	public Expression createIsPlant(Expression expr, SourceLocation sourceLocation) {
+		IsPlant isPlant = new IsPlant(expr, sourceLocation);
+		return isPlant;
+	}
 
-	/**
-	 * An expression that evaluates to true if the object obtained from the
-	 * given expression is dead
-	 */
-	E createIsDead(E expr, SourceLocation sourceLocation);
+	@Override
+	public Expression createIsDead(Expression expr, SourceLocation sourceLocation) {
+		IsDead isDead = new IsDead(expr, sourceLocation);
+		return isDead;
+	}
 
-	/**
-	 * An expression that evaluates to true if the object obtained from the
-	 * given expression is part of the terrain
-	 */
-	E createIsTerrain(E expr, SourceLocation sourceLocation);
+	//TODO
+	@Override
+	public Expression createIsTerrain(Expression expr, SourceLocation sourceLocation) {
+		IsTerrain isTerrain = new IsTerrain(expr, sourceLocation);
+		return isTerrain;
+	}
 
-	/**
-	 * An expression that evaluates to true if the object obtained from the
-	 * given expression is passable
-	 */
-	E createIsPassable(E expr, SourceLocation sourceLocation);
+	@Override
+	public Expression createIsPassable(Expression expr, SourceLocation sourceLocation) {
+		IsPassable isPassable = new IsPassable(expr, sourceLocation);
+		return isPassable;
+	}
 
-	/**
-	 * An expression that evaluates to true if the object obtained from the
-	 * given expression is water
-	 */
-	E createIsWater(E expr, SourceLocation sourceLocation);
+	@Override
+	public Expression createIsWater(Expression expr, SourceLocation sourceLocation) {
+		IsWater isWater = new IsWater(expr, sourceLocation);
+		return isWater;
+	}
 
-	/**
-	 * An expression that evaluates to true if the object obtained from the
-	 * given expression is magma
-	 */
-	E createIsMagma(E expr, SourceLocation sourceLocation);
+	@Override
+	public Expression createIsMagma(Expression expr, SourceLocation sourceLocation) {
+		IsMagma isMagma = new IsMagma(expr, sourceLocation);
+		return isMagma;
+	}
 
-	/**
-	 * An expression that evaluates to true if the object obtained from the
-	 * given expression is air
-	 */
-	E createIsAir(E expr, SourceLocation sourceLocation);
+	@Override
+	public Expression createIsAir(Expression expr, SourceLocation sourceLocation) {
+		IsAir isAir = new IsAir(expr, sourceLocation);
+		return isAir;
+	}
 
-	/**
-	 * An expression that evaluates to true if the object obtained from the
-	 * given expression is moving
-	 */
-	E createIsMoving(E expr, E direction, SourceLocation sourceLocation);
+	@Override
+	public Expression createIsMoving(Expression expr, Expression direction,
+			SourceLocation sourceLocation) {
+		IsMoving isMoving = new IsMoving(expr, direction, sourceLocation);
+		return isMoving;
+	}
 
-	/**
-	 * An expression that evaluates to true if the object obtained from the
-	 * given expression is ducking
-	 */
-	E createIsDucking(E expr, SourceLocation sourceLocation);
+	@Override
+	public Expression createIsDucking(Expression expr, SourceLocation sourceLocation) {
+		IsDucking isDucking = new IsDucking(expr, sourceLocation);
+		return isDucking;
+	}
 
-	/**
-	 * An expression that evaluates to true if the object obtained from the
-	 * given expression is jumping
-	 */
-	E createIsJumping(E expr, SourceLocation sourceLocation);
+	@Override
+	public Expression createIsJumping(Expression expr, SourceLocation sourceLocation) {
+		IsJumping isJumping =new IsJumping(expr, sourceLocation);
+		return isJumping;
+	}
 
-	/* * Statements * */
+	@Override
+	public Statement createAssignment(String variableName, Type<?> variableType,
+			Expression value, SourceLocation sourceLocation) {
+		Assignment assignment = new Assignment(variableName, variableType, value, sourceLocation);
+		return assignment;
+	}
 
-	/**
-	 * A statement that changes the value of the variable with the given name
-	 * and declared type to the value obtained from the given expression
-	 */
-	S createAssignment(String variableName, T variableType, E value,
-			SourceLocation sourceLocation);
+	@Override
+	public Statement createWhile(Expression condition, Statement body,
+			SourceLocation sourceLocation) {
+		WhileS whileS = new WhileS(condition, body, sourceLocation);
+		return whileS;
+	}
 
-	/**
-	 * A statement that executes the given body while the given condition
-	 * evaluates to true
-	 */
-	S createWhile(E condition, S body, SourceLocation sourceLocation);
+	//TODO execute
+	@Override
+	public Statement createForEach(String variableName, Kind variableKind,
+			Expression where, Expression sort, SortDirection sortDirection,
+			Statement body, SourceLocation sourceLocation) {
+		ForEach forEach = new ForEach(variableName, variableKind, where, sort, 
+				sortDirection, body, sourceLocation);
+		return forEach;
+	}
 
-	/**
-	 * A statement that executes the given body with the given variable set to
-	 * all objects of the given kind for which the where-expression evaluates to
-	 * true, sorted by the result of the given sort expression in the given
-	 * direction. The where- and sort-expressions are optional, and can be null;
-	 * */
-	S createForEach(String variableName, Kind variableKind, E where, E sort,
-			SortDirection sortDirection, S body, SourceLocation sourceLocation);
+	@Override
+	public Statement createBreak(SourceLocation sourceLocation) {
+		BreakS breakS = new BreakS(sourceLocation);
+		return breakS;
+	}
 
-	/** A statement that terminates the currently executing loop */
-	S createBreak(SourceLocation sourceLocation);
+	@Override
+	public Statement createIf(Expression condition, Statement ifBody, Statement elseBody,
+			SourceLocation sourceLocation) {
+		IfS ifS = new IfS(condition, ifBody, elseBody, sourceLocation);
+		return ifS;
+	}
 
-	/**
-	 * A statement that executes the given ifBody if the condition evaluates to
-	 * true, and the given elseBody otherwise.
-	 * The elseBody is optional, and can be null.
-	 */
-	S createIf(E condition, S ifBody, S elseBody, SourceLocation sourceLocation);
+	@Override
+	public Statement createPrint(Expression value, SourceLocation sourceLocation) {
+		PrintS printS = new PrintS(value, sourceLocation);
+		return printS;
+	}
 
-	/** A statement that prints the value of the given expression */
-	S createPrint(E value, SourceLocation sourceLocation);
+	@Override
+	public Statement createStartRun(Expression direction, SourceLocation sourceLocation) {
+		StartRun startRun = new StartRun(direction, sourceLocation);
+		return startRun;
+	}
 
-	/**
-	 * A statement that makes the object executing the program start moving in
-	 * the given direction
-	 */
-	S createStartRun(E direction, SourceLocation sourceLocation);
+	@Override
+	public Statement createStopRun(Expression direction, SourceLocation sourceLocation) {
+		StopRun stopRun = new StopRun(direction, sourceLocation);
+		return stopRun;
+	}
 
-	/**
-	 * A statement that makes the object executing the program stop moving in
-	 * the given direction
-	 */
-	S createStopRun(E direction, SourceLocation sourceLocation);
+	@Override
+	public Statement createStartJump(SourceLocation sourceLocation) {
+		StartJump startJump = new StartJump(sourceLocation);
+		return startJump;
+	}
 
-	/** A statement that makes the object executing the program start jumping */
-	S createStartJump(SourceLocation sourceLocation);
+	@Override
+	public Statement createStopJump(SourceLocation sourceLocation) {
+		StopJump stopJump = new StopJump(sourceLocation);
+		return stopJump;
+	}
 
-	/** A statement that makes the object executing the program stop jumping */
-	S createStopJump(SourceLocation sourceLocation);
+	@Override
+	public Statement createStartDuck(SourceLocation sourceLocation) {
+		StartDuck startDuck = new StartDuck(sourceLocation);
+		return startDuck;
+	}
 
-	/** A statement that makes the object executing the program start ducking */
-	S createStartDuck(SourceLocation sourceLocation);
+	@Override
+	public Statement createStopDuck(SourceLocation sourceLocation) {
+		StopDuck stopDuck = new StopDuck(sourceLocation);
+		return stopDuck;
+	}
 
-	/** A statement that makes the object executing the program stop ducking */
-	S createStopDuck(SourceLocation sourceLocation);
+	@Override
+	public Statement createWait(Expression duration, SourceLocation sourceLocation) {
+		WaitS waitS = new WaitS(duration, sourceLocation);
+		return waitS;
+	}
 
-	/**
-	 * A statement that suspends the execution of the program for the given
-	 * duration
-	 */
-	S createWait(E duration, SourceLocation sourceLocation);
+	@Override
+	public Statement createSkip(SourceLocation sourceLocation) {
+		SkipS skipS = new SkipS(sourceLocation);
+		return skipS;
+	}
 
-	/** A statement that does nothing */
-	S createSkip(SourceLocation sourceLocation);
+	@Override
+	public Statement createSequence(List<Statement> statements, SourceLocation sourceLocation) {
+		Sequence sequence = new Sequence(statements, sourceLocation);
+		return sequence;
+	}
 
-	/** A statement that executes of a list of statements subsequently */
-	S createSequence(List<S> statements, SourceLocation sourceLocation);
+	@Override
+	public Type<?> getDoubleType() {
+		DoubleType doubleType = new DoubleType(0.0);
+		return doubleType;
+	}
 
-	/* * Types * */
+	@Override
+	public Type<?> getBoolType() {
+		BooleanType booleanType = new BooleanType(false);
+		return booleanType;
+	}
 
-	/** The type of double values and variables */
-	T getDoubleType();
+	@Override
+	public Type<?> getGameObjectType() {
+		GameObjectType gameObjectType = new GameObjectType(null);
+		return gameObjectType;
+	}
 
-	/** The type of boolean values and variables */
-	T getBoolType();
+	@Override
+	public Type<?> getDirectionType() {
+		DirectionType directionType = new DirectionType(Direction.LEFT);
+		return directionType;
+	}
 
-	/** The type of game object values and variables */
-	T getGameObjectType();
-
-	/** The type of direction values and variables */
-	T getDirectionType();
-
-	/* * Program * */
-
-	/**
-	 * Create a program with the given main statement and variable declarations.
-	 * The globalVariables map contains the type for each declared variable,
-	 * with the name of the variable as the key.
-	 */
-	P createProgram(S mainStatement, Map<String, T> globalVariables);
+	@Override
+	public Program createProgram(Statement mainStatement, Map globalVariables) {
+		Program program = new Program(mainStatement, globalVariables);
+		return program;
+	}
 
 }

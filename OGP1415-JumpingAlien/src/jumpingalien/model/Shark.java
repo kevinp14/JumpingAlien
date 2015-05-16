@@ -18,7 +18,6 @@ import jumpingalien.util.Sprite;
  *
  */
 public class Shark extends GameObject {
-	private double normalVerticalVelocity;
 	private double timeMovingHorizontally;
 	private double timesNotJumped;
 	
@@ -37,8 +36,8 @@ public class Shark extends GameObject {
 	 * 			| this.setNormalHorizontalAcceleration(1.5)
 	 * @effect	The new maximum horizontal velocity is set to 4.
 	 * 			| this.setMaxHorizontalVelocity(4)
-	 * @post	The new normal vertical velocity is set to 2.
-	 * 			| (new this).normalVerticalVelocity = 2
+	 * @effect	The new normal vertical velocity is set to 2.
+	 * 			| setNormalVerticalVelocity(2)
 	 * @post	The new time moving horizontally is set to 0.
 	 * 			| (new this).timeMovingHorizontally = 0
 	 * @post	The new times not jumped are set to 0.
@@ -52,7 +51,7 @@ public class Shark extends GameObject {
 		this.setNormalHorizontalVelocity(0);
 		this.setNormalHorizontalAcceleration(1.5);
 		this.setMaxHorizontalVelocity(4);
-		this.normalVerticalVelocity = 2;
+		this.setNormalVerticalVelocity(2);
 	    this.timeMovingHorizontally = 0;	
 	    this.timesNotJumped = 0;
 	    this.changeNbHitPoints(100);
@@ -144,14 +143,6 @@ public class Shark extends GameObject {
 	
 	/**
 	 * @return	True if and only if the shark's vertical velocity is bigger than 0 and its vertical
-	 * 			acceleration is -10.
-	 */
-	private boolean isJumping() {
-		return ((this.getVerticalVelocity() > 0) && (this.getVerticalAcceleration() == -10));
-	}
-	
-	/**
-	 * @return	True if and only if the shark's vertical velocity is bigger than 0 and its vertical
 	 * 			acceleration is not -10.
 	 */
 	private boolean isRising() {
@@ -224,31 +215,6 @@ public class Shark extends GameObject {
 		}
 		if (this.timeMovingHorizontally < movingTime)
 			this.timeMovingHorizontally += dt;
-	}
-	
-	/**
-	 * @effect	If the shark is not falling, its new vertical velocity and acceleration are set to the
-	 * 			normal ones.
-	 * 			| this.setVerticalVelocity(this.normalVerticalVelocity)
-	 * 			| this.setVerticalAcceleration(this.getNormalVerticalAcceleration())
-	 */
-	private void startJump() {
-		if (!this.isFalling()) {
-			this.setVerticalVelocity(this.normalVerticalVelocity);
-			this.setVerticalAcceleration(this.getNormalVerticalAcceleration());
-		}
-	}
-	
-	/**
-	 * @effect	If the current vertical velocity is bigger than 0, the new vertical velocity is set to
-	 * 			0.
-	 * 			| if (this.getVerticalVelocity() > 0)
-	 * 			|	this.setVerticalVelocity(0)
-	 */
-	private void endJump() {
-		if (this.getVerticalVelocity() > 0) {
-			this.setVerticalVelocity(0);
-		}
 	}
 	
 	/**

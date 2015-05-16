@@ -38,7 +38,10 @@ public class GameObject {
 	private double normalHorizontalVelocity;
 	private double normalHorizontalAcceleration;
 	private double maxHorizontalVelocity;
+	private double maxDuckingVelocity = 1;
+	private double maxRunningVelocity = 3;
 	private double verticalVelocity;
+	private double normalVerticalVelocity;
 	private double verticalAcceleration;
 	private double normalVerticalAcceleration;
 	private double positionX;
@@ -145,7 +148,7 @@ public class GameObject {
 	 * 
 	 */
 	@Basic
-	protected World getWorld() {
+	public World getWorld() {
 		return this.world;
 	}
 	
@@ -291,7 +294,7 @@ public class GameObject {
 	 * 
 	 */
 	@Basic
-	protected double getNormalHorizontalVelocity() {
+	public double getNormalHorizontalVelocity() {
 		return this.normalHorizontalVelocity;
 	}
 	
@@ -327,6 +330,16 @@ public class GameObject {
 	}
 
 	/**
+	 * @return	The maximum of the velocity of the game object while ducking in the x-direction.
+	 * 
+	 */
+	@Basic
+	@Immutable
+	protected double getMaxDuckingVelocity() {
+		return this.maxDuckingVelocity;
+	}
+
+	/**
 	 * @return	The acceleration of the game object in the x-direction.
 	 * 
 	 */
@@ -353,7 +366,7 @@ public class GameObject {
 	 * 
 	 */
 	@Basic
-	protected double getNormalHorizontalAcceleration() {
+	public double getNormalHorizontalAcceleration() {
 		return this.normalHorizontalAcceleration;
 	}
 	
@@ -386,6 +399,26 @@ public class GameObject {
 	@Basic
 	protected void setVerticalVelocity(double verticalVelocity) {
 		this.verticalVelocity = verticalVelocity;
+	}
+	
+	/**
+	 * @return	The normal/initial vertical velocity.
+	 * 
+	 */
+	@Basic
+	protected double getNormalVerticalVelocity() {
+		return this.normalVerticalVelocity;
+	}
+	
+	/**
+	 * Set the normal/initial vertical velocity to the given one.
+	 * 
+	 * @param 	normalVerticalVelocity
+	 * 			The normal vertical velocity the game object has to get.
+	 */
+	@Basic
+	protected void setNormalVerticalVelocity(double normalVerticalVelocity) {
+		this.normalVerticalVelocity = normalVerticalVelocity;
 	}
 	
 	/**
@@ -621,6 +654,26 @@ public class GameObject {
 		return (position[0] <= this.getMaxPosition()[0]) && (position[0] >= 0) && 
 				(position[1] <= this.getMaxPosition()[1]) && (position[1] >= 0);
 	}
+	
+	/**
+	 * Check whether the alien can jump at the given position or not.
+	 * 
+	 * @param	position
+	 * @return	True if and only if the tile beneath the alien is not passable.
+	 */
+	public boolean isValidJumpingPosition(int[] position) {
+		if (this.getWorld().getSharks().contains(this)) {
+			return (!this.isFalling());
+		}
+		else if ((this.getWorld().getMazub() == this) || (this.getWorld().getBuzam() == this)) {
+			for (int horizontalPixel: this.getHorizontalPixels()) {
+				if (this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(horizontalPixel, 
+						position[1])))
+					return true;
+			}
+		}
+		return false;
+	}
 
 	/**
 	 * Check whether the given sprite list is a valid one.
@@ -690,6 +743,26 @@ public class GameObject {
 	 */
 	protected boolean isFalling() {
 		return ((this.getVerticalVelocity() < 0) && (this.getVerticalAcceleration() == -10));
+	}
+	
+	/**
+	 * Check whether the game object is jumping or not.
+	 * 
+	 * @return	True if and only if the vertical velocity of the game object is positive and the 
+	 * 			vertical acceleration of the game object is -10.
+	 */
+	public boolean isJumping() {
+		return ((this.getVerticalVelocity() > 0) && (this.getVerticalAcceleration() == -10));
+	}
+	
+	/**
+	 * Check whether the game object is ducking or not.
+	 * 
+	 * @return	True if and only if the game object's maximum horizontal velocity is equal to the 
+	 * 			maximum ducking velocity.
+	 */
+	public boolean isDucking() {
+		return (this.getMaxHorizontalVelocity() == this.getMaxDuckingVelocity());
 	}
 	
 	/**
@@ -1075,6 +1148,57 @@ public class GameObject {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 		}
+	}
+	
+	/**
+	 * Make the game object begin to jump (move in the positive y-direction).
+	 * 
+	 * @effect	The new vertical velocity and acceleration are set to the normal ones.
+	 * 			| this.setVerticalVelocity(this.normalVerticalVelocity)
+	 * 			| this.setVerticalAcceleration(this.getNormalVerticalAcceleration())
+	 */ //TODO: defensief, misschien zelf exception maken
+	public void startJump() {
+		if (this.isValidJumpingPosition(this.getPosition())) {
+			this.setVerticalVelocity(this.normalVerticalVelocity);
+			this.setVerticalAcceleration(this.getNormalVerticalAcceleration());
+		}
+	}
+	
+	/**
+	 * End the jumping of the game object.
+	 * 
+	 * @effect	If the current vertical velocity is bigger than 0, the new vertical velocity is set to
+	 * 			0.
+	 * 			| if (this.getVerticalVelocity() > 0)
+	 * 			|	this.setVerticalVelocity(0)
+	 */ //TODO: defensief, misschien zelf exception maken
+	public void endJump() {
+		if (this.getVerticalVelocity() > 0) {
+			this.setVerticalVelocity(0);
+		}
+	}
+	
+	/**
+	 * Make the game object begin to duck (shrink in the y-direction).
+	 * 
+	 * @effect	The new horizontal acceleration is set to 0 and the new maximum horizontal velocity is 
+	 * 			set to the maximum ducking velocity.
+	 * 			| this.setHorizontalAcceleration(0)
+	 * 			| this.setMaxHorizontalVelocity(this.getMaxDuckingVelocity())
+	 */ //TODO: defensief, misschien zelf exception maken
+	public void startDuck() {
+		this.setHorizontalAcceleration(0);
+		this.setMaxHorizontalVelocity(this.getMaxDuckingVelocity());
+	}
+	
+	/**
+	 * End the ducking of the game object.
+	 * 
+	 * @effect	The new maximum horizontal velocity is set to the maximum running velocity.
+	 * 			| this.setMaxHorizontalVelocity(this.maxRunningVelocity)
+	 */ //TODO: defensief, misschien zelf exception maken
+	public void endDuck() {
+		this.setMaxHorizontalVelocity(this.maxRunningVelocity);
 	}
 	
 	/**

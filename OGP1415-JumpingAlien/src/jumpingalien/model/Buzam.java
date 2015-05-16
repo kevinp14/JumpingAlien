@@ -32,9 +32,6 @@ import jumpingalien.util.*;
  *
  */
 public class Buzam extends GameObject {
-	private double maxRunningVelocity = 3;
-	private double maxDuckingVelocity = 1;
-	private double normalVerticalVelocity;
 	private Sprite[] spriteList;
 	private double timeMovingHorizontally;
 	private double timeForcedDuck;
@@ -55,8 +52,8 @@ public class Buzam extends GameObject {
 	 * 			| this.setNormalHorizontalAcceleration(0.9)
 	 * @effect	The new maximum horizontal velocity is set to 3.
 	 * 			| this.setMaxHorizontalVelocity(3)
-	 * @post	The new normal vertical velocity is set to 8.
-	 * 			| (new this).normalVerticalVelocity = 8
+	 * @effect	The new normal vertical velocity is set to 8.
+	 * 			| setNormalVerticalVelocity(8)
 	 * @post	The new time moving horizontally is set to 0.
 	 * 			| (new this).timeMovingHorizontally = 0
 	 * @post	The new time forced ducking is set to 0.
@@ -71,7 +68,7 @@ public class Buzam extends GameObject {
 		this.setNormalHorizontalVelocity(1);
 		this.setNormalHorizontalAcceleration(0.9);
 		this.setMaxHorizontalVelocity(3);
-		this.normalVerticalVelocity = 8;
+		this.setNormalVerticalVelocity(8);
 	    this.timeMovingHorizontally = 0;
 	    this.timeForcedDuck = 0;
 	    this.changeNbHitPoints(100);
@@ -135,16 +132,6 @@ public class Buzam extends GameObject {
 			else
 				return spriteList[0];
 		}
-	}
-	
-	/**
-	 * @return	The maximum of the velocity of the alien while ducking in the x-direction.
-	 * 
-	 */
-	@Basic
-	@Immutable
-	private double getMaxDuckingVelocity() {
-		return this.maxDuckingVelocity;
 	}
 	
 	/**
@@ -212,57 +199,6 @@ public class Buzam extends GameObject {
 				return false;
 		}
 		return true;
-	}
-
-	/**
-	 * Make the alien begin to jump (move in the positive y-direction).
-	 * 
-	 * @effect	The new vertical velocity and acceleration are set to the normal ones.
-	 * 			| this.setVerticalVelocity(this.normalVerticalVelocity)
-	 * 			| this.setVerticalAcceleration(this.getNormalVerticalAcceleration())
-	 */ //TODO: defensief, misschien zelf exception maken
-	public void startJump() {
-		if (this.isValidJumpingPosition(this.getPosition())) {
-			this.setVerticalVelocity(this.normalVerticalVelocity);
-			this.setVerticalAcceleration(this.getNormalVerticalAcceleration());
-		}
-	}
-	
-	/**
-	 * End the jumping of the alien.
-	 * 
-	 * @effect	If the current vertical velocity is bigger than 0, the new vertical velocity is set to
-	 * 			0.
-	 * 			| if (this.getVerticalVelocity() > 0)
-	 * 			|	this.setVerticalVelocity(0)
-	 */ //TODO: defensief, misschien zelf exception maken
-	public void endJump() {
-		if (this.getVerticalVelocity() > 0) {
-			this.setVerticalVelocity(0);
-		}
-	}
-	
-	/**
-	 * Make the alien begin to duck (shrink in the y-direction).
-	 * 
-	 * @effect	The new horizontal acceleration is set to 0 and the new maximum horizontal velocity is 
-	 * 			set to the maximum ducking velocity.
-	 * 			| this.setHorizontalAcceleration(0)
-	 * 			| this.setMaxHorizontalVelocity(this.getMaxDuckingVelocity())
-	 */ //TODO: defensief, misschien zelf exception maken
-	public void startDuck() {
-		this.setHorizontalAcceleration(0);
-		this.setMaxHorizontalVelocity(this.getMaxDuckingVelocity());
-	}
-	
-	/**
-	 * End the ducking of the alien.
-	 * 
-	 * @effect	The new maximum horizontal velocity is set to the maximum running velocity.
-	 * 			| this.setMaxHorizontalVelocity(this.maxRunningVelocity)
-	 */ //TODO: defensief, misschien zelf exception maken
-	public void endDuck() {
-		this.setMaxHorizontalVelocity(this.maxRunningVelocity);
 	}
 	
 	/**
