@@ -1,15 +1,16 @@
 package jumpingalien.model.expression;
 
 import jumpingalien.model.Program;
+import jumpingalien.model.type.DoubleType;
 import jumpingalien.part3.programs.SourceLocation;
 
 public class DoubleExpression {
 	
-	protected Expression expr1;
-	protected Expression expr2;
+	protected Expression<DoubleType> expr1;
+	protected Expression<DoubleType> expr2;
 	protected SourceLocation sourceLocation;
 	
-	public DoubleExpression(Expression expr1, Expression expr2, 
+	public DoubleExpression(Expression<DoubleType> expr1, Expression<DoubleType> expr2, 
 			SourceLocation sourceLocation){
 		this.expr1 = expr1;
 		this.expr2 = expr2;

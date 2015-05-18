@@ -93,7 +93,8 @@ public class Buzam extends GameObject {
 				if (this.isAirborne())
 					return spriteList[5];
 				else {
-					if (((1000*this.timeMovingHorizontally) / 75) < 11)
+					if (!Util.fuzzyGreaterThanOrEqualTo(((1000*this.timeMovingHorizontally) / 75)
+							,11))
 						return spriteList[(int)(19 + ((1000*this.timeMovingHorizontally) / 75))];
 					else
 						this.timeMovingHorizontally = 0;
@@ -105,7 +106,8 @@ public class Buzam extends GameObject {
 				if (this.isAirborne())
 					return spriteList[4];
 				else {
-					if (((1000*this.timeMovingHorizontally) / 75) < 11)
+					if (!Util.fuzzyGreaterThanOrEqualTo(((1000*this.timeMovingHorizontally) / 75)
+							,11))
 						return spriteList[(int) (8 + ((1000*this.timeMovingHorizontally) / 75))];
 					else 
 						this.timeMovingHorizontally = 0;
@@ -146,7 +148,7 @@ public class Buzam extends GameObject {
 		double acceleration = Math.sqrt(Math.pow(this.getHorizontalAcceleration(), 2) + 
 				Math.pow(this.getVerticalAcceleration(), 2));
 		double newDt = 0.01 / (velocity + (acceleration * dt));
-		if ((velocity + (acceleration * dt)) == 0)
+		if (Util.fuzzyEquals((velocity + (acceleration * dt)), 0))
 			return 0.01;
 		else 
 			return newDt;
@@ -173,17 +175,7 @@ public class Buzam extends GameObject {
 	 * @return	True if and only if the alien's vertical velocity is not 0.
 	 */
 	private boolean isAirborne() {
-		return (!(this.getVerticalVelocity() == 0));
-	}
-	
-	/**
-	 * Check whether the alien is ducking or not.
-	 * 
-	 * @return	True if and only if the alien's maximum horizontal velocity is equal to the maximum
-	 * 			ducking velocity.
-	 */
-	public boolean isDucking() {
-		return (this.getMaxHorizontalVelocity() == this.getMaxDuckingVelocity());
+		return (!(Util.fuzzyEquals(this.getVerticalVelocity(), 0)));
 	}
 	
 	/**
@@ -220,7 +212,8 @@ public class Buzam extends GameObject {
 		assert (isValidMovingDirection(direction));
 		if (direction == Direction.RIGHT) {
 			this.setLastDirection(Direction.RIGHT);
-			if (this.getHorizontalVelocity() <= this.getMaxHorizontalVelocity()) { 
+			if (Util.fuzzyLessThanOrEqualTo(this.getHorizontalVelocity(), 
+					this.getMaxHorizontalVelocity())) {
 				this.setHorizontalVelocity(this.getNormalHorizontalVelocity());
 				this.setHorizontalAcceleration(this.getNormalHorizontalAcceleration());
 			}
@@ -231,7 +224,8 @@ public class Buzam extends GameObject {
 		}
 		else {
 			this.setLastDirection(Direction.LEFT);
-			if (this.getHorizontalVelocity() >= -this.getMaxHorizontalVelocity()) { 
+			if (Util.fuzzyGreaterThanOrEqualTo(this.getHorizontalVelocity(),
+					(-this.getMaxHorizontalVelocity()))) {
 				this.setHorizontalVelocity(-this.getNormalHorizontalVelocity());
 				this.setHorizontalAcceleration(-this.getNormalHorizontalAcceleration());
 			}
@@ -253,18 +247,22 @@ public class Buzam extends GameObject {
 	@Override
 	public void endMoveHorizontally(Direction direction) {
 		assert (isValidMovingDirection(direction));
-		if ((direction == Direction.RIGHT) && (this.getHorizontalVelocity() > 0)) {
+		if ((direction == Direction.RIGHT) 
+				&& (!Util.fuzzyLessThanOrEqualTo(this.getHorizontalVelocity(), 0))) {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 		}
-		if ((direction == Direction.RIGHT) && (this.getHorizontalVelocity() > 0)) {
+		if ((direction == Direction.RIGHT) 
+				&& (!Util.fuzzyLessThanOrEqualTo(this.getHorizontalVelocity(), 0))) {
 			this.setHorizontalAcceleration(-this.getHorizontalAcceleration());
 		}
-		if ((direction == Direction.LEFT) && (this.getHorizontalVelocity() < 0)) {
+		if ((direction == Direction.LEFT) 
+				&& (!Util.fuzzyGreaterThanOrEqualTo(this.getHorizontalVelocity(), 0))) {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 		}
-		if ((direction == Direction.LEFT) && (this.getHorizontalVelocity() < 0)) {
+		if ((direction == Direction.LEFT) 
+				&& (!Util.fuzzyGreaterThanOrEqualTo(this.getHorizontalVelocity(), 0))) {
 			this.setHorizontalAcceleration(-this.getHorizontalAcceleration());
 		}
 	}
@@ -295,9 +293,10 @@ public class Buzam extends GameObject {
 	 * 			|	+ this.getHorizontalAcceleration() * Math.pow(dt, 2) / 2
 	 */
 	private double horizontalMovement(double dt) {
-		if (Math.abs(this.getHorizontalVelocity()) >= this.getMaxHorizontalVelocity()) {
+		if (Util.fuzzyGreaterThanOrEqualTo(Math.abs(this.getHorizontalVelocity()),
+				this.getMaxHorizontalVelocity())) {
 			this.setHorizontalAcceleration(0);
-			if (this.getHorizontalVelocity() < 0) {
+			if (!Util.fuzzyGreaterThanOrEqualTo(this.getHorizontalVelocity(), 0)) {
 				this.setHorizontalVelocity(-this.getMaxHorizontalVelocity());
 			} 
 			else
@@ -383,7 +382,7 @@ public class Buzam extends GameObject {
 						this.makeImmune();
 						}
 					else {
-						if (this.getTimeImmune() <= 0.60) 
+						if (Util.fuzzyLessThanOrEqualTo(this.getTimeImmune(), 0.60))
 							this.setTimeImmune(this.getTimeImmune() + newDt);
 						else {
 							this.makeVulnerable();
@@ -402,7 +401,7 @@ public class Buzam extends GameObject {
 						this.makeImmune();
 						}
 					else {
-						if (this.getTimeImmune() <= 0.60) 
+						if (Util.fuzzyLessThanOrEqualTo(this.getTimeImmune(), 0.60))
 							this.setTimeImmune(this.getTimeImmune() + newDt);
 						else {
 							this.makeVulnerable();
@@ -421,7 +420,7 @@ public class Buzam extends GameObject {
 					this.makeImmune();
 					}
 				else {
-					if (this.getTimeImmune() <= 0.60) 
+					if (Util.fuzzyLessThanOrEqualTo(this.getTimeImmune(), 0.60)) 
 						this.setTimeImmune(this.getTimeImmune() + newDt);
 					else {
 						this.makeVulnerable();
@@ -447,7 +446,7 @@ public class Buzam extends GameObject {
 	 */
 	private void isInFluidActions(double newDt) {
 		if (this.isInWater()) {
-			if (this.getTimeInWater() >= 0.2) {
+			if (Util.fuzzyGreaterThanOrEqualTo(this.getTimeInWater(), 0.2)) {
 				this.changeNbHitPoints(-2);
 				this.setTimeInWater(0);
 			}
@@ -461,7 +460,7 @@ public class Buzam extends GameObject {
 				this.makeImmuneForMagma();
 			}
 			else {
-				if (this.getTimeImmuneForMagma() >= 0.20) {
+				if (Util.fuzzyGreaterThanOrEqualTo(this.getTimeImmuneForMagma(), 0.20)) {
 					this.makeVulnerableForMagma();
 					this.setTimeImmuneForMagma(0);
 				}
@@ -514,7 +513,7 @@ public class Buzam extends GameObject {
 		if (!this.isValidDt(dt))
 			throw new IllegalArgumentException("The given period of time dt is invalid!");
 		double sumDt = 0;
-		while (sumDt < dt) {
+		while (!Util.fuzzyGreaterThanOrEqualTo(sumDt, dt)) {
 			double newDt = this.getNewDt(dt);
 			int[] oldPosition = this.getPosition();
 			if ((this.crossImpassableBottom()) || (this.crossImpassableLeft()) 
@@ -533,7 +532,7 @@ public class Buzam extends GameObject {
 				this.setTimeStalled(0);
 				this.timeMovingHorizontally += newDt;
 			}
-			if ((this.canEndDuck()) && (this.timeForcedDuck > 0)) {
+			if ((this.canEndDuck()) && (!Util.fuzzyLessThanOrEqualTo(this.timeForcedDuck, 0))) {
 				this.endDuck();
 				this.timeForcedDuck = 0;
 			}

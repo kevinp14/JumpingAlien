@@ -261,10 +261,10 @@ public class GameObject {
 	@Basic
 	protected void changeNbHitPoints(int hitPointsDifference) {
 		int newHitPoints = this.hitPoints += hitPointsDifference;
-		if (newHitPoints < 0) {
+		if (!Util.fuzzyGreaterThanOrEqualTo(newHitPoints, 0)) {
 			this.hitPoints = 0;
 		}
-		else if (newHitPoints > 500) {
+		else if (!Util.fuzzyLessThanOrEqualTo(newHitPoints, 500)) {
 			this.hitPoints = 500;
 		}
 	}
@@ -486,8 +486,9 @@ public class GameObject {
 	 * 
 	 */
 	protected ArrayList<Integer> getHorizontalPixels() {
+		double width = this.getCurrentSprite().getWidth();
 		ArrayList<Integer> horizontalPixels = new ArrayList<Integer>();
-		for (int x=0; x < this.getCurrentSprite().getWidth(); x++)
+		for (int x=0; x < this.getCurrentSprite().getWidth(); x += (width/10))
 			horizontalPixels.add(this.getPosition()[0] + x);
 		return horizontalPixels;
 	}
@@ -498,8 +499,9 @@ public class GameObject {
 	 * 
 	 */
 	protected ArrayList<Integer> getVerticalPixels() {
+		double height = this.getCurrentSprite().getHeight();
 		ArrayList<Integer> verticalPixels = new ArrayList<Integer>();
-		for (int y=0; y < this.getCurrentSprite().getHeight(); y++)
+		for (int y=0; y < this.getCurrentSprite().getHeight(); y += (height/10))
 			verticalPixels.add(this.getPosition()[1] + y);
 		return verticalPixels;
 	}
@@ -694,7 +696,7 @@ public class GameObject {
 	 * @return	True if and only if the given dt is between 0 and 0.2.
 	 */
 	protected boolean isValidDt(double dt) {
-		return (dt > 0) && (dt <= 0.2);
+		return (!Util.fuzzyLessThanOrEqualTo(dt, 0)) && (Util.fuzzyLessThanOrEqualTo(dt, 0.2));
 	}
 	
 	/**
@@ -712,7 +714,7 @@ public class GameObject {
 	 * @return	True if and only if the time stalled is smaller than or equal to 30.
 	 */
 	public boolean hasJustMovedHorizontally() {
-		return (this.getTimeStalled() <= 0.30);
+		return (Util.fuzzyLessThanOrEqualTo(this.getTimeStalled(), 0.30));
 	}
 
 	/**
@@ -742,7 +744,8 @@ public class GameObject {
 	 * 			vertical acceleration of the game object is -10.
 	 */
 	protected boolean isFalling() {
-		return ((this.getVerticalVelocity() < 0) && (this.getVerticalAcceleration() == -10));
+		return ((!Util.fuzzyGreaterThanOrEqualTo(this.getVerticalVelocity(), 0)) 
+				&& (Util.fuzzyEquals(this.getVerticalAcceleration(), -10)));
 	}
 	
 	/**
@@ -752,7 +755,8 @@ public class GameObject {
 	 * 			vertical acceleration of the game object is -10.
 	 */
 	public boolean isJumping() {
-		return ((this.getVerticalVelocity() > 0) && (this.getVerticalAcceleration() == -10));
+		return ((!Util.fuzzyLessThanOrEqualTo(this.getVerticalVelocity(), 0)) 
+				&& (Util.fuzzyEquals(this.getVerticalAcceleration(), -10)));
 	}
 	
 	/**
@@ -762,7 +766,7 @@ public class GameObject {
 	 * 			maximum ducking velocity.
 	 */
 	public boolean isDucking() {
-		return (this.getMaxHorizontalVelocity() == this.getMaxDuckingVelocity());
+		return (Util.fuzzyEquals(this.getMaxHorizontalVelocity(), this.getMaxDuckingVelocity()));
 	}
 	
 	/**
@@ -1058,7 +1062,8 @@ public class GameObject {
 	 * 			its horizontal velocity is bigger than 0.
 	 */
 	protected boolean crossImpassableRight() {
-		return ((this.touchImpassableRight()) && (this.getHorizontalVelocity() > 0));
+		return ((this.touchImpassableRight()) 
+				&& (!Util.fuzzyLessThanOrEqualTo(this.getHorizontalVelocity(), 0)));
 	}
 	
 	/**
@@ -1068,7 +1073,8 @@ public class GameObject {
 	 * 			its vertical velocity is bigger than 0.
 	 */
 	protected boolean crossImpassableTop() {
-		return ((this.touchImpassableTop()) && (this.getVerticalVelocity() > 0));
+		return ((this.touchImpassableTop()) 
+				&& (!Util.fuzzyLessThanOrEqualTo(this.getVerticalVelocity(), 0)));
 	}
 	
 	/**
@@ -1078,7 +1084,8 @@ public class GameObject {
 	 * 			its horizontal velocity is smaller than 0.
 	 */
 	protected boolean crossImpassableLeft() {
-		return ((this.touchImpassableLeft()) && (this.getHorizontalVelocity() < 0));
+		return ((this.touchImpassableLeft()) 
+				&& (!Util.fuzzyGreaterThanOrEqualTo(this.getHorizontalVelocity(), 0)));
 	}
 	
 	/**
@@ -1088,7 +1095,8 @@ public class GameObject {
 	 * 			its vertical velocity is smaller than 0.
 	 */
 	protected boolean crossImpassableBottom() {
-		return ((this.touchImpassableBottom()) && (this.getVerticalVelocity() < 0));
+		return ((this.touchImpassableBottom()) 
+				&& (!Util.fuzzyGreaterThanOrEqualTo(this.getVerticalVelocity(), 0)));
 	}
 	
 	/**
@@ -1108,7 +1116,8 @@ public class GameObject {
 		assert (isValidMovingDirection(direction));
 		if (direction == Direction.RIGHT) {
 			this.setLastDirection(Direction.RIGHT);
-			if (this.getHorizontalVelocity() <= this.getMaxHorizontalVelocity()) {
+			if (Util.fuzzyLessThanOrEqualTo(this.getHorizontalVelocity(), 
+					this.getMaxHorizontalVelocity())) {
 				this.setHorizontalVelocity(initalVelocity);
 				this.setHorizontalAcceleration(initialAcceleration);
 			}
@@ -1119,7 +1128,8 @@ public class GameObject {
 		}
 		else {
 			this.setLastDirection(Direction.LEFT);
-			if (this.getHorizontalVelocity() >= -this.getMaxHorizontalVelocity()) { 
+			if (Util.fuzzyGreaterThanOrEqualTo(this.getHorizontalVelocity(),
+					(-this.getMaxHorizontalVelocity()))) {
 				this.setHorizontalVelocity(-initalVelocity);
 				this.setHorizontalAcceleration(-initialAcceleration);
 			}
@@ -1140,11 +1150,13 @@ public class GameObject {
 	 */
 	public void endMoveHorizontally(Direction direction) {
 		assert (isValidMovingDirection(direction));
-		if ((direction == Direction.RIGHT) && (this.getHorizontalVelocity() > 0)) {
+		if ((direction == Direction.RIGHT) 
+				&& (!Util.fuzzyLessThanOrEqualTo(this.getHorizontalVelocity(), 0))) {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 		}
-		if ((direction == Direction.LEFT) && (this.getHorizontalVelocity() < 0)) {
+		if ((direction == Direction.LEFT) 
+				&& (!Util.fuzzyGreaterThanOrEqualTo(this.getHorizontalVelocity(), 0))) {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 		}
@@ -1173,7 +1185,7 @@ public class GameObject {
 	 * 			|	this.setVerticalVelocity(0)
 	 */ //TODO: defensief, misschien zelf exception maken
 	public void endJump() {
-		if (this.getVerticalVelocity() > 0) {
+		if (!Util.fuzzyLessThanOrEqualTo(this.getVerticalVelocity(), 0)) {
 			this.setVerticalVelocity(0);
 		}
 	}
@@ -1280,7 +1292,7 @@ public class GameObject {
 	 */
 	protected void collisionBlockMovement(GameObject object, int[] oldPosition, double dt) {
 		if (this.topCollidesWith(object)) {
-			if (this.timeBlocked >= 0.6) {
+			if (Util.fuzzyGreaterThanOrEqualTo(this.timeBlocked, 0.6)) {
 				this.timeBlocked = 0;
 				this.setVerticalVelocity(0);
 				this.setPosition(oldPosition[0], oldPosition[1]);
@@ -1288,8 +1300,8 @@ public class GameObject {
 			else
 				this.timeBlocked += dt;
 		}
-		if (this.bottomCollidesWith(object)) {//TODO: kan je springen als je op een enemy staat?
-			if (this.timeBlocked >= 0.6) {
+		if ((this.bottomCollidesWith(object)) && (this.isFalling())) {
+			if (Util.fuzzyGreaterThanOrEqualTo(this.timeBlocked, 0.6)) {
 				this.timeBlocked = 0;
 				this.setVerticalAcceleration(0);
 				this.setVerticalVelocity(0);
@@ -1299,7 +1311,7 @@ public class GameObject {
 				this.timeBlocked += dt;
 		}
 		if ((this.leftCollidesWith(object)) && (this.getLastDirection() == Direction.LEFT)) {
-			if (this.timeBlocked >= 0.6) {
+			if (Util.fuzzyGreaterThanOrEqualTo(this.timeBlocked, 0.6)) {
 				this.timeBlocked = 0;
 				this.setHorizontalAcceleration(0);
 				this.setHorizontalVelocity(0);
@@ -1309,7 +1321,7 @@ public class GameObject {
 				this.timeBlocked += dt;
 		}
 		if ((this.rightCollidesWith(object)) && (this.getLastDirection() == Direction.RIGHT)) {
-			if (this.timeBlocked >= 0.6) {
+			if (Util.fuzzyGreaterThanOrEqualTo(this.timeBlocked, 0.6)) {
 				this.timeBlocked = 0;
 				this.setHorizontalAcceleration(0);
 				this.setHorizontalVelocity(0);
@@ -1330,7 +1342,7 @@ public class GameObject {
 	 */
 	protected void removeDeadObject(double dt) {
 		if ((this.getNbHitPoints() == 0) || (!this.isValidPosition(this.getPosition()))) {
-			if (this.getTimeDead() >= 0.6) {
+			if (Util.fuzzyGreaterThanOrEqualTo(this.getTimeDead(), 0.6)) {
 				this.setTimeDead(0);
 				this.getWorld().removeObject(this, dt);
 			}

@@ -1,11 +1,13 @@
 package jumpingalien.model.expression;
 
 import jumpingalien.model.Program;
+import jumpingalien.model.type.BooleanType;
 import jumpingalien.part3.programs.SourceLocation;
 
-public class OrE extends DoubleExpression implements Expression{
+public class OrE extends DoubleExpression implements Expression<BooleanType> {
 	
-	public OrE(Expression expr1, Expression expr2, SourceLocation sourceLocation){
+	public OrE(Expression<BooleanType> expr1, Expression<BooleanType> expr2, 
+			SourceLocation sourceLocation){
 		super(expr1, expr2, sourceLocation);
 	}
 

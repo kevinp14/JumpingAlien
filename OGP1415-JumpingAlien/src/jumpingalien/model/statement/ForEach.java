@@ -26,6 +26,7 @@ public class ForEach implements Statement{
 		this.sortDirection = sortDirection;
 		this.body = body;
 		this.sourceLocation = sourceLocation;
+		return (public )
 	}
 
 	@Override

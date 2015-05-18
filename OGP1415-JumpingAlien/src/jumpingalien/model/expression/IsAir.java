@@ -1,14 +1,15 @@
 package jumpingalien.model.expression;
 
 import jumpingalien.model.Program;
+import jumpingalien.model.type.GameObjectType;
 import jumpingalien.part3.programs.SourceLocation;
 
-public class IsAir implements Expression{
+public class IsAir implements Expression<GameObjectType> {
 	
-	private Expression expr;
+	private Expression<GameObjectType> expr;
 	private SourceLocation sourceLocation;
 	
-	public IsAir(Expression expr, SourceLocation sourceLocation){
+	public IsAir(Expression<GameObjectType> expr, SourceLocation sourceLocation){
 		this.expr = expr;
 		this.sourceLocation = sourceLocation;
 	}

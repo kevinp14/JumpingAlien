@@ -9,7 +9,7 @@ public class ReadVariable implements Expression{
 	private String variableName;
 	private SourceLocation sourceLocation;
 	
-	public ReadVariable(String variableName, Type<?> variableType,SourceLocation sourceLocation){
+	public ReadVariable(String variableName, Type<?> variableType, SourceLocation sourceLocation){
 		this.variableName = variableName;
 		this.sourceLocation = sourceLocation;
 	}

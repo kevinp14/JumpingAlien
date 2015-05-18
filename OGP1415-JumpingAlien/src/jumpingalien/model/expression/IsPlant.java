@@ -3,15 +3,16 @@ package jumpingalien.model.expression;
 import jumpingalien.model.GameObject;
 import jumpingalien.model.Plant;
 import jumpingalien.model.Program;
+import jumpingalien.model.type.GameObjectType;
 import jumpingalien.part3.programs.SourceLocation;
 
-public class IsPlant implements Expression{
+public class IsPlant implements Expression<GameObjectType> {
 	
-	private Expression expr;
+	private Expression<GameObjectType> expr;
 	private SourceLocation sourceLocation;
 	private Plant testPlant = new Plant(0,0,null,null);
 	
-	public IsPlant(Expression expr, SourceLocation sourceLocation){
+	public IsPlant(Expression<GameObjectType> expr, SourceLocation sourceLocation){
 		this.expr = expr;
 		this.sourceLocation = sourceLocation;
 	}

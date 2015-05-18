@@ -1,14 +1,15 @@
 package jumpingalien.model.expression;
 
 import jumpingalien.model.Program;
+import jumpingalien.model.type.DoubleType;
 import jumpingalien.part3.programs.SourceLocation;
 
-public class RandomE implements Expression{
+public class RandomE implements Expression<DoubleType> {
 	
-	private Expression maxValue;
+	private Expression<DoubleType> maxValue;
 	private SourceLocation sourceLocation;
 	
-	public RandomE(Expression maxValue, SourceLocation sourceLocation){
+	public RandomE(Expression<DoubleType> maxValue, SourceLocation sourceLocation){
 		this.maxValue = maxValue;
 		this.sourceLocation = sourceLocation;
 	}

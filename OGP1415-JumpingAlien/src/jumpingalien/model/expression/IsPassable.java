@@ -2,14 +2,15 @@ package jumpingalien.model.expression;
 
 import jumpingalien.model.Program;
 import jumpingalien.model.World;
+import jumpingalien.model.type.GameObjectType;
 import jumpingalien.part3.programs.SourceLocation;
 
-public class IsPassable implements Expression{
+public class IsPassable implements Expression<GameObjectType> {
 
-	private Expression expr;
+	private Expression<GameObjectType> expr;
 	private SourceLocation sourceLocation;
 	
-	public IsPassable(Expression expr, SourceLocation sourceLocation){
+	public IsPassable(Expression<GameObjectType> expr, SourceLocation sourceLocation){
 		this.expr = expr;
 		this.sourceLocation = sourceLocation;
 	}

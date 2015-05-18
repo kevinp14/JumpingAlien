@@ -3,6 +3,7 @@ package jumpingalien.model;
 import java.util.Random;
 
 import jumpingalien.util.Sprite;
+import jumpingalien.util.Util;
 
 /**
  * A class of plants involving the normal and maximum for the horizontal velocity, the time the plant 
@@ -73,7 +74,7 @@ public class Plant extends GameObject {
 		double acceleration = Math.sqrt(Math.pow(this.getHorizontalAcceleration(), 2) + 
 				Math.pow(this.getVerticalAcceleration(), 2));
 		double newDt = 0.01 / (velocity + (acceleration * dt));
-		if ((velocity + (acceleration * dt)) == 0)
+		if (Util.fuzzyEquals((velocity + (acceleration * dt)), 0))
 			return 0.01;
 		else 
 			return newDt;
@@ -128,9 +129,11 @@ public class Plant extends GameObject {
 	@Override
 	public void endMoveHorizontally(Direction direction) {
 		assert (isValidMovingDirection(direction));
-		if ((direction == Direction.RIGHT) && (this.getHorizontalVelocity() > 0))
+		if ((direction == Direction.RIGHT)
+				&& (!Util.fuzzyLessThanOrEqualTo(this.getHorizontalVelocity(), 0)))
 			this.setHorizontalVelocity(0);
-		if ((direction == Direction.LEFT) && (this.getHorizontalVelocity() < 0))
+		if ((direction == Direction.LEFT) 
+				& (!Util.fuzzyGreaterThanOrEqualTo(this.getHorizontalVelocity(), 0)))
 			this.setHorizontalVelocity(0);
 	}
 	
@@ -196,15 +199,15 @@ public class Plant extends GameObject {
 		if (!this.isValidDt(dt))
 			throw new IllegalArgumentException("The given period of time dt is invalid!");
 		double sumDt = 0;
-		while (sumDt < dt) {
+		while (!Util.fuzzyGreaterThanOrEqualTo(sumDt, dt)) {
 			double newDt = this.getNewDt(dt);
 			int[] oldPosition = this.getPosition();
-			if (this.timeMovingHorizontally >= 0.50) {
+			if (Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, 0.50)) {
 				this.timeMovingHorizontally = 0;
 				this.endMoveHorizontally(this.getLastDirection());
 				this.startMoveHorizontally(this.getNextDirection());
 			}
-			else if (this.timeMovingHorizontally < 0.50) {
+			else if (!Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, 0.50)) {
 				this.timeMovingHorizontally += newDt;
 			}
 			if ((this.crossImpassableLeft()) || (this.crossImpassableRight()))  {

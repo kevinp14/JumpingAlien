@@ -3,6 +3,7 @@ package jumpingalien.model;
 import java.util.Random;
 
 import jumpingalien.util.Sprite;
+import jumpingalien.util.Util;
 
 /**
  * A class of sharks involving the normal and maximum for the horizontal velocity, the time the shark 
@@ -120,7 +121,7 @@ public class Shark extends GameObject {
 		double acceleration = Math.sqrt(Math.pow(this.getHorizontalAcceleration(), 2) + 
 				Math.pow(this.getVerticalAcceleration(), 2));
 		double newDt = 0.01 / (velocity + (acceleration * dt));
-		if ((velocity + (acceleration * dt)) == 0)
+		if (Util.fuzzyEquals((velocity + (acceleration * dt)), 0))
 			return 0.01;
 		else 
 			return newDt;
@@ -146,7 +147,8 @@ public class Shark extends GameObject {
 	 * 			acceleration is not -10.
 	 */
 	private boolean isRising() {
-		return ((this.getVerticalVelocity() > 0) && (!(this.getVerticalAcceleration() == -10)));
+		return ((!Util.fuzzyLessThanOrEqualTo(this.getVerticalVelocity(), 0)) 
+				&& (!Util.fuzzyEquals(this.getVerticalAcceleration(), -10)));
 	}
 	
 	/**
@@ -154,7 +156,8 @@ public class Shark extends GameObject {
 	 * 			acceleration is not -10.
 	 */
 	private boolean isDiving() {
-		return ((this.getVerticalVelocity() < 0) && (!(this.getVerticalAcceleration() == -10)));
+		return ((!Util.fuzzyGreaterThanOrEqualTo(this.getVerticalVelocity(), 0))
+				&& (!Util.fuzzyEquals(this.getVerticalAcceleration(), -10)));
 	}
 	
 	/**
@@ -182,7 +185,7 @@ public class Shark extends GameObject {
 	 * 			|		this.startMoveVertically(direction)
 	 */
 	private void move(double movingTime, double dt) {
-		if (this.timeMovingHorizontally >= movingTime) {
+		if (Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, movingTime)) {
 			this.timeMovingHorizontally = 0;
 			this.endMoveHorizontally(this.getLastDirection());
 			this.endMoveVertically();
@@ -213,7 +216,7 @@ public class Shark extends GameObject {
 				this.startMoveVertically(Direction.DOWN);
 			}
 		}
-		if (this.timeMovingHorizontally < movingTime)
+		if (!Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, movingTime))
 			this.timeMovingHorizontally += dt;
 	}
 	
@@ -326,9 +329,10 @@ public class Shark extends GameObject {
 	 * 			|	+ this.getHorizontalAcceleration() * Math.pow(dt, 2) / 2
 	 */
 	private double horizontalMovement(double dt) {
-		if (Math.abs(this.getHorizontalVelocity()) >= this.getMaxHorizontalVelocity()) {
+		if (Util.fuzzyGreaterThanOrEqualTo(Math.abs(this.getHorizontalVelocity()),
+				this.getMaxHorizontalVelocity())) {
 			this.setHorizontalAcceleration(0);
-			if (this.getHorizontalVelocity() < 0) {
+			if (!Util.fuzzyGreaterThanOrEqualTo(this.getHorizontalVelocity(), 0)) {
 				this.setHorizontalVelocity(-this.getMaxHorizontalVelocity());
 			} 
 			else
@@ -452,7 +456,7 @@ public class Shark extends GameObject {
 	 */
 	private void isInFluidActions(double newDt) {
 		if (this.isInAir()) {
-			if (this.getTimeInAir() >= 0.2) {
+			if (Util.fuzzyGreaterThanOrEqualTo(this.getTimeInAir(), 0.2)) {
 				this.changeNbHitPoints(-6);
 				this.setTimeInAir(0);
 			}
@@ -466,7 +470,7 @@ public class Shark extends GameObject {
 				this.makeImmuneForMagma();
 			}
 			else {
-				if (this.getTimeImmuneForMagma() < 0.20) 
+				if (!Util.fuzzyGreaterThanOrEqualTo(this.getTimeImmuneForMagma(), 0.20) )
 					this.setTimeImmuneForMagma(this.getTimeImmuneForMagma() + newDt);
 				else {
 					this.makeVulnerableForMagma();
@@ -508,7 +512,7 @@ public class Shark extends GameObject {
 			throw new IllegalArgumentException("The given period of time dt is invalid!");
 		double sumDt = 0;
 		double movingTime = this.getRandomMovingTime();
-		while (sumDt < dt) {
+		while (!Util.fuzzyGreaterThanOrEqualTo(sumDt, dt)) {
 			double newDt = this.getNewDt(dt);
 			int[] oldPosition = this.getPosition();
 			if ((this.crossImpassableBottom()) || (this.crossImpassableLeft()) 

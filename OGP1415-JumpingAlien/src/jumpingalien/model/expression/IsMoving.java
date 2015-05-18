@@ -2,12 +2,14 @@ package jumpingalien.model.expression;
 
 import jumpingalien.model.GameObject;
 import jumpingalien.model.Program;
+import jumpingalien.model.type.GameObjectType;
 import jumpingalien.part3.programs.IProgramFactory.Direction;
 import jumpingalien.part3.programs.SourceLocation;
 
-public class IsMoving extends DoubleExpression implements Expression{
+public class IsMoving extends DoubleExpression implements Expression<GameObjectType> {
 	
-	public IsMoving(Expression expr1, Expression expr2, SourceLocation sourceLocation){
+	public IsMoving(Expression<GameObjectType> expr1, Expression<GameObjectType> expr2, 
+			SourceLocation sourceLocation){
 		super(expr1, expr2, sourceLocation);
 	}
 

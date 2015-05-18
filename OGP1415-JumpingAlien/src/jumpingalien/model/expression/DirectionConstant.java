@@ -1,10 +1,12 @@
 package jumpingalien.model.expression;
 
 import jumpingalien.model.Program;
+import jumpingalien.model.type.DirectionType;
 import jumpingalien.part3.programs.IProgramFactory.Direction;
 import jumpingalien.part3.programs.SourceLocation;
 
-public class DirectionConstant implements Expression{
+public class DirectionConstant implements Expression<DirectionType> {
+	
 	private Direction direction;
 	private SourceLocation sourceLocation;
 	

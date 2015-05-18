@@ -3,15 +3,16 @@ package jumpingalien.model.expression;
 import jumpingalien.model.GameObject;
 import jumpingalien.model.Mazub;
 import jumpingalien.model.Program;
+import jumpingalien.model.type.GameObjectType;
 import jumpingalien.part3.programs.SourceLocation;
 
-public class IsMazub implements Expression{
+public class IsMazub implements Expression<GameObjectType> {
 	
-	private Expression expr;
+	private Expression<GameObjectType> expr;
 	private SourceLocation sourceLocation;
 	private Mazub testMazub = new Mazub(0,0,null,null);
 	
-	public IsMazub(Expression expr, SourceLocation sourceLocation){
+	public IsMazub(Expression<GameObjectType> expr, SourceLocation sourceLocation){
 		this.expr = expr;
 		this.sourceLocation = sourceLocation;
 	}

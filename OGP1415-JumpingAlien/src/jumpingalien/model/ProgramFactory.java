@@ -408,7 +408,7 @@ public class ProgramFactory implements IProgramFactory<Expression, Statement, Ty
 	}
 
 	@Override
-	public Program createProgram(Statement mainStatement, Map globalVariables) {
+	public Program createProgram(Statement mainStatement, Map globalVariables) { //Map<String, T>?
 		Program program = new Program(mainStatement, globalVariables);
 		return program;
 	}
