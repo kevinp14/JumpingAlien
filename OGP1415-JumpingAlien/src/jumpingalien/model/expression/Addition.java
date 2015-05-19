@@ -4,7 +4,7 @@ import jumpingalien.model.Program;
 import jumpingalien.part3.programs.SourceLocation;
 import jumpingalien.model.type.*;
 
-public class Addition extends DoubleExpression implements Expression<DoubleType>{
+public class Addition extends DoubleExpression implements Expression<DoubleType> {
 	
 	public Addition(Expression<DoubleType> expr1, Expression<DoubleType> expr2, 
 			SourceLocation sourceLocation){

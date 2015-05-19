@@ -52,7 +52,6 @@ public class GameObject {
 	private double timeInAir;
 	private double timeInMagma;
 	private double timeImmune;
-	private double timeImmuneForMagma;
 	private double timeBlocked;
 	private double timeDead;
 	private Direction lastDirection;
@@ -132,9 +131,8 @@ public class GameObject {
 	    this.setTimeStalled(0);
 	    this.setTimeInAir(0);
 	    this.setTimeInWater(0);
-	    this.setTimeInMagma(0);
+	    this.setTimeInMagma(0.2);
 	    this.setTimeImmune(0);
-	    this.setTimeImmuneForMagma(0);
 		this.timeBlocked = 0;
 	    this.setTimeDead(0);
 	    this.setLastDirection(Direction.STALLED);
@@ -172,10 +170,12 @@ public class GameObject {
 	@Basic
 	@Immutable
 	public Sprite getCurrentSprite() {
-		if (this.isMovingLeft())
+		if (this.isMovingLeft()) {
 			return spriteList[0];
-		else
+		}
+		else {
 			return spriteList[1];
+		}
 	}
 
 	/**
@@ -187,6 +187,18 @@ public class GameObject {
 	@Basic
 	public int[] getPosition() {
 		int[] position = new int[]{ (int)this.positionX, (int)this.positionY };
+		return position;
+	}
+	
+	/**
+	 * Returns the current location of the given game object.
+	 * 
+	 * @return An array, consisting of 2 doubles {x, y}, that represents the
+	 *         coordinates of the given game object's bottom left pixel in the world.
+	 */
+	@Basic
+	public double[] getPositionAsDouble() {
+		double[] position = new double[] { this.positionX, this.positionY };
 		return position;
 	}
 	
@@ -488,8 +500,9 @@ public class GameObject {
 	protected ArrayList<Integer> getHorizontalPixels() {
 		double width = this.getCurrentSprite().getWidth();
 		ArrayList<Integer> horizontalPixels = new ArrayList<Integer>();
-		for (int x=0; x < this.getCurrentSprite().getWidth(); x += (width/10))
+		for (int x=1; x < this.getCurrentSprite().getWidth(); x += (width/10)) {
 			horizontalPixels.add(this.getPosition()[0] + x);
+		}
 		return horizontalPixels;
 	}
 	
@@ -501,8 +514,9 @@ public class GameObject {
 	protected ArrayList<Integer> getVerticalPixels() {
 		double height = this.getCurrentSprite().getHeight();
 		ArrayList<Integer> verticalPixels = new ArrayList<Integer>();
-		for (int y=0; y < this.getCurrentSprite().getHeight(); y += (height/10))
+		for (int y=1; y < this.getCurrentSprite().getHeight(); y += (height/10)) {
 			verticalPixels.add(this.getPosition()[1] + y);
+		}
 		return verticalPixels;
 	}
 	
@@ -597,24 +611,6 @@ public class GameObject {
 	}
 	
 	/**
-	 * @return	The time the game object is immune for magma.
-	 * 
-	 */
-	protected double getTimeImmuneForMagma() {
-		return this.timeImmuneForMagma;
-	}
-	
-	/**
-	 * Set the time the game object is immune for magma to the given one.
-	 * 
-	 * @param	timeImmuneForMagma
-	 * 			The time the game object has to be immune for magma.
-	 */
-	protected void setTimeImmuneForMagma(double timeImmuneForMagma) {
-		this.timeImmuneForMagma = timeImmuneForMagma;
-	}
-	
-	/**
 	 * @return	The time the game object is dead.
 	 * 
 	 */
@@ -670,8 +666,9 @@ public class GameObject {
 		else if ((this.getWorld().getMazub() == this) || (this.getWorld().getBuzam() == this)) {
 			for (int horizontalPixel: this.getHorizontalPixels()) {
 				if (this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(horizontalPixel, 
-						position[1])))
+						position[1]))) {
 					return true;
+				}
 			}
 		}
 		return false;
@@ -743,7 +740,7 @@ public class GameObject {
 	 * @return	True if and only if the vertical velocity of the game object is negative and the 
 	 * 			vertical acceleration of the game object is -10.
 	 */
-	protected boolean isFalling() {
+	public boolean isFalling() {
 		return ((!Util.fuzzyGreaterThanOrEqualTo(this.getVerticalVelocity(), 0)) 
 				&& (Util.fuzzyEquals(this.getVerticalAcceleration(), -10)));
 	}
@@ -796,14 +793,16 @@ public class GameObject {
 		for (int verticalPixel: this.getVerticalPixels()) {
 			if ((this.getWorld().getGeologicalFeature(this.getPosition()[0], verticalPixel) == 0) ||
 					this.getWorld().getGeologicalFeature
-					(this.getPosition()[0] + this.getCurrentSprite().getWidth(), verticalPixel) == 0)
+					(this.getPosition()[0] + this.getCurrentSprite().getWidth(), verticalPixel) == 0) {
 				return true;
+			}
 		}
 		for (int horizontalPixel: this.getHorizontalPixels()) {
 			if ((this.getWorld().getGeologicalFeature(horizontalPixel, this.getPosition()[1]) == 0) ||
 					(this.getWorld().getGeologicalFeature(horizontalPixel, 
-							this.getPosition()[1] + this.getCurrentSprite().getHeight()) == 0))
+							this.getPosition()[1] + this.getCurrentSprite().getHeight()) == 0)) {
 				return true;
+			}
 		}
 		return false;	
 	}
@@ -817,14 +816,16 @@ public class GameObject {
 		for (int verticalPixel: this.getVerticalPixels()) {
 			if ((this.getWorld().getGeologicalFeature(this.getPosition()[0], verticalPixel) == 2) ||
 					this.getWorld().getGeologicalFeature
-					(this.getPosition()[0] + this.getCurrentSprite().getWidth(), verticalPixel) == 2)
+					(this.getPosition()[0] + this.getCurrentSprite().getWidth(), verticalPixel) == 2) {
 				return true;
+			}
 		}
 		for (int horizontalPixel: this.getHorizontalPixels()) {
 			if ((this.getWorld().getGeologicalFeature(horizontalPixel, this.getPosition()[1]) == 2) ||
 					(this.getWorld().getGeologicalFeature(horizontalPixel, 
-							this.getPosition()[1] + this.getCurrentSprite().getHeight()) == 2))
+							this.getPosition()[1] + this.getCurrentSprite().getHeight()) == 2)) {
 				return true;
+			}
 		}
 		return false;
 	}
@@ -838,16 +839,27 @@ public class GameObject {
 		for (int verticalPixel: this.getVerticalPixels()) {
 			if ((this.getWorld().getGeologicalFeature(this.getPosition()[0], verticalPixel) == 3) ||
 					this.getWorld().getGeologicalFeature
-					(this.getPosition()[0] + this.getCurrentSprite().getWidth(), verticalPixel) == 3)
+					(this.getPosition()[0] + this.getCurrentSprite().getWidth(), verticalPixel) == 3) {
 				return true;
+			}
 		}
 		for (int horizontalPixel: this.getHorizontalPixels()) {
 			if ((this.getWorld().getGeologicalFeature(horizontalPixel, this.getPosition()[1]) == 3) ||
 					(this.getWorld().getGeologicalFeature(horizontalPixel, 
-							this.getPosition()[1] + this.getCurrentSprite().getHeight()) == 3))
+							this.getPosition()[1] + this.getCurrentSprite().getHeight()) == 3)) {
 				return true;
+			}
 		}
 		return false;
+	}
+	
+	/**
+	 * @return	True if and only if this game object's number of hitpoints equals 0 or if its 
+	 * 			position is not valid.
+	 * 
+	 */
+	public boolean isDead() {
+		return ((this.getNbHitPoints() == 0) || (!this.isValidPosition(this.getPosition())));
 	}
 	
 	/**
@@ -911,15 +923,8 @@ public class GameObject {
 	 * 			perimeter of the game object equals the right perimeter of the given object - 1.
 	 */
 	protected boolean leftCollidesWith(GameObject object) {
-		for (Integer thisVerticalPosition: this.getVerticalPixels()) {
-			for (Integer objectVerticalPosition: object.getVerticalPixels()) {
-				if ((this.collidesWith(object)) && (this.getPosition()[0] 
-						== object.getPosition()[0] + object.getCurrentSprite().getWidth() - 1) 
-						&& (thisVerticalPosition == objectVerticalPosition))
-					return true;
-			}
-		}
-		return false;
+		return ((this.collidesWith(object)) && (this.getPosition()[0] == (object.getPosition()[0]
+				+ object.getCurrentSprite().getWidth() - 1)));
 	}
 	
 	/**
@@ -932,15 +937,8 @@ public class GameObject {
 	 * 			perimeter of the given object equals the left perimeter of the game object - 1.
 	 */
 	protected boolean rightCollidesWith(GameObject object) {
-		for (Integer thisVerticalPosition: this.getVerticalPixels()) {
-			for (Integer objectVerticalPosition: object.getVerticalPixels()) {
-				if ((this.collidesWith(object)) && (object.getPosition()[1] 
-						== this.getPosition()[1] + this.getCurrentSprite().getWidth() - 1) 
-						&& (thisVerticalPosition == objectVerticalPosition))
-					return true;
-			}
-		}
-		return false;
+		return ((this.collidesWith(object)) && (object.getPosition()[1] == (this.getPosition()[1] 
+				+ this.getCurrentSprite().getWidth() - 1)));
 	}
 	
 	/**
@@ -953,15 +951,8 @@ public class GameObject {
 	 * 			the game object equals the top perimeter of the given object - 1.
 	 */
 	protected boolean bottomCollidesWith(GameObject object) {
-		for (Integer thisHorizontalPosition: this.getHorizontalPixels()) {
-			for (Integer objectHorizontalPosition: object.getHorizontalPixels()) {
-				if ((this.collidesWith(object)) && (this.getPosition()[1] 
-						== object.getPosition()[1] + object.getCurrentSprite().getHeight() - 1) 
-						&& (thisHorizontalPosition == objectHorizontalPosition))
-					return true;
-			}
-		}
-		return false;
+		return ((this.collidesWith(object)) && (this.getPosition()[1] == (object.getPosition()[1] 
+				+ object.getCurrentSprite().getHeight() - 1)));
 	}
 	
 	/**
@@ -974,15 +965,8 @@ public class GameObject {
 	 * 			the given object equals the top perimeter of the game object - 1.
 	 */
 	protected boolean topCollidesWith(GameObject object) {
-		for (Integer thisHorizontalPosition: this.getHorizontalPixels()) {
-			for (Integer objectHorizontalPosition: object.getHorizontalPixels()) {
-				if ((this.collidesWith(object)) && (object.getPosition()[1] 
-						== this.getPosition()[1] + this.getCurrentSprite().getHeight() - 1) 
-						&& (thisHorizontalPosition == objectHorizontalPosition))
-					return true;
-			}
-		}
-		return false;
+		return ((this.collidesWith(object)) && (object.getPosition()[1] == (this.getPosition()[1] 
+				+ this.getCurrentSprite().getHeight() - 1)));
 	}
 	
 	/**
@@ -997,8 +981,9 @@ public class GameObject {
 					&& (rightPixel != this.getPosition()[1])
 					&& (rightPixel != this.getPosition()[1] + 1)
 					&& (rightPixel != this.getPosition()[1] + this.getCurrentSprite().getHeight() - 1)
-					&& (rightPixel != this.getPosition()[1] + this.getCurrentSprite().getHeight()))
+					&& (rightPixel != this.getPosition()[1] + this.getCurrentSprite().getHeight())) {
 				return true;
+			}
 		}
 		return false;
 	}
@@ -1015,8 +1000,9 @@ public class GameObject {
 					&& (topPixel != this.getPosition()[0])
 					&& (topPixel != this.getPosition()[0] + 1)
 					&& (topPixel != this.getPosition()[0] + this.getCurrentSprite().getWidth() - 1)
-					&& (topPixel != this.getPosition()[0] + this.getCurrentSprite().getWidth()))
+					&& (topPixel != this.getPosition()[0] + this.getCurrentSprite().getWidth())) {
 				return true;
+			}
 		}
 		return false;
 	}
@@ -1032,8 +1018,9 @@ public class GameObject {
 					this.getPosition()[0], leftPixel))) && (leftPixel != this.getPosition()[1])
 					&& (leftPixel != this.getPosition()[1] + 1)
 					&& (leftPixel != this.getPosition()[1] + this.getCurrentSprite().getHeight() - 1)
-					&& (leftPixel != this.getPosition()[1] + this.getCurrentSprite().getHeight()))
+					&& (leftPixel != this.getPosition()[1] + this.getCurrentSprite().getHeight())) {
 				return true;
+			}
 		}
 		return false;
 	}
@@ -1049,8 +1036,9 @@ public class GameObject {
 					this.getPosition()[1])) && (bottomPixel != this.getPosition()[0])
 					&& (bottomPixel != this.getPosition()[0] + 1)
 					&& (bottomPixel != this.getPosition()[0] + this.getCurrentSprite().getWidth() - 1)
-					&& (bottomPixel != this.getPosition()[0] + this.getCurrentSprite().getWidth()))
+					&& (bottomPixel != this.getPosition()[0] + this.getCurrentSprite().getWidth())) {
 				return true;
+			}
 		}
 		return false;
 	}
@@ -1292,62 +1280,47 @@ public class GameObject {
 	 */
 	protected void collisionBlockMovement(GameObject object, int[] oldPosition, double dt) {
 		if (this.topCollidesWith(object)) {
-			if (Util.fuzzyGreaterThanOrEqualTo(this.timeBlocked, 0.6)) {
-				this.timeBlocked = 0;
+			if (!Util.fuzzyGreaterThanOrEqualTo(this.timeBlocked, 0.6)) {
+				this.timeBlocked += dt;
 				this.setVerticalVelocity(0);
 				this.setPosition(oldPosition[0], oldPosition[1]);
 			}
-			else
-				this.timeBlocked += dt;
-		}
-		if ((this.bottomCollidesWith(object)) && (this.isFalling())) {
-			if (Util.fuzzyGreaterThanOrEqualTo(this.timeBlocked, 0.6)) {
+			else {
 				this.timeBlocked = 0;
+			}
+		}
+		if ((this.bottomCollidesWith(object)) && (this.isFalling())) { //TODO shark?
+			if (!Util.fuzzyGreaterThanOrEqualTo(this.timeBlocked, 0.6)) {
+				this.timeBlocked += dt;
 				this.setVerticalAcceleration(0);
 				this.setVerticalVelocity(0);
 				this.setPosition(oldPosition[0], oldPosition[1]);
 			}
-			else
-				this.timeBlocked += dt;
-		}
-		if ((this.leftCollidesWith(object)) && (this.getLastDirection() == Direction.LEFT)) {
-			if (Util.fuzzyGreaterThanOrEqualTo(this.timeBlocked, 0.6)) {
+			else {
 				this.timeBlocked = 0;
+			}
+		}
+		if ((this.leftCollidesWith(object)) && (this.isMovingLeft())) {
+			if (!Util.fuzzyGreaterThanOrEqualTo(this.timeBlocked, 0.6)) {
+				this.timeBlocked += dt;
 				this.setHorizontalAcceleration(0);
 				this.setHorizontalVelocity(0);
 				this.setPosition(oldPosition[0], oldPosition[1]);
 			}
-			else
-				this.timeBlocked += dt;
-		}
-		if ((this.rightCollidesWith(object)) && (this.getLastDirection() == Direction.RIGHT)) {
-			if (Util.fuzzyGreaterThanOrEqualTo(this.timeBlocked, 0.6)) {
+			else {
 				this.timeBlocked = 0;
+			}
+		}
+		if ((this.rightCollidesWith(object)) && (this.isMovingRight())) {
+			if (!Util.fuzzyGreaterThanOrEqualTo(this.timeBlocked, 0.6)) {
+				this.timeBlocked += dt;
 				this.setHorizontalAcceleration(0);
 				this.setHorizontalVelocity(0);
 				this.setPosition(oldPosition[0], oldPosition[1]);
 			}
-			else
-				this.timeBlocked += dt;
-		}
-	}
-	
-	
-	/**
-	 * @effect	If this game object has 0 hitpoints or is out of the game world, it is removed
-	 * 			from its game world with a delay of 0.6 seconds.
-	 * 			| if ((this.getNbHitPoints() == 0) || (!this.isValidPosition(this.getPosition())))
-	 * 			|	if (this.getTimeDead() >= 0.6)
-	 * 			|		this.getWorld().removeObject(this, dt)
-	 */
-	protected void removeDeadObject(double dt) {
-		if ((this.getNbHitPoints() == 0) || (!this.isValidPosition(this.getPosition()))) {
-			if (Util.fuzzyGreaterThanOrEqualTo(this.getTimeDead(), 0.6)) {
-				this.setTimeDead(0);
-				this.getWorld().removeObject(this, dt);
+			else {
+				this.timeBlocked = 0;
 			}
-			else
-				this.setTimeDead(this.getTimeDead() + dt);
 		}
 	}
 }

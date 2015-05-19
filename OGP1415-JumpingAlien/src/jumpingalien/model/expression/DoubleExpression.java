@@ -1,8 +1,8 @@
 package jumpingalien.model.expression;
 
-import jumpingalien.model.Program;
 import jumpingalien.model.type.DoubleType;
 import jumpingalien.part3.programs.SourceLocation;
+import jumpingalien.util.Util;
 
 public class DoubleExpression {
 	
@@ -49,40 +49,24 @@ public class DoubleExpression {
 		return (valueExpr1 / valueExpr2);
 	}
 	
-	public Object and(Program program){
-		boolean expr1Evaluated = (boolean) this.expr1.evaluate(program);
-		boolean expr2Evaluated = (boolean) this.expr2.evaluate(program);
-		return ((expr1Evaluated) && (expr2Evaluated));
-	}
-	
-	public Object or(Program program){
-		boolean expr1Evaluated = (boolean) this.expr1.evaluate(program);
-		boolean expr2Evaluated = (boolean) this.expr2.evaluate(program);
-		return ((expr1Evaluated) || (expr2Evaluated));
-	}
-	
 	public boolean lessThan(){
-		return ((double)this.expr1.evaluate(null) < (double)this.expr2.evaluate(null));
+		return (!Util.fuzzyGreaterThanOrEqualTo((double)this.expr1.evaluate(null),
+				(double)this.expr2.evaluate(null)));
 	}
 	
 	public boolean lessThanOrEqual(){
-		return ((double)this.expr1.evaluate(null) <= (double)this.expr2.evaluate(null));
+		return (Util.fuzzyLessThanOrEqualTo((double)this.expr1.evaluate(null),
+				(double)this.expr2.evaluate(null)));
 	}
 	
 	public boolean greaterThan(){
-		return ((double)this.expr1.evaluate(null) > (double)this.expr2.evaluate(null));
+		return (!Util.fuzzyLessThanOrEqualTo((double)this.expr1.evaluate(null),
+				(double)this.expr2.evaluate(null)));
 	}
 	
 	public boolean greaterThanOrEqual(){
-		return ((double)this.expr1.evaluate(null) >= (double)this.expr2.evaluate(null));
-	}
-	
-	public boolean equals(){
-		return (this.expr1.evaluate(null) == this.expr2.evaluate(null));
-	}
-	
-	public boolean notEquals(){
-		return (this.expr1.evaluate(null) != this.expr2.evaluate(null));
+		return (Util.fuzzyGreaterThanOrEqualTo((double)this.expr1.evaluate(null),
+				(double)this.expr2.evaluate(null)));
 	}
 }
 

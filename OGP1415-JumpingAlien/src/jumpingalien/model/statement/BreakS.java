@@ -2,6 +2,7 @@ package jumpingalien.model.statement;
 
 import jumpingalien.model.Program;
 import jumpingalien.model.expression.*;
+import jumpingalien.model.type.BooleanType;
 import jumpingalien.part3.programs.SourceLocation;
 
 public class BreakS implements Statement{
@@ -13,10 +14,13 @@ public class BreakS implements Statement{
 	}
 
 	@Override
-	public void execute(Program program, Expression condition) {
+	public void execute(Program program, Expression<BooleanType> condition) {
 		SourceLocation srcLoc = condition.getSourceLocation();
-		BooleanE falseE = new BooleanE(false, srcLoc);
-		condition = falseE;
+		boolean cond = (boolean)condition.evaluate(program);
+		while (cond) {
+			break;
+		}
+		this.sourceLocation = srcLoc;
 	}
 
 	@Override

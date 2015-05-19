@@ -55,10 +55,12 @@ public class Plant extends GameObject {
 	private Direction getRandomDirection(){
 		Random rand = new Random();
 	    int directionNumber = rand.nextInt(2);
-	    if (directionNumber == 0)
+	    if (directionNumber == 0) {
 	    	return Direction.LEFT;
-	    else
+	    }
+	    else {
 	    	return Direction.RIGHT;
+	    }
 	}
 	
 	/**
@@ -74,10 +76,12 @@ public class Plant extends GameObject {
 		double acceleration = Math.sqrt(Math.pow(this.getHorizontalAcceleration(), 2) + 
 				Math.pow(this.getVerticalAcceleration(), 2));
 		double newDt = 0.01 / (velocity + (acceleration * dt));
-		if (Util.fuzzyEquals((velocity + (acceleration * dt)), 0))
+		if (Util.fuzzyEquals((velocity + (acceleration * dt)), 0)) {
 			return 0.01;
-		else 
+		}
+		else {
 			return newDt;
+		}
 	}
 	
 	/**
@@ -130,11 +134,13 @@ public class Plant extends GameObject {
 	public void endMoveHorizontally(Direction direction) {
 		assert (isValidMovingDirection(direction));
 		if ((direction == Direction.RIGHT)
-				&& (!Util.fuzzyLessThanOrEqualTo(this.getHorizontalVelocity(), 0)))
+				&& (!Util.fuzzyLessThanOrEqualTo(this.getHorizontalVelocity(), 0))) {
 			this.setHorizontalVelocity(0);
+		}
 		if ((direction == Direction.LEFT) 
-				& (!Util.fuzzyGreaterThanOrEqualTo(this.getHorizontalVelocity(), 0)))
+				& (!Util.fuzzyGreaterThanOrEqualTo(this.getHorizontalVelocity(), 0))) {
 			this.setHorizontalVelocity(0);
+		}
 	}
 	
 	/**
@@ -168,11 +174,14 @@ public class Plant extends GameObject {
 		Mazub alien = this.getWorld().getMazub();
 //		Buzam buzam = this.getWorld().getBuzam();
 		if (((this.collidesWith(alien)) && (alien.getNbHitPoints() < 500)))
-//				|| ((this.collidesWith(buzam)) && (buzam.getNbHitPoints() < 500)))
+//			|| ((this.collidesWith(buzam)) && (buzam.getNbHitPoints() < 500)))
+			{
 			this.changeNbHitPoints(-1);
+		}
 		for (Plant plant: this.getWorld().getPlants()) {
-			if (this.collidesWith(plant))
+			if (this.collidesWith(plant)) {
 				this.collisionBlockMovement(plant, oldPosition, newDt);
+			}
 		}
 	}
 	
@@ -196,12 +205,14 @@ public class Plant extends GameObject {
 	 * 			| !isValidDt(dt)
 	 */
 	public void advanceTime(double dt) throws IllegalArgumentException {
-		if (!this.isValidDt(dt))
+		if (!this.isValidDt(dt)) {
 			throw new IllegalArgumentException("The given period of time dt is invalid!");
+		}
 		double sumDt = 0;
 		while (!Util.fuzzyGreaterThanOrEqualTo(sumDt, dt)) {
 			double newDt = this.getNewDt(dt);
 			int[] oldPosition = this.getPosition();
+			double[] oldPositionAsDouble = this.getPositionAsDouble();
 			if (Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, 0.50)) {
 				this.timeMovingHorizontally = 0;
 				this.endMoveHorizontally(this.getLastDirection());
@@ -215,8 +226,8 @@ public class Plant extends GameObject {
 			}
 			this.collidesWithActions(newDt, oldPosition);
 			if ((!this.crossImpassableLeft()) && (!this.crossImpassableRight())) {
-				this.setPosition(oldPosition[0] + (100 * this.horizontalMovement(
-						newDt)), oldPosition[1]);
+				this.setPosition(oldPositionAsDouble[0] + (100 * this.horizontalMovement(
+						newDt)), oldPositionAsDouble[1]);
 			}
 			sumDt += newDt;
 		}

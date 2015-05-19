@@ -65,10 +65,12 @@ public class Shark extends GameObject {
 	private double getRandomMovingTime() {
 		Random rand = new Random();
 		int movingTime = rand.nextInt(40);
-		if (movingTime > 10)
+		if (movingTime > 10) {
 			return (((double)movingTime) / 10);
-		else
+		}
+		else {
 			return (((double)(movingTime + 10)) / 10);
+		}
 	}
 	
 	/**
@@ -121,10 +123,12 @@ public class Shark extends GameObject {
 		double acceleration = Math.sqrt(Math.pow(this.getHorizontalAcceleration(), 2) + 
 				Math.pow(this.getVerticalAcceleration(), 2));
 		double newDt = 0.01 / (velocity + (acceleration * dt));
-		if (Util.fuzzyEquals((velocity + (acceleration * dt)), 0))
+		if (Util.fuzzyEquals((velocity + (acceleration * dt)), 0)) {
 			return 0.01;
-		else 
+		}
+		else {
 			return newDt;
+		}
 	}
 	
 	/**
@@ -216,8 +220,9 @@ public class Shark extends GameObject {
 				this.startMoveVertically(Direction.DOWN);
 			}
 		}
-		if (!Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, movingTime))
+		if (!Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, movingTime)) {
 			this.timeMovingHorizontally += dt;
+		}
 	}
 	
 	/**
@@ -281,8 +286,9 @@ public class Shark extends GameObject {
 		}
 		if (direction == Direction.DOWN) {
 			this.timesNotJumped += 1;
-			if (this.isSubmergedInWater())
+			if (this.isSubmergedInWater()) {
 				this.startDive();
+			}
 		}
 	}
 	
@@ -298,12 +304,15 @@ public class Shark extends GameObject {
 	 * 			|	this.endDive()
 	 */
 	public void endMoveVertically() {
-		if (this.isJumping())
+		if (this.isJumping()) {
 			this.endJump();
-		if (this.isRising())
+		}
+		if (this.isRising()) {
 			this.endRise();
-		if (this.isDiving())
+		}
+		if (this.isDiving()) {
 			this.endDive();
+		}
 	}
 	
 	/**
@@ -335,8 +344,9 @@ public class Shark extends GameObject {
 			if (!Util.fuzzyGreaterThanOrEqualTo(this.getHorizontalVelocity(), 0)) {
 				this.setHorizontalVelocity(-this.getMaxHorizontalVelocity());
 			} 
-			else
+			else {
 				this.setHorizontalVelocity(this.getMaxHorizontalVelocity());
+			}
 		}
 		this.setHorizontalVelocity(this.getHorizontalVelocity() + this.getHorizontalAcceleration() * dt);
 		double newPositionX = this.getHorizontalVelocity() * dt 
@@ -408,8 +418,9 @@ public class Shark extends GameObject {
 					this.changeNbHitPoints(-50);
 					this.makeImmune();
 				}
-				else
+				else {
 					this.setTimeImmune(this.getTimeImmune() + newDt);
+				}
 			}
 		}
 //		Buzam buzam = this.getWorld().getBuzam();
@@ -420,8 +431,9 @@ public class Shark extends GameObject {
 //					this.changeNbHitPoints(-50);
 //					this.makeImmune();
 //				}
-//				else
+//				else {
 //					this.setTimeImmune(this.getTimeImmune() + newDt);
+//				}
 //			}
 //		}
 		for (Shark shark: this.getWorld().getSharks()) {
@@ -436,11 +448,11 @@ public class Shark extends GameObject {
 					this.changeNbHitPoints(-50);
 					this.makeImmune();
 				}
-				else
+				else {
 					this.setTimeImmune(this.getTimeImmune() + newDt);
+				}
 			}
 		}
-
 	}
 	
 	/**
@@ -460,22 +472,17 @@ public class Shark extends GameObject {
 				this.changeNbHitPoints(-6);
 				this.setTimeInAir(0);
 			}
-			else 
+			else {
 				this.setTimeInAir(this.getTimeInAir() + newDt);
+			}
 		}
 		else if (this.isInMagma()) {
-			this.setTimeInMagma(this.getTimeInMagma() + newDt);
-			if (!this.isImmuneForMagma()) {
+			if (Util.fuzzyGreaterThanOrEqualTo(this.getTimeInMagma(), 0.2)) {
 				this.changeNbHitPoints(-50);
-				this.makeImmuneForMagma();
+				this.setTimeInMagma(0);
 			}
 			else {
-				if (!Util.fuzzyGreaterThanOrEqualTo(this.getTimeImmuneForMagma(), 0.20) )
-					this.setTimeImmuneForMagma(this.getTimeImmuneForMagma() + newDt);
-				else {
-					this.makeVulnerableForMagma();
-					this.setTimeImmuneForMagma(0);
-				}
+				this.setTimeInMagma(this.getTimeInMagma() + newDt);
 			}
 		}
 		else {
@@ -508,28 +515,31 @@ public class Shark extends GameObject {
 	 * 			| !isValidDt(dt)
 	 */
 	public void advanceTime(double dt) throws IllegalArgumentException {
-		if (!this.isValidDt(dt))
+		if (!this.isValidDt(dt)) {
 			throw new IllegalArgumentException("The given period of time dt is invalid!");
+		}
 		double sumDt = 0;
 		double movingTime = this.getRandomMovingTime();
 		while (!Util.fuzzyGreaterThanOrEqualTo(sumDt, dt)) {
 			double newDt = this.getNewDt(dt);
 			int[] oldPosition = this.getPosition();
+			double[] oldPositionAsDouble = this.getPositionAsDouble();
 			if ((this.crossImpassableBottom()) || (this.crossImpassableLeft()) 
 					|| (this.crossImpassableTop()) || (this.crossImpassableRight()))  {
 				this.crossImpassableActions(oldPosition);
 			}
 			this.collidesWithActions(newDt, oldPosition);
-			if ((this.isInAir()) || (this.isInMagma()))
+			if ((this.isInAir()) || (this.isInMagma())) {
 				this.isInFluidActions(newDt);
+			}
 			this.move(movingTime, newDt);
 			if ((!this.crossImpassableBottom()) && (!this.crossImpassableLeft())
 					&& (!this.crossImpassableTop()) && (!this.crossImpassableRight())) {
 				if ((!this.touchImpassableBottom()) && (!this.isSubmergedInWater())) {
 					this.setVerticalAcceleration(this.getNormalVerticalAcceleration());
 				}
-				this.setPosition(oldPosition[0] + 100*this.horizontalMovement(newDt),
-					oldPosition[1] + 100*this.verticalMovement(newDt));
+				this.setPosition(oldPositionAsDouble[0] + 100*this.horizontalMovement(newDt),
+					oldPositionAsDouble[1] + 100*this.verticalMovement(newDt));
 			}
 			sumDt += newDt;
 		}

@@ -2,15 +2,15 @@ package jumpingalien.model.expression;
 
 import jumpingalien.model.Program;
 import jumpingalien.part3.programs.SourceLocation;
-import jumpingalien.model.*;
-import jumpingalien.model.type.GameObjectType;
+import jumpingalien.model.type.BooleanType;
+import jumpingalien.model.type.IntervalType;
 
-public class IsTerrain implements Expression<GameObjectType> {
+public class IsTerrain implements Expression<BooleanType> {
 	
-	private Expression<GameObjectType> expr;
+	private Expression<IntervalType> expr;
 	private SourceLocation sourceLocation;
 	
-	public IsTerrain(Expression<GameObjectType> expr, SourceLocation sourceLocation){
+	public IsTerrain(Expression<IntervalType> expr, SourceLocation sourceLocation){
 		this.expr = expr;
 		this.sourceLocation = sourceLocation;
 	}
@@ -18,11 +18,14 @@ public class IsTerrain implements Expression<GameObjectType> {
 	@Override
 	public Object evaluate(Program program) {
 		IsAir air = new IsAir(this.expr, this.sourceLocation);
+		boolean isAir = (boolean)air.evaluate(program);
 		IsWater water = new IsWater(this.expr, this.sourceLocation);
+		boolean isWater = (boolean)water.evaluate(program);
 		IsMagma magma = new IsMagma(this.expr, this.sourceLocation);
+		boolean isMagma = (boolean)magma.evaluate(program);
 		IsPassable passable = new IsPassable(this.expr, this.sourceLocation);
-		return ((air.evaluate(program)) || (water.evaluate(program)) || (magma.evaluate(program))
-				passable.evaluate(program));
+		boolean isPassable = (boolean)passable.evaluate(program);
+		return ((isAir) || (isWater) || (isMagma) || (!isPassable));
 	}
 
 	@Override

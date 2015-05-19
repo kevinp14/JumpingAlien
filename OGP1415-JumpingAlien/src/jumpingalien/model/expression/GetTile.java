@@ -2,7 +2,6 @@ package jumpingalien.model.expression;
 
 import jumpingalien.model.Program;
 import jumpingalien.model.type.DoubleType;
-import jumpingalien.model.type.GameObjectType;
 import jumpingalien.part3.programs.SourceLocation;
 
 public class GetTile extends DoubleExpression implements Expression<DoubleType> {
@@ -16,7 +15,9 @@ public class GetTile extends DoubleExpression implements Expression<DoubleType> 
 	public Object evaluate(Program program) {
 		int positionX = (int) this.expr1.evaluate(null);
 		int positionY = (int) this.expr2.evaluate(null);
-		return program.getGameObject().getWorld().getBottomLeftPixelOfTile((positionX, positionY));
+		int tileLength = program.getGameObject().getWorld().getTileLength();
+		int[] tile = new int[] { (positionX / tileLength), (positionY / tileLength) };
+		return tile;
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package jumpingalien.model.statement;
 
 import jumpingalien.model.Program;
 import jumpingalien.model.expression.Expression;
+import jumpingalien.model.type.BooleanType;
 import jumpingalien.part3.programs.SourceLocation;
 
 public class SkipS implements Statement{
@@ -13,7 +14,14 @@ public class SkipS implements Statement{
 	}
 
 	@Override
-	public void execute(Program program, Expression condition) {}
+	public void execute(Program program, Expression<BooleanType> condition) {
+		long duration = (long)0.001;
+		try {
+			program.wait(duration);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 
 	@Override
 	public SourceLocation getSourceLocation() {

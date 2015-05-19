@@ -1,10 +1,11 @@
 package jumpingalien.model.expression;
 
 import jumpingalien.model.Program;
+import jumpingalien.model.type.BooleanType;
 import jumpingalien.model.type.DoubleType;
 import jumpingalien.part3.programs.SourceLocation;
 
-public class GreaterThanOrEqual extends DoubleExpression implements Expression<DoubleType> {
+public class GreaterThanOrEqual extends DoubleExpression implements Expression<BooleanType> {
 	
 	public GreaterThanOrEqual(Expression<DoubleType> expr1, Expression<DoubleType> expr2, 
 			SourceLocation sourceLocation){

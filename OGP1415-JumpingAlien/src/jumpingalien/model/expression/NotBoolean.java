@@ -1,14 +1,15 @@
 package jumpingalien.model.expression;
 
 import jumpingalien.model.Program;
+import jumpingalien.model.type.BooleanType;
 import jumpingalien.part3.programs.SourceLocation;
 
-public class NotE implements Expression{
+public class NotBoolean implements Expression<BooleanType> {
 	
-	private Expression expr;
+	private Expression<BooleanType> expr;
 	private SourceLocation sourceLocation;
 	
-	public NotE(Expression expr, SourceLocation sourceLocation){
+	public NotBoolean(Expression<BooleanType> expr, SourceLocation sourceLocation){
 		this.expr = expr;
 		this.sourceLocation = sourceLocation;
 	}
@@ -16,7 +17,7 @@ public class NotE implements Expression{
 	@Override
 	public Object evaluate(Program program) {
 		boolean valueExpr = (boolean)this.expr.evaluate(null);
-		return (! valueExpr);
+		return (!valueExpr);
 	}
 	
 	@Override

@@ -1,15 +1,16 @@
 package jumpingalien.model.expression;
 
 import jumpingalien.model.Program;
-import jumpingalien.model.type.GameObjectType;
+import jumpingalien.model.type.BooleanType;
+import jumpingalien.model.type.IntervalType;
 import jumpingalien.part3.programs.SourceLocation;
 
-public class IsWater implements Expression<GameObjectType> {
+public class IsWater implements Expression<BooleanType> {
 	
-	private Expression<GameObjectType> expr;
+	private Expression<IntervalType> expr;
 	private SourceLocation sourceLocation;
 	
-	public IsWater(Expression<GameObjectType> expr, SourceLocation sourceLocation){
+	public IsWater(Expression<IntervalType> expr, SourceLocation sourceLocation){
 		this.expr = expr;
 		this.sourceLocation = sourceLocation;
 	}

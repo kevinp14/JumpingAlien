@@ -4,7 +4,7 @@ import jumpingalien.model.Program;
 import jumpingalien.model.type.Type;
 import jumpingalien.part3.programs.SourceLocation;
 
-public class ReadVariable implements Expression{
+public class ReadVariable implements Expression<?> {
 	
 	private String variableName;
 	private SourceLocation sourceLocation;

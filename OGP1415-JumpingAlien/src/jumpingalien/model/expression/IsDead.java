@@ -2,10 +2,11 @@ package jumpingalien.model.expression;
 
 import jumpingalien.model.GameObject;
 import jumpingalien.model.Program;
+import jumpingalien.model.type.BooleanType;
 import jumpingalien.model.type.GameObjectType;
 import jumpingalien.part3.programs.SourceLocation;
 
-public class IsDead implements Expression<GameObjectType> {
+public class IsDead implements Expression<BooleanType> {
 	
 	private Expression<GameObjectType> expr;
 	private SourceLocation sourceLocation;
@@ -18,7 +19,7 @@ public class IsDead implements Expression<GameObjectType> {
 	@Override
 	public Object evaluate(Program program) {
 		GameObject gameObject = (GameObject) this.expr.evaluate(program);
-		return (gameObject.getNbHitPoints() == 0);
+		return (gameObject.isDead());
 	}
 
 	@Override

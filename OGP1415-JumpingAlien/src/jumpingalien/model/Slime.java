@@ -90,10 +90,12 @@ public class Slime extends GameObject {
 	private double getRandomMovingTime() {
 		Random rand = new Random();
 		int movingTime = rand.nextInt(60);
-		if (movingTime > 20)
+		if (movingTime > 20) {
 			return (((double)movingTime) / 10);
-		else
+		}
+		else {
 			return (((double)(movingTime + 20)) / 10);
+		}
 	}
 	
 	/**
@@ -103,10 +105,12 @@ public class Slime extends GameObject {
 	private Direction getRandomDirection(){
 		Random rand = new Random();
 	    int directionNumber = rand.nextInt(2);
-	    if (directionNumber == 0)
+	    if (directionNumber == 0) {
 	    	return Direction.LEFT;
-	    else
+	    }
+	    else {
 	    	return Direction.RIGHT;
+	    }
 	}
 	
 	/**
@@ -121,10 +125,12 @@ public class Slime extends GameObject {
 		double acceleration = Math.sqrt(Math.pow(this.getHorizontalAcceleration(), 2) + 
 				Math.pow(this.getVerticalAcceleration(), 2));
 		double newDt = 0.01 / (velocity + (acceleration * dt));
-		if (Util.fuzzyEquals((velocity + (acceleration * dt)), 0))
+		if (Util.fuzzyEquals((velocity + (acceleration * dt)), 0)) {
 			return 0.01;
-		else 
+		}
+		else {
 			return newDt;
+		}
 	}
 	
 	
@@ -157,8 +163,10 @@ public class Slime extends GameObject {
 			this.setHorizontalAcceleration(0);
 			if (!Util.fuzzyGreaterThanOrEqualTo(this.getHorizontalVelocity(), 0)) {
 				this.setHorizontalVelocity(-this.getMaxHorizontalVelocity());
-			} else
+			} 
+			else {
 				this.setHorizontalVelocity(this.getMaxHorizontalVelocity());
+			}
 		}
 		this.setHorizontalVelocity(this.getHorizontalVelocity() + this.getHorizontalAcceleration() * dt);
 		double newPositionX = this.getHorizontalVelocity() * dt - 
@@ -292,14 +300,16 @@ public class Slime extends GameObject {
 					if (!this.isImmune()) {
 						this.changeNbHitPoints(-50);
 						for (Slime slime: this.getSchool().getSlimes()) {
-							if (!(slime == this))
+							if (!(slime == this)) {
 								slime.changeNbHitPoints(-1);
+							}
 						}
 						this.makeImmune();
-						}
+					}
 					else {
-						if (Util.fuzzyLessThanOrEqualTo(this.getTimeImmune(), 0.60)) 
+						if (Util.fuzzyLessThanOrEqualTo(this.getTimeImmune(), 0.60)) {
 							this.setTimeImmune(this.getTimeImmune() + newDt);
+						}
 						else {
 							this.makeVulnerable();
 							this.setTimeImmune(0);
@@ -315,14 +325,16 @@ public class Slime extends GameObject {
 				if (!this.isImmune()) {
 					this.changeNbHitPoints(-50);
 					for (Slime slime: this.getSchool().getSlimes()) {
-						if (!(slime == this))
+						if (!(slime == this)) {
 							slime.changeNbHitPoints(-1);
+						}
 					}
 					this.makeImmune();
-					}
+				}
 				else {
-					if (Util.fuzzyLessThanOrEqualTo(this.getTimeImmune(), 0.60)) 
+					if (Util.fuzzyLessThanOrEqualTo(this.getTimeImmune(), 0.60)) {
 						this.setTimeImmune(this.getTimeImmune() + newDt);
+					}
 					else {
 						this.makeVulnerable();
 						this.setTimeImmune(0);
@@ -337,14 +349,16 @@ public class Slime extends GameObject {
 //				if (!this.isImmune()) {
 //					this.changeNbHitPoints(-50);
 //					for (Slime slime: this.getSchool().getSlimes()) {
-//						if (!(slime == this))
+//						if (!(slime == this)) {
 //							slime.changeNbHitPoints(-1);
+//						}
 //					}
 //					this.makeImmune();
 //				}
 //				else {
-//					if (Util.fuzzyLessThanOrEqualTo(this.getTimeImmune(), 0.60)) 
+//					if (Util.fuzzyLessThanOrEqualTo(this.getTimeImmune(), 0.60)) {
 //						this.setTimeImmune(this.getTimeImmune() + newDt);
+//					}
 //					else {
 //						this.makeVulnerable();
 //						this.setTimeImmune(0);
@@ -371,22 +385,17 @@ public class Slime extends GameObject {
 				this.changeNbHitPoints(-2);
 				this.setTimeInWater(0);
 			}
-			else 
+			else {
 				this.setTimeInWater(this.getTimeInWater() + newDt);
+			}
 		}
 		else if (this.isInMagma()) {
-			this.setTimeInMagma(this.getTimeInMagma() + newDt);
-			if (!this.isImmuneForMagma()) {
+			if (Util.fuzzyGreaterThanOrEqualTo(this.getTimeInMagma(), 0.2)) {
 				this.changeNbHitPoints(-50);
-				this.makeImmuneForMagma();
+				this.setTimeInMagma(0);
 			}
 			else {
-				if (!Util.fuzzyGreaterThanOrEqualTo(this.getTimeImmuneForMagma(), 0.20)) 
-					this.setTimeImmuneForMagma(this.getTimeImmuneForMagma() + newDt);
-				else {
-					this.makeVulnerableForMagma();
-					this.setTimeImmuneForMagma(0);
-				}
+				this.setTimeInMagma(this.getTimeInMagma() + newDt);
 			}
 		}
 		else {
@@ -425,13 +434,15 @@ public class Slime extends GameObject {
 	 * 			| !isValidDt(dt)
 	 */
 	public void advanceTime(double dt) throws IllegalArgumentException {
-		if (!this.isValidDt(dt))
+		if (!this.isValidDt(dt)) {
 			throw new IllegalArgumentException("The given period of time dt is invalid!");
+		}
 		double sumDt = 0;
 		double movingTime = this.getRandomMovingTime();
 		while (!Util.fuzzyGreaterThanOrEqualTo(sumDt, dt)) {
 			double newDt = this.getNewDt(dt);
 			int[] oldPosition = this.getPosition();
+			double[] oldPositionAsDouble = this.getPositionAsDouble();
 			if (Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, movingTime)) {
 				this.timeMovingHorizontally = 0;
 				this.endMoveHorizontally(this.getLastDirection());
@@ -442,10 +453,12 @@ public class Slime extends GameObject {
 				this.timeMovingHorizontally += newDt;
 			}
 			if ((this.crossImpassableLeft()) || (this.crossImpassableBottom()) 
-					|| (this.crossImpassableRight()))
+					|| (this.crossImpassableRight())) {
 				this.crossImpassableActions(oldPosition);
-			if ((this.isInWater()) || (this.isInMagma()))
+			}
+			if ((this.isInWater()) || (this.isInMagma())) {
 				this.isInFluidActions(dt);
+			}
 			this.collidesWithActions(newDt, oldPosition);
 			if ((this.isInWater()) || (this.isInMagma())) {
 				this.isInFluidActions(newDt);
@@ -455,8 +468,8 @@ public class Slime extends GameObject {
 				if (!this.touchImpassableBottom()) {
 					this.setVerticalAcceleration(this.getNormalVerticalAcceleration());
 				}
-				this.setPosition(oldPosition[0] + 100*this.horizontalMovement(newDt),
-					oldPosition[1] + 100*this.verticalMovement(newDt));
+				this.setPosition(oldPositionAsDouble[0] + 100*this.horizontalMovement(newDt),
+					oldPositionAsDouble[1] + 100*this.verticalMovement(newDt));
 			}
 			sumDt += newDt;
 		}

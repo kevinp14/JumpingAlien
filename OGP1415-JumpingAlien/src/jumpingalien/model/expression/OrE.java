@@ -4,7 +4,7 @@ import jumpingalien.model.Program;
 import jumpingalien.model.type.BooleanType;
 import jumpingalien.part3.programs.SourceLocation;
 
-public class OrE extends DoubleExpression implements Expression<BooleanType> {
+public class OrE extends BooleanExpression implements Expression<BooleanType> {
 	
 	public OrE(Expression<BooleanType> expr1, Expression<BooleanType> expr2, 
 			SourceLocation sourceLocation){

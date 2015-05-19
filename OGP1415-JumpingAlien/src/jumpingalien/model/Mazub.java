@@ -90,51 +90,65 @@ public class Mazub extends GameObject {
 		assert (this.isValidSpriteList(this.spriteList));
 		if (this.isMovingHorizontally()) {
 			if (this.isMovingLeft()) {
-				if (this.isDucking())
+				if (this.isDucking()) {
 					return spriteList[7];
-				if (this.isAirborne())
+				}
+				if (this.isAirborne()) {
 					return spriteList[5];
+				}
 				else {
 					if (!Util.fuzzyGreaterThanOrEqualTo(((1000*this.timeMovingHorizontally) / 75)
-							,11))
+							,11)) {
 						return spriteList[(int)(19 + ((1000*this.timeMovingHorizontally) / 75))];
-					else
+					}
+					else {
 						this.timeMovingHorizontally = 0;
+					}
 				}
 			}
 			else {
-				if (this.isDucking())
+				if (this.isDucking()) {
 					return spriteList[6];
-				if (this.isAirborne())
+				}
+				if (this.isAirborne()) {
 					return spriteList[4];
+				}
 				else {
 					if (!Util.fuzzyGreaterThanOrEqualTo(((1000*this.timeMovingHorizontally) / 75)
-							,11))
+							,11)) {
 						return spriteList[(int) (8 + ((1000*this.timeMovingHorizontally) / 75))];
-					else 
+					}
+					else {
 						this.timeMovingHorizontally = 0;
+					}
 				}
 			}
 		}
 		if (this.hasJustMovedHorizontally()) {
 			if (this.isMovingLeft()) {
-				if (this.isDucking())
+				if (this.isDucking()) {
 					return spriteList[7];
-				else
+				}
+				else {
 					return spriteList[3];
+				}
 			}
 			else {
-				if (this.isDucking())
+				if (this.isDucking()) {
 					return spriteList[6];
-				else
+				}
+				else {
 					return spriteList[2];
+				}
 			}
 		}
 		else {
-			if (this.isDucking())
+			if (this.isDucking()) {
 				return spriteList[1];
-			else
+			}
+			else {
 				return spriteList[0];
+			}
 		}
 	}
 	
@@ -168,8 +182,9 @@ public class Mazub extends GameObject {
 		double acceleration = Math.sqrt(Math.pow(this.getHorizontalAcceleration(), 2) + 
 				Math.pow(this.getVerticalAcceleration(), 2));
 		double newDt = 0.01 / (velocity + (acceleration * dt));
-		if (Util.fuzzyEquals((velocity + (acceleration * dt)), 0))
+		if (Util.fuzzyEquals((velocity + (acceleration * dt)), 0)) {
 			return 0.01;
+		}
 		else 
 			return newDt;
 	}
@@ -192,8 +207,9 @@ public class Mazub extends GameObject {
 	public boolean canEndDuck() {
 		for (int horizontalPixel: this.getHorizontalPixels()) {
 			if (this.getWorld().isNotPassable(this.getWorld().getGeologicalFeature(
-					horizontalPixel, this.getPosition()[1] + this.spriteList[0].getHeight())))
+					horizontalPixel, this.getPosition()[1] + this.spriteList[0].getHeight()))) {
 				return false;
+			}
 		}
 		return true;
 	}
@@ -234,8 +250,9 @@ public class Mazub extends GameObject {
 		assert (isValidMovingDirection(direction));
 		if (direction == Direction.RIGHT) {
 			this.setLastDirection(Direction.RIGHT);
-			if (this.isMovingLeft())
+			if (this.isMovingLeft()) {
 				this.setSecondaryDirection(Direction.LEFT);
+			}
 			if (Util.fuzzyLessThanOrEqualTo(this.getHorizontalVelocity(), 
 					this.getMaxHorizontalVelocity())) {
 				this.setHorizontalVelocity(this.getNormalHorizontalVelocity());
@@ -248,8 +265,9 @@ public class Mazub extends GameObject {
 		}
 		else {
 			this.setLastDirection(Direction.LEFT);
-			if (this.isMovingRight())
+			if (this.isMovingRight()) {
 				this.setSecondaryDirection(Direction.RIGHT);
+			}
 			if (Util.fuzzyGreaterThanOrEqualTo(this.getHorizontalVelocity(),
 					(-this.getMaxHorizontalVelocity()))) {
 				this.setHorizontalVelocity(-this.getNormalHorizontalVelocity());
@@ -329,8 +347,9 @@ public class Mazub extends GameObject {
 			if (!Util.fuzzyGreaterThanOrEqualTo(this.getHorizontalVelocity(), 0)) {
 				this.setHorizontalVelocity(-this.getMaxHorizontalVelocity());
 			} 
-			else
+			else {
 				this.setHorizontalVelocity(this.getMaxHorizontalVelocity());
+			}
 		}
 		this.setHorizontalVelocity(this.getHorizontalVelocity() + this.getHorizontalAcceleration() * dt);
 		double newPositionX = this.getHorizontalVelocity() * dt 
@@ -372,7 +391,7 @@ public class Mazub extends GameObject {
 	 * @effect	If the alien collides with a plant in its game world and its current number of 
 	 * 			hitpoints is smaller than 500, it has to gain 50 hitpoints.
 	 * 			| for (Plant plant: this.getWorld().getPlants())
-	 * 			|	if ((this.collidesWith(plant)) && (this.getNbHitPoints() < 500))
+	 * 			|	if ((this.collidesWith(plant)) && (!plant.isDead()) && (this.getNbHitPoints() < 500))
 	 * 			|			this.changeNbHitPoints(50)
 	 * @effect	If the alien collides with a shark in its game world, its movement is blocked if it
 	 * 			is trying to move in the direction in which it collided, and it loses 50 hitpoints if
@@ -392,16 +411,17 @@ public class Mazub extends GameObject {
 	 * 			|			this.changeNbHitPoints(-50)
 	 * @effect	If the alien collides with buzam, its movement is blocked if it is trying to move in 
 	 * 			the direction in which it collided, and it loses 50 hitpoints if it didn't fall on 
-	 * 			top of bazum.
-	 * 			| if (this.collidesWith(bazum)) 
-	 * 			|	this.collisionBlockMovement(bazum, oldPosition, newDt)
-	 * 			|	if ((!this.bottomCollidesWith(bazum)) && (!this.isImmune()))
+	 * 			top of buzam.
+	 * 			| if (this.collidesWith(buzam)) 
+	 * 			|	this.collisionBlockMovement(buzam, oldPosition, newDt)
+	 * 			|	if ((!this.bottomCollidesWith(buzam)) && (!this.isImmune()))
 	 * 			|		this.changeNbHitPoints(-50)
 	 */
 	private void collidesWithActions(double newDt, int[] oldPosition) {
 		for (Plant plant: this.getWorld().getPlants()) {
-			if ((this.collidesWith(plant)) && (this.getNbHitPoints() < 500))
+			if ((this.collidesWith(plant)) && (!plant.isDead()) && (this.getNbHitPoints() < 500)) {
 					this.changeNbHitPoints(50);
+			}
 		}
 		for (Shark shark: this.getWorld().getSharks()) {
 			if (this.collidesWith(shark)) {
@@ -412,8 +432,9 @@ public class Mazub extends GameObject {
 						this.makeImmune();
 						}
 					else {
-						if (Util.fuzzyLessThanOrEqualTo(this.getTimeImmune(), 0.60))
+						if (Util.fuzzyLessThanOrEqualTo(this.getTimeImmune(), 0.60)) {
 							this.setTimeImmune(this.getTimeImmune() + newDt);
+						}
 						else {
 							this.makeVulnerable();
 							this.setTimeImmune(0);
@@ -431,8 +452,9 @@ public class Mazub extends GameObject {
 						this.makeImmune();
 						}
 					else {
-						if (Util.fuzzyLessThanOrEqualTo(this.getTimeImmune(), 0.60))
+						if (Util.fuzzyLessThanOrEqualTo(this.getTimeImmune(), 0.60)) {
 							this.setTimeImmune(this.getTimeImmune() + newDt);
+						}
 						else {
 							this.makeVulnerable();
 							this.setTimeImmune(0);
@@ -450,8 +472,9 @@ public class Mazub extends GameObject {
 //					this.makeImmune();
 //					}
 //				else {
-//					if (Util.fuzzyLessThanOrEqualTo(this.getTimeImmune(), 0.60))
+//					if (Util.fuzzyLessThanOrEqualTo(this.getTimeImmune(), 0.60)) {
 //						this.setTimeImmune(this.getTimeImmune() + newDt);
+//					}
 //					else {
 //						this.makeVulnerable();
 //						this.setTimeImmune(0);
@@ -480,20 +503,17 @@ public class Mazub extends GameObject {
 				this.changeNbHitPoints(-2);
 				this.setTimeInWater(0);
 			}
-			else 
+			else {
 				this.setTimeInWater(this.getTimeInWater() + newDt);
+			}
 		}
 		else if (this.isInMagma()) {
-			this.setTimeInMagma(this.getTimeInMagma() + newDt);
-			if (!this.isImmuneForMagma()) {
+			if (Util.fuzzyGreaterThanOrEqualTo(this.getTimeInMagma(), 0.2)) {
 				this.changeNbHitPoints(-50);
-				this.makeImmuneForMagma();
+				this.setTimeInMagma(0);
 			}
 			else {
-				if (Util.fuzzyGreaterThanOrEqualTo(this.getTimeImmuneForMagma(), 0.20)) {
-					this.makeVulnerableForMagma();
-					this.setTimeImmuneForMagma(0);
-				}
+				this.setTimeInMagma(this.getTimeInMagma() + newDt);
 			}
 		}
 		else {
@@ -546,6 +566,7 @@ public class Mazub extends GameObject {
 		while (!Util.fuzzyGreaterThanOrEqualTo(sumDt, dt)) {
 			double newDt = this.getNewDt(dt);
 			int[] oldPosition = this.getPosition();
+			double[] oldPositionAsDouble = this.getPositionAsDouble();
 			if ((this.crossImpassableBottom()) || (this.crossImpassableLeft()) 
 					|| (this.crossImpassableTop()) || (this.crossImpassableRight()))  {
 				this.crossImpassableActions(oldPosition);
@@ -566,15 +587,16 @@ public class Mazub extends GameObject {
 				this.endDuck();
 				this.timeForcedDuck = 0;
 			}
-			if (!this.canEndDuck())
+			if (!this.canEndDuck()) {
 				this.timeForcedDuck += newDt;
+			}
 			if ((!this.crossImpassableBottom()) && (!this.crossImpassableLeft())
 					&& (!this.crossImpassableTop()) && (!this.crossImpassableRight())) {
 				if (!this.touchImpassableBottom()) {
 					this.setVerticalAcceleration(this.getNormalVerticalAcceleration());
 				}
-				this.setPosition(oldPosition[0] + 100 * this.horizontalMovement(newDt),
-						oldPosition[1] + 100 * this.verticalMovement(newDt));
+				this.setPosition(oldPositionAsDouble[0] + 100 * this.horizontalMovement(newDt),
+						oldPositionAsDouble[1] + 100 * this.verticalMovement(newDt));
 			}
 			sumDt += newDt;
 		}

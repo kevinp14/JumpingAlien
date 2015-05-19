@@ -30,26 +30,25 @@ public class SearchObject implements Expression<GameObjectType> {
 		int tileY = position[1] / world.getTileLength();
 		if (direction == Direction.DOWN){
 			int iterateTile = tileY - 1;
-			return this.searchObjectVertically(iterateTile, program);
+			return this.searchObjectVertically(iterateTile, tileX, program);
 		}
 		if (direction == Direction.LEFT){
 			int iterateTile = tileX - 1;
-			return this.searchObjectHorizontally(iterateTile, program);
+			return this.searchObjectHorizontally(iterateTile, tileY, program);
 		}
 		if (direction == Direction.RIGHT){
 			int iterateTile = tileX + 1;
-			return this.searchObjectHorizontally(iterateTile, program);
+			return this.searchObjectHorizontally(iterateTile, tileY, program);
 		}
 		else {
 			int iterateTile = tileY + 1;
-			return this.searchObjectVertically(iterateTile, program);
+			return this.searchObjectVertically(iterateTile, tileX, program);
 		}
 	}
 	
-	private Object searchObjectVertically(int iterateTile, Program program) {
+	private Object searchObjectVertically(int iterateTile, int tileX, Program program) {
 		World world = program.getGameObject().getWorld();
 		int[] position = program.getGameObject().getPosition();
-		int tileX = position[0] / world.getTileLength();
 		while (iterateTile >= 0) {
 			if (world.getGeologicalFeature(position[0], position[1]) == 2)
 				return null; //TODO
@@ -88,10 +87,9 @@ public class SearchObject implements Expression<GameObjectType> {
 		return null;
 	}
 	
-	private Object searchObjectHorizontally(int iterateTile, Program program) {
+	private Object searchObjectHorizontally(int iterateTile, int tileY, Program program) {
 		World world = program.getGameObject().getWorld();
 		int[] position = program.getGameObject().getPosition();
-		int tileY = position[1] / world.getTileLength();
 		while (iterateTile >= 0) {
 			if (world.getGeologicalFeature(position[0], position[1]) == 2)
 				return null; //TODO

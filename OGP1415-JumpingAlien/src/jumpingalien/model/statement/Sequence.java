@@ -4,6 +4,7 @@ import java.util.List;
 
 import jumpingalien.model.Program;
 import jumpingalien.model.expression.Expression;
+import jumpingalien.model.type.BooleanType;
 import jumpingalien.part3.programs.SourceLocation;
 
 public class Sequence implements Statement{
@@ -17,15 +18,9 @@ public class Sequence implements Statement{
 	}
 
 	@Override
-	public void execute(Program program, Expression condition) {
-		BreakS testBreakS = new BreakS(null);
+	public void execute(Program program, Expression<BooleanType> condition) {
 		for (Statement statement: this.statements) {
-			if (statement.getClass() == testBreakS.getClass()){
-				statement.execute(program, condition);
-			}
-			else{
-				statement.execute(program, condition);
-			}
+			statement.execute(program, condition);
 		}
 	}
 

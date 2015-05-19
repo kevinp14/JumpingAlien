@@ -2,10 +2,11 @@ package jumpingalien.model.expression;
 
 import jumpingalien.model.GameObject;
 import jumpingalien.model.Program;
+import jumpingalien.model.type.DoubleType;
 import jumpingalien.model.type.GameObjectType;
 import jumpingalien.part3.programs.SourceLocation;
 
-public class GetWidth implements Expression<GameObjectType> {
+public class GetWidth implements Expression<DoubleType> {
 	
 	private Expression<GameObjectType> expression;
 	private SourceLocation sourceLocation;

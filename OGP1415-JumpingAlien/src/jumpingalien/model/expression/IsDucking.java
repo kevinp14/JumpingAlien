@@ -2,10 +2,11 @@ package jumpingalien.model.expression;
 
 import jumpingalien.model.GameObject;
 import jumpingalien.model.Program;
+import jumpingalien.model.type.BooleanType;
 import jumpingalien.model.type.GameObjectType;
 import jumpingalien.part3.programs.SourceLocation;
 
-public class IsDucking implements Expression<GameObjectType> {
+public class IsDucking implements Expression<BooleanType> {
 	
 	private Expression<GameObjectType> expr;
 	private SourceLocation sourceLocation;

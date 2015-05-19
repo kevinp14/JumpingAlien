@@ -2,27 +2,39 @@ package jumpingalien.model.expression;
 
 import jumpingalien.model.GameObject;
 import jumpingalien.model.Program;
+import jumpingalien.model.type.BooleanType;
+import jumpingalien.model.type.DirectionType;
 import jumpingalien.model.type.GameObjectType;
 import jumpingalien.part3.programs.IProgramFactory.Direction;
 import jumpingalien.part3.programs.SourceLocation;
 
-public class IsMoving extends DoubleExpression implements Expression<GameObjectType> {
+public class IsMoving implements Expression<BooleanType> {
 	
-	public IsMoving(Expression<GameObjectType> expr1, Expression<GameObjectType> expr2, 
+	private Expression<GameObjectType> object;
+	private Expression<DirectionType> direction;
+	private SourceLocation sourceLocation;
+	
+	public IsMoving(Expression<GameObjectType> object, Expression<DirectionType> direction, 
 			SourceLocation sourceLocation){
-		super(expr1, expr2, sourceLocation);
+		this.object = object;
+		this.direction = direction;
+		this.sourceLocation = sourceLocation;
 	}
 
 	@Override
 	public Object evaluate(Program program) {
-		GameObject gameObject = (GameObject) expr1.evaluate(program);
-		Direction direction = (Direction) expr2.evaluate(null);
-		if ((direction == Direction.LEFT) || (direction == Direction.RIGHT)){
-			return (gameObject.getHorizontalVelocity() != 0);
+		GameObject gameObject = (GameObject) this.object.evaluate(program);
+		Direction direction = (Direction) this.direction.evaluate(program);
+		if ((direction == Direction.LEFT) || (direction == Direction.RIGHT)) {
+			return (gameObject.isMovingHorizontally());
 		}
-		else{
-			return (gameObject.getVerticalVelocity() != 0);
+		else if (direction == Direction.DOWN) {
+			return (gameObject.isFalling());
 		}
+		else if (direction == Direction.UP) {
+			return (gameObject.isJumping());
+		}
+		return false;
 	}
 
 	@Override

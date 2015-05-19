@@ -2,6 +2,7 @@ package jumpingalien.model;
 
 import java.util.ArrayList;
 
+import jumpingalien.util.Util;
 import be.kuleuven.cs.som.annotate.Basic;
 
 /**
@@ -165,11 +166,14 @@ public class World {
 			if (this.plants != null){
 				amountOfObjects += this.plants.size();
 			}
-			if  (this.sharks != null){
+			if (this.sharks != null){
 				amountOfObjects += this.sharks.size();
 			}
 			if (this.slimes != null){
 				amountOfObjects += this.slimes.size();
+			}
+			if (this.buzam != null) {
+				amountOfObjects += 1;
 			}
 			return (amountOfObjects < 100);
 		}
@@ -433,8 +437,9 @@ public class World {
 	 */
 	public void setGeologicalFeature(int tileX, int tileY, int tileType){
 		assert (isValidTileType(tileType));
-		if (!(this.gameState == GameState.STARTED))
+		if (!(this.gameState == GameState.STARTED)) {
 			this.tiles[tileX][tileY] = tileType;
+		}
 	}
 	
 	/**
@@ -496,6 +501,12 @@ public class World {
 	}
 	
 	/**
+	 * @effect	If the given object is dead for 0.6 seconds or longer, its movement is ended.
+	 * 			if (Util.fuzzyGreaterThanOrEqualTo(object.getTimeDead(), 0.6))
+	 * 			|	object.setHorizontalAcceleration(0)
+	 * 			|	object.setVerticalAcceleration(0)
+	 * 			|	object.setHorizontalVelocity(0)
+	 * 			|	object.setVerticalVelocity(0);
 	 * @effect	If the given game object is a plant, it is removed from this world's plants.
 	 * 			| if (this.plants.contains(object))
 	 * 			|	this.plants.remove(object)
@@ -509,17 +520,29 @@ public class World {
 	 * 			| if (object == this.getBuzam())
 	 * 			|	this.setBuzam(null)
 	 */
-	public void removeObject(GameObject object, double dt) {
-		if (this.plants.contains(object))
-			this.plants.remove(object);
-		if (this.sharks.contains(object))
-			this.sharks.remove(object);
-		if (this.slimes.contains(object))
-			this.slimes.remove(object);
-		if (object == this.getBuzam())
-			this.setBuzam(null);
-			
-		
+	public void removeDeadObject(GameObject object, double dt) {
+		if (Util.fuzzyGreaterThanOrEqualTo(object.getTimeDead(), 0.6)) {
+			object.setTimeDead(0);
+			object.setHorizontalAcceleration(0);
+			object.setVerticalAcceleration(0);
+			object.setHorizontalVelocity(0);
+			object.setVerticalVelocity(0);
+			if (this.getPlants().contains(object)) {
+				this.plants.remove(object);
+			}
+			if (this.getSharks().contains(object)) {
+				this.sharks.remove(object);
+			}
+			if (this.getSlimes().contains(object)) {
+				this.slimes.remove(object);
+			}
+			if (object == this.getBuzam()) {
+				this.setBuzam(null);
+			}
+		}
+		else {
+			object.setTimeDead(object.getTimeDead() + dt);
+		}
 	}
 	
 	public void advanceTime(double dt) {
@@ -527,12 +550,13 @@ public class World {
 		alien.advanceTime(dt);
 		if ((alien.getNbHitPoints() == 0) 
 				|| (alien.getPosition()[1] < 0)) {
-			if (alien.getTimeDead() >= 0.6) {
+			if (alien.getTimeDead() >= 0.6) { //TODO mazub uit wereld
 				this.gameOver = true;
 				this.gameState = GameState.STOPPED;
 			}
-			else
+			else {
 				alien.setTimeDead(alien.getTimeDead() + dt);
+			}
 		}
 		if (this.alienOnTargetTile()) {
 			this.won = true;
@@ -541,13 +565,25 @@ public class World {
 		}
 //		Buzam buzam = this.getBuzam();
 //		buzam.advanceTime(dt);
+//		if (buzam.isDead()) {
+//			this.removeDeadObject(buzam, dt);
+//		}
 		for (Shark shark: this.getSharks()) {
+			if (shark.isDead()) {
+				this.removeDeadObject(shark, dt);
+			}
 			shark.advanceTime(dt);
 		}
 		for (Slime slime: this.getSlimes()) {
+			if (slime.isDead()) {
+				this.removeDeadObject(slime, dt);
+			}
 			slime.advanceTime(dt);
 		}
 		for (Plant plant: this.getPlants()) {
+			if (plant.isDead()) {
+				this.removeDeadObject(plant, dt);
+			}
 			plant.advanceTime(dt);
 		}
 	}

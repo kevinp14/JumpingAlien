@@ -1,11 +1,12 @@
 package jumpingalien.model.expression;
 
 import jumpingalien.model.Program;
+import jumpingalien.model.type.BooleanType;
 import jumpingalien.part3.programs.SourceLocation;
 
-public class NotEquals extends DoubleExpression implements Expression{
+public class NotEquals extends GeneralExpression implements Expression<BooleanType> {
 	
-	public NotEquals(Expression expr1, Expression expr2, SourceLocation sourceLocation){
+	public NotEquals(Expression<?> expr1, Expression<?> expr2, SourceLocation sourceLocation){
 		super(expr1, expr2, sourceLocation);
 	}
 
