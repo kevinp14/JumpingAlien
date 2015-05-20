@@ -1,15 +1,14 @@
 package jumpingalien.model.expression;
 
 import jumpingalien.model.Program;
-import jumpingalien.model.type.DoubleType;
 import jumpingalien.part3.programs.SourceLocation;
 
-public class SqrtE implements Expression<DoubleType> {
+public class SqrtE implements Expression {
 	
-	private Expression<DoubleType> expr;
+	private Expression expr;
 	private SourceLocation sourceLocation;
 
-	public SqrtE(Expression<DoubleType> expr, SourceLocation sourceLocation){
+	public SqrtE(Expression expr, SourceLocation sourceLocation){
 		this.expr = expr;
 		this.sourceLocation = sourceLocation;
 	}

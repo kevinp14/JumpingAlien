@@ -3,7 +3,7 @@ package jumpingalien.model.expression;
 import jumpingalien.model.Program;
 import jumpingalien.part3.programs.SourceLocation;
 
-public class SelfE implements Expression{
+public class SelfE implements Expression {
 	
 	private SourceLocation sourceLocation;
 	

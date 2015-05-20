@@ -1,15 +1,14 @@
 package jumpingalien.model.expression;
 
 import jumpingalien.model.Program;
-import jumpingalien.model.type.DoubleType;
 import jumpingalien.part3.programs.SourceLocation;
 
-public class NotDouble implements Expression<DoubleType> {
+public class NotDouble implements Expression {
 	
-	private Expression<DoubleType> expr;
+	private Expression expr;
 	private SourceLocation sourceLocation;
 	
-	public NotDouble(Expression<DoubleType> expr, SourceLocation sourceLocation){
+	public NotDouble(Expression expr, SourceLocation sourceLocation){
 		this.expr = expr;
 		this.sourceLocation = sourceLocation;
 	}

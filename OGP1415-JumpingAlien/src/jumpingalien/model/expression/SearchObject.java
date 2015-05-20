@@ -7,16 +7,15 @@ import jumpingalien.model.Program;
 import jumpingalien.model.Shark;
 import jumpingalien.model.Slime;
 import jumpingalien.model.World;
-import jumpingalien.model.type.GameObjectType;
 import jumpingalien.part3.programs.IProgramFactory.Direction;
 import jumpingalien.part3.programs.SourceLocation;
 
-public class SearchObject implements Expression<GameObjectType> {
+public class SearchObject implements Expression {
 	
-	private Expression<GameObjectType> expr;
+	private Expression expr;
 	private SourceLocation sourceLocation;
 	
-	public SearchObject(Expression<GameObjectType> expr, SourceLocation sourceLocation){
+	public SearchObject(Expression expr, SourceLocation sourceLocation){
 		this.expr = expr;
 		this.sourceLocation = sourceLocation;
 	}

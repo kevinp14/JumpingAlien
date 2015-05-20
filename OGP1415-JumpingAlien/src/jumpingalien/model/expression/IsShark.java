@@ -3,17 +3,15 @@ package jumpingalien.model.expression;
 import jumpingalien.model.GameObject;
 import jumpingalien.model.Shark;
 import jumpingalien.model.Program;
-import jumpingalien.model.type.BooleanType;
-import jumpingalien.model.type.GameObjectType;
 import jumpingalien.part3.programs.SourceLocation;
 
-public class IsShark implements Expression<BooleanType> {
+public class IsShark implements Expression {
 	
-	private Expression<GameObjectType> expr;
+	private Expression expr;
 	private SourceLocation sourceLocation;
 	private Shark testShark = new Shark(0,0,null,null);
 	
-	public IsShark(Expression<GameObjectType> expr, SourceLocation sourceLocation){
+	public IsShark(Expression expr, SourceLocation sourceLocation){
 		this.expr = expr;
 		this.sourceLocation = sourceLocation;
 	}

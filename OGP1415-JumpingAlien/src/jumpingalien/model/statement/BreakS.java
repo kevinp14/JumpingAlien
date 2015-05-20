@@ -1,11 +1,10 @@
 package jumpingalien.model.statement;
 
 import jumpingalien.model.Program;
-import jumpingalien.model.expression.*;
-import jumpingalien.model.type.BooleanType;
+import jumpingalien.model.expression.Expression;
 import jumpingalien.part3.programs.SourceLocation;
 
-public class BreakS implements Statement{
+public class BreakS implements Statement {
 	
 	private SourceLocation sourceLocation;
 	
@@ -14,7 +13,7 @@ public class BreakS implements Statement{
 	}
 
 	@Override
-	public void execute(Program program, Expression<BooleanType> condition) {
+	public void execute(Program program, Expression condition) {
 		SourceLocation srcLoc = condition.getSourceLocation();
 		boolean cond = (boolean)condition.evaluate(program);
 		while (cond) {

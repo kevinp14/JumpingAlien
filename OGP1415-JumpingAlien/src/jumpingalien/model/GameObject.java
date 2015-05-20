@@ -500,7 +500,7 @@ public class GameObject {
 	protected ArrayList<Integer> getHorizontalPixels() {
 		double width = this.getCurrentSprite().getWidth();
 		ArrayList<Integer> horizontalPixels = new ArrayList<Integer>();
-		for (int x=1; x < this.getCurrentSprite().getWidth(); x += (width/10)) {
+		for (int x=0; x < this.getCurrentSprite().getWidth(); x += (width/10)) {
 			horizontalPixels.add(this.getPosition()[0] + x);
 		}
 		return horizontalPixels;
@@ -514,7 +514,7 @@ public class GameObject {
 	protected ArrayList<Integer> getVerticalPixels() {
 		double height = this.getCurrentSprite().getHeight();
 		ArrayList<Integer> verticalPixels = new ArrayList<Integer>();
-		for (int y=1; y < this.getCurrentSprite().getHeight(); y += (height/10)) {
+		for (int y=0; y < this.getCurrentSprite().getHeight(); y += (height/10)) {
 			verticalPixels.add(this.getPosition()[1] + y);
 		}
 		return verticalPixels;
@@ -1199,6 +1199,12 @@ public class GameObject {
 	 */ //TODO: defensief, misschien zelf exception maken
 	public void endDuck() {
 		this.setMaxHorizontalVelocity(this.maxRunningVelocity);
+		if (this.isMovingLeft()) {
+			this.setHorizontalAcceleration(-this.getNormalHorizontalAcceleration());
+		}
+		else if (this.isMovingRight()) {
+			this.setHorizontalAcceleration(this.getNormalHorizontalAcceleration());
+		}
 	}
 	
 	/**

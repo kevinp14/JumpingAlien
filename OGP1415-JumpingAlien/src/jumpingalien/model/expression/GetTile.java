@@ -1,12 +1,11 @@
 package jumpingalien.model.expression;
 
 import jumpingalien.model.Program;
-import jumpingalien.model.type.DoubleType;
 import jumpingalien.part3.programs.SourceLocation;
 
-public class GetTile extends DoubleExpression implements Expression<DoubleType> {
+public class GetTile extends DoubleExpression implements Expression {
 	
-	public GetTile(Expression<DoubleType> expr1, Expression<DoubleType> expr2, 
+	public GetTile(Expression expr1, Expression expr2, 
 			SourceLocation sourceLocation){
 		super(expr1, expr2, sourceLocation);
 	}

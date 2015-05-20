@@ -4,11 +4,11 @@ import jumpingalien.part3.programs.SourceLocation;
 
 public class GeneralExpression {
 
-	protected Expression<?> expr1;
-	protected Expression<?> expr2;
+	protected Expression expr1;
+	protected Expression expr2;
 	protected SourceLocation sourceLocation;
 	
-	public GeneralExpression(Expression<?> expr1, Expression<?> expr2, 
+	public GeneralExpression(Expression expr1, Expression expr2, 
 			SourceLocation sourceLocation) {
 		this.expr1 = expr1;
 		this.expr2 = expr2;

@@ -2,19 +2,16 @@ package jumpingalien.model.expression;
 
 import jumpingalien.model.GameObject;
 import jumpingalien.model.Program;
-import jumpingalien.model.type.BooleanType;
-import jumpingalien.model.type.DirectionType;
-import jumpingalien.model.type.GameObjectType;
 import jumpingalien.part3.programs.IProgramFactory.Direction;
 import jumpingalien.part3.programs.SourceLocation;
 
-public class IsMoving implements Expression<BooleanType> {
+public class IsMoving implements Expression {
 	
-	private Expression<GameObjectType> object;
-	private Expression<DirectionType> direction;
+	private Expression object;
+	private Expression direction;
 	private SourceLocation sourceLocation;
 	
-	public IsMoving(Expression<GameObjectType> object, Expression<DirectionType> direction, 
+	public IsMoving(Expression object, Expression direction, 
 			SourceLocation sourceLocation){
 		this.object = object;
 		this.direction = direction;

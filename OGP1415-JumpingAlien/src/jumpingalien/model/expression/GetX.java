@@ -2,16 +2,14 @@ package jumpingalien.model.expression;
 
 import jumpingalien.model.GameObject;
 import jumpingalien.model.Program;
-import jumpingalien.model.type.DoubleType;
-import jumpingalien.model.type.GameObjectType;
 import jumpingalien.part3.programs.SourceLocation;
 
-public class GetX implements Expression<DoubleType> {
+public class GetX implements Expression {
 	
-	private Expression<GameObjectType> expr;
+	private Expression expr;
 	private SourceLocation sourceLocation;
 	
-	public GetX(Expression<GameObjectType> expr, SourceLocation sourceLocation){
+	public GetX(Expression expr, SourceLocation sourceLocation){
 		this.expr = expr;
 		this.sourceLocation = sourceLocation;
 	}

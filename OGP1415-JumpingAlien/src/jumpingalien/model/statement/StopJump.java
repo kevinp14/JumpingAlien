@@ -3,10 +3,9 @@ package jumpingalien.model.statement;
 import jumpingalien.model.GameObject;
 import jumpingalien.model.Program;
 import jumpingalien.model.expression.Expression;
-import jumpingalien.model.type.BooleanType;
 import jumpingalien.part3.programs.SourceLocation;
 
-public class StopJump implements Statement{
+public class StopJump implements Statement {
 	
 	private SourceLocation sourceLocation;
 	
@@ -15,7 +14,7 @@ public class StopJump implements Statement{
 	}
 
 	@Override
-	public void execute(Program program, Expression<BooleanType> condition) {
+	public void execute(Program program, Expression condition) {
 		GameObject gameObject = (GameObject) program.getGameObject();
 		gameObject.endJump();
 	}

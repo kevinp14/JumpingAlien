@@ -1,12 +1,11 @@
 package jumpingalien.model.expression;
 
 import jumpingalien.model.Program;
-import jumpingalien.model.type.DoubleType;
 import jumpingalien.part3.programs.SourceLocation;
 
-public class Subtraction extends DoubleExpression implements Expression<DoubleType> {
+public class Subtraction extends DoubleExpression implements Expression {
 	
-	public Subtraction(Expression<DoubleType> expr1, Expression<DoubleType> expr2,
+	public Subtraction(Expression expr1, Expression expr2,
 			SourceLocation sourceLocation){
 		super(expr1, expr2, sourceLocation);
 	}

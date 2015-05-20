@@ -1,16 +1,15 @@
 package jumpingalien.model.expression;
 
 import jumpingalien.model.Program;
-import jumpingalien.model.type.BooleanType;
 import jumpingalien.part3.programs.SourceLocation;
 
 public class BooleanExpression {
 
-	protected Expression<BooleanType> expr1;
-	protected Expression<BooleanType> expr2;
+	protected Expression expr1;
+	protected Expression expr2;
 	protected SourceLocation sourceLocation;
 	
-	public BooleanExpression(Expression<BooleanType> expr1, Expression<BooleanType> expr2, 
+	public BooleanExpression(Expression expr1, Expression expr2, 
 			SourceLocation sourceLocation) {
 		this.expr1 = expr1;
 		this.expr2 = expr2;

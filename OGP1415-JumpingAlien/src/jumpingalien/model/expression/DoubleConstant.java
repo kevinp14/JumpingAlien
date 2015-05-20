@@ -1,10 +1,9 @@
 package jumpingalien.model.expression;
 
 import jumpingalien.model.Program;
-import jumpingalien.model.type.DoubleType;
 import jumpingalien.part3.programs.SourceLocation;
 
-public class DoubleConstant implements Expression<DoubleType> {
+public class DoubleConstant implements Expression {
 	
 	private double var;
 	private SourceLocation sourceLocation;

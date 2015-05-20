@@ -2,16 +2,14 @@ package jumpingalien.model.expression;
 
 import jumpingalien.model.Program;
 import jumpingalien.model.World;
-import jumpingalien.model.type.BooleanType;
-import jumpingalien.model.type.IntervalType;
 import jumpingalien.part3.programs.SourceLocation;
 
-public class IsPassable implements Expression<BooleanType> {
+public class IsPassable implements Expression {
 
-	private Expression<IntervalType> expr;
+	private Expression expr;
 	private SourceLocation sourceLocation;
 	
-	public IsPassable(Expression<IntervalType> expr, SourceLocation sourceLocation){
+	public IsPassable(Expression expr, SourceLocation sourceLocation){
 		this.expr = expr;
 		this.sourceLocation = sourceLocation;
 	}

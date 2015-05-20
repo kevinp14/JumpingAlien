@@ -550,7 +550,8 @@ public class World {
 		alien.advanceTime(dt);
 		if ((alien.getNbHitPoints() == 0) 
 				|| (alien.getPosition()[1] < 0)) {
-			if (alien.getTimeDead() >= 0.6) { //TODO mazub uit wereld
+			if (alien.getTimeDead() >= 0.6) {
+				alien.setPosition(alien.getPosition()[0], -100);
 				this.gameOver = true;
 				this.gameState = GameState.STOPPED;
 			}

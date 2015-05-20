@@ -5,13 +5,14 @@ import java.util.Map.Entry;
 
 import jumpingalien.model.GameObject;
 import jumpingalien.model.statement.Statement;
+import jumpingalien.model.type.Type;
 
 public class Program {
 	private final Statement mainStatement;
-	private Map<String, Object> globalVariables;
+	private Map<String, Type<?>> globalVariables;
 	private GameObject gameObject;
 	
-	public Program(Statement mainStatement, Map<String, Object> globalVariables){
+	public Program(Statement mainStatement, Map<String, Type<?>> globalVariables){
 		this.mainStatement = mainStatement;
 		this.globalVariables = globalVariables;
 	}
@@ -29,7 +30,7 @@ public class Program {
 	}
 	
 	public Object getObjectByName(String variableName){
-		for(Entry<String, Object> entry : this.globalVariables.entrySet()) {
+		for(Entry<String, Type<?>> entry : this.globalVariables.entrySet()) {
 		    String name = entry.getKey();
 		    Object value = entry.getValue();
 		    if (name == variableName){
@@ -39,12 +40,12 @@ public class Program {
 		return null;
 	}
 	
-	public void setObjectByName(String variableName, Object newValue){
-		for(Entry<String, Object> entry : this.globalVariables.entrySet()) {
+	public void setObjectByName(String variableName, Type<?> type){
+		for(Entry<String, Type<?>> entry : this.globalVariables.entrySet()) {
 		    String name = entry.getKey();
 		    if (name == variableName){
 		    	this.globalVariables.remove(name);
-		    	this.globalVariables.put(name, newValue);
+		    	this.globalVariables.put(name, type);
 		    }
 		}
 	}

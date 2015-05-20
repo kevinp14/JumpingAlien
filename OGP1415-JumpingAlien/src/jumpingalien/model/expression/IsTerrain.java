@@ -2,15 +2,13 @@ package jumpingalien.model.expression;
 
 import jumpingalien.model.Program;
 import jumpingalien.part3.programs.SourceLocation;
-import jumpingalien.model.type.BooleanType;
-import jumpingalien.model.type.IntervalType;
 
-public class IsTerrain implements Expression<BooleanType> {
+public class IsTerrain implements Expression {
 	
-	private Expression<IntervalType> expr;
+	private Expression expr;
 	private SourceLocation sourceLocation;
 	
-	public IsTerrain(Expression<IntervalType> expr, SourceLocation sourceLocation){
+	public IsTerrain(Expression expr, SourceLocation sourceLocation){
 		this.expr = expr;
 		this.sourceLocation = sourceLocation;
 	}

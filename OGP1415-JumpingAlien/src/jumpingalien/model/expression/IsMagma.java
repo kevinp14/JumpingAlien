@@ -1,16 +1,14 @@
 package jumpingalien.model.expression;
 
 import jumpingalien.model.Program;
-import jumpingalien.model.type.BooleanType;
-import jumpingalien.model.type.IntervalType;
 import jumpingalien.part3.programs.SourceLocation;
 
-public class IsMagma implements Expression<BooleanType> {
+public class IsMagma implements Expression {
 	
-	private Expression<IntervalType> expr;
+	private Expression expr;
 	private SourceLocation sourceLocation;
 	
-	public IsMagma(Expression<IntervalType> expr, SourceLocation sourceLocation){
+	public IsMagma(Expression expr, SourceLocation sourceLocation){
 		this.expr = expr;
 		this.sourceLocation = sourceLocation;
 	}

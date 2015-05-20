@@ -1,16 +1,14 @@
 package jumpingalien.model.expression;
 
 import jumpingalien.model.Program;
-import jumpingalien.model.type.BooleanType;
-import jumpingalien.model.type.IntervalType;
 import jumpingalien.part3.programs.SourceLocation;
 
-public class IsAir implements Expression<BooleanType> {
+public class IsAir implements Expression {
 	
-	private Expression<IntervalType> expr;
+	private Expression expr;
 	private SourceLocation sourceLocation;
 	
-	public IsAir(Expression<IntervalType> expr, SourceLocation sourceLocation){
+	public IsAir(Expression expr, SourceLocation sourceLocation){
 		this.expr = expr;
 		this.sourceLocation = sourceLocation;
 	}
