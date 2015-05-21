@@ -10,11 +10,16 @@ import jumpingalien.model.type.Type;
 public class Program {
 	private final Statement mainStatement;
 	private Map<String, Type<?>> globalVariables;
+	private Map<String, Object> variables;
 	private GameObject gameObject;
 	
 	public Program(Statement mainStatement, Map<String, Type<?>> globalVariables){
 		this.mainStatement = mainStatement;
 		this.globalVariables = globalVariables;
+		for (Entry<String, Type<?>> entry : this.globalVariables.entrySet()){
+			String variableName = entry.getKey();
+			this.variables.put(variableName, null);
+		}
 	}
 	
 	public GameObject getGameObject() {
@@ -30,7 +35,7 @@ public class Program {
 	}
 	
 	public Object getObjectByName(String variableName){
-		for(Entry<String, Type<?>> entry : this.globalVariables.entrySet()) {
+		for(Entry<String, Object> entry : this.variables.entrySet()) {
 		    String name = entry.getKey();
 		    Object value = entry.getValue();
 		    if (name == variableName){
@@ -40,12 +45,11 @@ public class Program {
 		return null;
 	}
 	
-	public void setObjectByName(String variableName, Type<?> type){
-		for(Entry<String, Type<?>> entry : this.globalVariables.entrySet()) {
+	public void setObjectByName(String variableName, Object value){
+		for(Entry<String, Object> entry : this.variables.entrySet()) {
 		    String name = entry.getKey();
 		    if (name == variableName){
-		    	this.globalVariables.remove(name);
-		    	this.globalVariables.put(name, type);
+		    	this.variables.put(name, value);
 		    }
 		}
 	}
