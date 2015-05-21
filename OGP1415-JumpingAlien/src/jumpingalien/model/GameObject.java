@@ -209,7 +209,7 @@ public class GameObject {
 	 *         maximum possible position in the game world.
 	 */
 	@Basic
-	protected int[] getMaxPosition() {
+	public int[] getMaxPosition() {
 		int[] maxPosition = { this.getWorld().getWorldSize()[0] - 1, 
 				this.getWorld().getWorldSize()[1] - 1 };
 	    return maxPosition;
@@ -1306,7 +1306,7 @@ public class GameObject {
 				this.timeBlocked = 0;
 			}
 		}
-		if ((this.leftCollidesWith(object)) && (this.isMovingLeft())) {
+		if ((this.leftCollidesWith(object)) && (this.getHorizontalAcceleration() < 0)) {
 			if (!Util.fuzzyGreaterThanOrEqualTo(this.timeBlocked, 0.6)) {
 				this.timeBlocked += dt;
 				this.setHorizontalAcceleration(0);
@@ -1317,7 +1317,7 @@ public class GameObject {
 				this.timeBlocked = 0;
 			}
 		}
-		if ((this.rightCollidesWith(object)) && (this.isMovingRight())) {
+		if ((this.rightCollidesWith(object)) && (this.getHorizontalAcceleration() > 0)) {
 			if (!Util.fuzzyGreaterThanOrEqualTo(this.timeBlocked, 0.6)) {
 				this.timeBlocked += dt;
 				this.setHorizontalAcceleration(0);

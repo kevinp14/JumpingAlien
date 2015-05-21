@@ -14,6 +14,7 @@ public class SearchObject implements Expression {
 	
 	private Expression expr;
 	private SourceLocation sourceLocation;
+	private int distance;
 	
 	public SearchObject(Expression expr, SourceLocation sourceLocation){
 		this.expr = expr;
@@ -25,105 +26,287 @@ public class SearchObject implements Expression {
 		Direction direction = (Direction) this.expr.evaluate(program);
 		World world = program.getGameObject().getWorld();
 		int[] position = program.getGameObject().getPosition();
+		int[] maxPosition = program.getGameObject().getMaxPosition();
 		int tileX = position[0] / world.getTileLength();
 		int tileY = position[1] / world.getTileLength();
 		if (direction == Direction.DOWN){
 			int iterateTile = tileY - 1;
-			return this.searchObjectVertically(iterateTile, tileX, program);
+			if ((int)this.searchObjectDown(position, world) == position[1]) {
+				return this.searchTileDown(iterateTile, tileX, program);
+			}
+			else {
+				return this.searchObjectDown(position, world);
+			}
 		}
 		if (direction == Direction.LEFT){
 			int iterateTile = tileX - 1;
-			return this.searchObjectHorizontally(iterateTile, tileY, program);
+			if ((int)this.searchObjectLeft(position, world) == position[0]) {
+				return this.searchTileLeft(iterateTile, tileY, program);
+			}
+			else {
+				return this.searchObjectLeft(position, world);
+			}
 		}
 		if (direction == Direction.RIGHT){
 			int iterateTile = tileX + 1;
-			return this.searchObjectHorizontally(iterateTile, tileY, program);
+			if ((int)this.searchObjectRight(position, maxPosition, world) 
+					== maxPosition[0] - position[0]) {
+				return this.searchTileRight(iterateTile, tileY, program);
+			}
+			else {
+				return this.searchObjectRight(position, maxPosition, world);
+			}
 		}
 		else {
 			int iterateTile = tileY + 1;
-			return this.searchObjectVertically(iterateTile, tileX, program);
+			if ((int)this.searchObjectUp(position, maxPosition, world) 
+					== maxPosition[1] - position[1]) {
+				return this.searchTileUp(iterateTile, tileX, program);
+			}
+			else {
+				return this.searchObjectUp(position, maxPosition, world);
+			}
 		}
 	}
 	
-	private Object searchObjectVertically(int iterateTile, int tileX, Program program) {
+	private Object searchTileUp(int iterateTile, int tileX, Program program) {
 		World world = program.getGameObject().getWorld();
-		int[] position = program.getGameObject().getPosition();
+		while (iterateTile <= world.getTopRightTile()[1]) {
+			int[] tilePosition = world.getBottomLeftPixelOfTile(tileX, iterateTile);
+			if (world.getGeologicalFeature(tilePosition[0], tilePosition[1]) == 2) {
+				return tilePosition; //TODO wat returnen?
+			}
+			iterateTile += 1;
+		}
+		return null;
+	}
+	
+	private Object searchTileRight(int iterateTile, int tileY, Program program) {
+		World world = program.getGameObject().getWorld();
+		while (iterateTile <= world.getTopRightTile()[0]) {
+			int[] tilePosition = world.getBottomLeftPixelOfTile(iterateTile, tileY);
+			if (world.getGeologicalFeature(tilePosition[0], tilePosition[1]) == 2) {
+				return tilePosition; //TODO wat returnen?
+			}
+			iterateTile += 1;
+		}
+		return null;
+	}
+	
+	private Object searchTileDown(int iterateTile, int tileX, Program program) {
+		World world = program.getGameObject().getWorld();
 		while (iterateTile >= 0) {
-			if (world.getGeologicalFeature(position[0], position[1]) == 2)
-				return null; //TODO
-			else {
-				for (Plant plant: world.getPlants()) {
-					int plantTileX = plant.getPosition()[0] / world.getTileLength();
-					int plantTileY = plant.getPosition()[1] / world.getTileLength();
-					if ((plantTileX == tileX) && (iterateTile == plantTileY))
-						return plant;
-				}
-				for (Shark shark: world.getSharks()) {
-					int sharkTileX = shark.getPosition()[0] / world.getTileLength();
-					int sharkTileY = shark.getPosition()[1] / world.getTileLength();
-					if ((sharkTileX == tileX) && (iterateTile == sharkTileY))
-						return shark;
-				}
-				for (Slime slime: world.getSlimes()) {
-					int slimeTileX = slime.getPosition()[0] / world.getTileLength();
-					int slimeTileY = slime.getPosition()[1] / world.getTileLength();
-					if ((slimeTileX == tileX) && (iterateTile == slimeTileY))
-						return slime;
-				}
-				Mazub mazub = world.getMazub();
-				int mazubTileX = mazub.getPosition()[0] / world.getTileLength();
-				int mazubTileY = mazub.getPosition()[1] / world.getTileLength();
-				if ((mazubTileX == tileX) && (iterateTile == mazubTileY))
-					return mazub;
-				Buzam buzam = world.getBuzam();
-				int buzamTileX = buzam.getPosition()[0] / world.getTileLength();
-				int buzamTileY = buzam.getPosition()[1] / world.getTileLength();
-				if ((buzamTileX == tileX) && (iterateTile == buzamTileY))
-					return buzam;
+			int[] tilePosition = world.getBottomLeftPixelOfTile(tileX, iterateTile);
+			if (world.getGeologicalFeature(tilePosition[0], tilePosition[1]) == 2) {
+				return tilePosition; //TODO wat returnen?
 			}
 			iterateTile -= 1;
 		}
 		return null;
 	}
 	
-	private Object searchObjectHorizontally(int iterateTile, int tileY, Program program) {
+	private Object searchTileLeft(int iterateTile, int tileY, Program program) {
 		World world = program.getGameObject().getWorld();
-		int[] position = program.getGameObject().getPosition();
 		while (iterateTile >= 0) {
-			if (world.getGeologicalFeature(position[0], position[1]) == 2)
-				return null; //TODO
-			else {
-				for (Plant plant: world.getPlants()) {
-					int plantTileX = plant.getPosition()[0] / world.getTileLength();
-					int plantTileY = plant.getPosition()[1] / world.getTileLength();
-					if ((plantTileX == iterateTile) && (plantTileY == tileY))
-						return plant;
-				}
-				for (Shark shark: world.getSharks()) {
-					int sharkTileX = shark.getPosition()[0] / world.getTileLength();
-					int sharkTileY = shark.getPosition()[1] / world.getTileLength();
-					if ((sharkTileX == iterateTile) && (sharkTileY == tileY))
-						return shark;
-				}
-				for (Slime slime: world.getSlimes()) {
-					int slimeTileX = slime.getPosition()[0] / world.getTileLength();
-					int slimeTileY = slime.getPosition()[1] / world.getTileLength();
-					if ((slimeTileX == iterateTile) && (slimeTileY == tileY))
-						return slime;
-				}
-				Mazub mazub = world.getMazub();
-				int mazubTileX = mazub.getPosition()[0] / world.getTileLength();
-				int mazubTileY = mazub.getPosition()[1] / world.getTileLength();
-				if ((mazubTileX == iterateTile) && (mazubTileY == tileY))
-					return mazub;
-				Buzam buzam = world.getBuzam();
-				int buzamTileX = buzam.getPosition()[0] / world.getTileLength();
-				int buzamTileY = buzam.getPosition()[1] / world.getTileLength();
-				if ((buzamTileX == iterateTile) && (buzamTileY == tileY))
-					return buzam;
+			int[] tilePosition = world.getBottomLeftPixelOfTile(iterateTile, tileY);
+			if (world.getGeologicalFeature(tilePosition[0], tilePosition[1]) == 2) {
+				return tilePosition; //TODO wat returnen?
 			}
+			iterateTile -= 1;
 		}
 		return null;
+	}
+	
+	private Object searchObjectUp(int[] position, int[] maxPosition, World world) {
+		this.distance = maxPosition[1] - position[1];
+		for (Plant plant: world.getPlants()) {
+			if ((plant.getPosition()[1] > position[1]) 
+					&& (plant.getPosition()[0] == position[0])) {
+				int distanceBetween = plant.getPosition()[1] - position[1];
+				if (distanceBetween < this.distance) {
+					this.distance = distanceBetween;
+				}
+			}
+		}
+		for (Slime slime: world.getSlimes()) {
+			if ((slime.getPosition()[1] > position[1]) 
+					&& (slime.getPosition()[0] == position[0])) {
+				int distanceBetween = slime.getPosition()[1] - position[1];
+				if (distanceBetween < this.distance) {
+					this.distance = distanceBetween;
+				}
+			}
+		}
+		for (Shark shark: world.getSharks()) {
+			if ((shark.getPosition()[1] > position[1]) 
+					&& (shark.getPosition()[0] == position[0])) {
+				int distanceBetween = shark.getPosition()[1] - position[1];
+				if (distanceBetween < this.distance) {
+					this.distance = distanceBetween;
+				}
+			}
+		}
+		Mazub mazub = world.getMazub();
+		if ((mazub.getPosition()[1] > position[1]) 
+				&& (mazub.getPosition()[0] == position[0])) {
+			int distanceBetween = mazub.getPosition()[1] - position[1];
+			if (distanceBetween < this.distance) {
+				this.distance = distanceBetween;
+			}
+		}
+		Buzam buzam = world.getBuzam();
+		if ((buzam.getPosition()[1] > position[1]) 
+				&& (buzam.getPosition()[0] == position[0])) {
+			int distanceBetween = buzam.getPosition()[1] - position[1];
+			if (distanceBetween < this.distance) {
+				this.distance = distanceBetween;
+			}
+		}
+		return this.distance;
+	}
+	
+	private Object searchObjectRight(int[] position, int[] maxPosition, World world) {
+		this.distance = maxPosition[0] - position[0];
+		for (Plant plant: world.getPlants()) {
+			if ((plant.getPosition()[0] > position[0]) 
+					&& (plant.getPosition()[1] == position[1])) {
+				int distanceBetween = plant.getPosition()[0] - position[0];
+				if (distanceBetween < this.distance) {
+					this.distance = distanceBetween;
+				}
+			}
+		}
+		for (Slime slime: world.getSlimes()) {
+			if ((slime.getPosition()[0] > position[0]) 
+					&& (slime.getPosition()[1] == position[1])) {
+				int distanceBetween = slime.getPosition()[0] - position[0];
+				if (distanceBetween < this.distance) {
+					this.distance = distanceBetween;
+				}
+			}
+		}
+		for (Shark shark: world.getSharks()) {
+			if ((shark.getPosition()[0] > position[0]) 
+					&& (shark.getPosition()[1] == position[1])) {
+				int distanceBetween = shark.getPosition()[0] - position[0];
+				if (distanceBetween < this.distance) {
+					this.distance = distanceBetween;
+				}
+			}
+		}
+		Mazub mazub = world.getMazub();
+		if ((mazub.getPosition()[0] > position[0]) 
+				&& (mazub.getPosition()[1] == position[1])) {
+			int distanceBetween = mazub.getPosition()[0] - position[0];
+			if (distanceBetween < this.distance) {
+				this.distance = distanceBetween;
+			}
+		}
+		Buzam buzam = world.getBuzam();
+		if ((buzam.getPosition()[0] > position[0]) 
+				&& (buzam.getPosition()[1] == position[1])) {
+			int distanceBetween = buzam.getPosition()[0] - position[0];
+			if (distanceBetween < this.distance) {
+				this.distance = distanceBetween;
+			}
+		}
+		return this.distance;
+	}
+	
+	private Object searchObjectDown(int[] position, World world) {
+		this.distance = position[1];
+		for (Plant plant: world.getPlants()) {
+			if ((plant.getPosition()[1] < position[1]) 
+					&& (plant.getPosition()[0] == position[0])) {
+				int distanceBetween = position[1] - plant.getPosition()[1];
+				if (distanceBetween < this.distance) {
+					this.distance = distanceBetween;
+				}
+			}
+		}
+		for (Slime slime: world.getSlimes()) {
+			if ((slime.getPosition()[1] < position[1]) 
+					&& (slime.getPosition()[0] == position[0])) {
+				int distanceBetween = position[1] - slime.getPosition()[1];
+				if (distanceBetween < this.distance) {
+					this.distance = distanceBetween;
+				}
+			}
+		}
+		for (Shark shark: world.getSharks()) {
+			if ((shark.getPosition()[1] < position[1]) 
+					&& (shark.getPosition()[0] == position[0])) {
+				int distanceBetween = position[1] - shark.getPosition()[1];
+				if (distanceBetween < this.distance) {
+					this.distance = distanceBetween;
+				}
+			}
+		}
+		Mazub mazub = world.getMazub();
+		if ((mazub.getPosition()[1] < position[1]) 
+				&& (mazub.getPosition()[0] == position[0])) {
+			int distanceBetween = position[1] - mazub.getPosition()[1];
+			if (distanceBetween < this.distance) {
+				this.distance = distanceBetween;
+			}
+		}
+		Buzam buzam = world.getBuzam();
+		if ((buzam.getPosition()[1] < position[1]) 
+				&& (buzam.getPosition()[0] == position[0])) {
+			int distanceBetween = position[1] - buzam.getPosition()[1];
+			if (distanceBetween < this.distance) {
+				this.distance = distanceBetween;
+			}
+		}
+		return this.distance;
+	}
+	
+	private Object searchObjectLeft(int[] position, World world) {
+		this.distance = position[0];
+		for (Plant plant: world.getPlants()) {
+			if ((plant.getPosition()[0] < position[0]) 
+					&& (plant.getPosition()[1] == position[1])) {
+				int distanceBetween = position[0] - plant.getPosition()[0];
+				if (distanceBetween < this.distance) {
+					this.distance = distanceBetween;
+				}
+			}
+		}
+		for (Slime slime: world.getSlimes()) {
+			if ((slime.getPosition()[0] < position[0]) 
+					&& (slime.getPosition()[1] == position[1])) {
+				int distanceBetween = position[0] - slime.getPosition()[0];
+				if (distanceBetween < this.distance) {
+					this.distance = distanceBetween;
+				}
+			}
+		}
+		for (Shark shark: world.getSharks()) {
+			if ((shark.getPosition()[0] < position[0]) 
+					&& (shark.getPosition()[1] == position[1])) {
+				int distanceBetween = position[0] - shark.getPosition()[0];
+				if (distanceBetween < this.distance) {
+					this.distance = distanceBetween;
+				}
+			}
+		}
+		Mazub mazub = world.getMazub();
+		if ((mazub.getPosition()[0] < position[0]) 
+				&& (mazub.getPosition()[1] == position[1])) {
+			int distanceBetween = position[0] - mazub.getPosition()[0];
+			if (distanceBetween < this.distance) {
+				this.distance = distanceBetween;
+			}
+		}
+		Buzam buzam = world.getBuzam();
+		if ((buzam.getPosition()[0] < position[0]) 
+				&& (buzam.getPosition()[1] == position[1])) {
+			int distanceBetween = position[0] - buzam.getPosition()[0];
+			if (distanceBetween < this.distance) {
+				this.distance = distanceBetween;
+			}
+		}
+		return this.distance;
 	}
 	
 	@Override

@@ -29,8 +29,8 @@ import be.kuleuven.cs.som.annotate.Basic;
  */
 public class World {
 	private int tileSize;
-	protected int nbTilesX;
-	protected int nbTilesY;
+	private int nbTilesX;
+	private int nbTilesY;
 	private int visibleWindowWidth;
 	private int visibleWindowHeight;
 	private int targetTileX;
@@ -297,61 +297,31 @@ public class World {
 	 */
 	@Basic
 	public int[] getVisibleWindow() {
-		if (this.getMazub().getLastDirection() == Direction.LEFT) {
-			if (this.getMazub().getPosition()[0] < 200) {
-				if (this.getMazub().getPosition()[1] < 200) {
-					return new int[]{0,0,this.visibleWindowWidth, this.visibleWindowHeight};
-				}
-				else {
-					return new int[]{0, this.getMazub().getPosition()[1] - 200, this.visibleWindowWidth, 
-							Math.min(this.getWorldSize()[1], this.getMazub().getPosition()[1] 
-									- 200 + this.visibleWindowHeight)};
-				}
+		Mazub mazub = this.getMazub();
+		int positionX = mazub.getPosition()[0];
+		int positionY = mazub.getPosition()[1];
+		int worldSizeX = this.getWorldSize()[0];
+		int worldSizeY = this.getWorldSize()[1];
+		int maxX = worldSizeX - this.visibleWindowWidth;
+		int maxY = worldSizeY - this.visibleWindowHeight;
+		if (positionX < 200) {
+			if (positionY < 200) {
+				return new int[]{0, 0, this.visibleWindowWidth, this.visibleWindowHeight};
 			}
 			else {
-				if (this.getMazub().getPosition()[1] < 200) {
-					return new int[]{this.getMazub().getPosition()[0] - 200,
-							0, Math.min(this.getWorldSize()[0], 
-									this.getMazub().getPosition()[0] - 200 + this.visibleWindowWidth), 
-									this.visibleWindowHeight};
-				}
-				else {
-					return new int[]{this.getMazub().getPosition()[0] - 200,
-							this.getMazub().getPosition()[1] - 200, 
-							Math.min(this.getWorldSize()[0], this.getMazub().getPosition()[0]
-									- 200 + this.visibleWindowWidth),
-									Math.min(this.getWorldSize()[1], 
-											this.getMazub().getPosition()[1] - 200 
-											+ this.visibleWindowHeight)};
-				}
+				return new int[]{0, Math.min(maxY, positionY - 200), this.visibleWindowWidth, 
+						Math.min(worldSizeY, positionY - 200 + this.visibleWindowHeight)};
 			}
 		}
 		else {
-			if (this.getMazub().getPosition()[0] < 200){
-				if (this.getMazub().getPosition()[1] < 200){
-					return new int[]{0,0,this.visibleWindowWidth, this.visibleWindowHeight};
-				}
-				else{
-					return new int[]{0, this.getMazub().getPosition()[1] - 200, this.visibleWindowWidth, 
-							Math.min(this.getWorldSize()[1], this.getMazub().getPosition()[1] 
-									- 200 + this.visibleWindowHeight)};
-				}
+			if (positionY < 200) {
+				return new int[]{Math.min(maxX, positionX - 200), 0, Math.min(worldSizeX, 
+						positionX - 200 + this.visibleWindowWidth), this.visibleWindowHeight};
 			}
-			else{
-				if (this.getMazub().getPosition()[1] < 200){
-					return new int[]{this.getMazub().getPosition()[0] - 200,
-							0, Math.min(this.getWorldSize()[0], 
-									this.getMazub().getPosition()[0] - 200 + this.visibleWindowWidth), 
-									this.visibleWindowHeight};
-				}
-				else{
-					return new int[]{this.getMazub().getPosition()[0] - 200,
-							this.getMazub().getPosition()[1] - 200, 
-							Math.min(this.getWorldSize()[0], this.getMazub().getPosition()[0] 
-									- 200 + this.visibleWindowWidth), Math.min(this.getWorldSize()[1]
-											, this.getMazub().getPosition()[1] - 200 
-											+ this.visibleWindowHeight)};
-				}
+			else {
+				return new int[]{Math.min(maxX, positionX - 200), Math.min(maxY, positionY - 200), 
+						Math.min(worldSizeX, positionX - 200 + this.visibleWindowWidth), 
+						Math.min(worldSizeY, positionY - 200 + this.visibleWindowHeight)};
 			}
 		}
 	}
@@ -362,8 +332,17 @@ public class World {
 	 */
 	@Basic
 	public int[] getWorldSize() {
-		int[] worldSize = new int[] {nbTilesX * this.tileSize, nbTilesY * this.tileSize };
+		int[] worldSize = new int[] {this.nbTilesX * this.tileSize, this.nbTilesY * this.tileSize };
 		return worldSize;
+	}
+	
+	/**
+	 * @return	The top right tile of the game world.
+	 * 
+	 */
+	public int[] getTopRightTile() {
+		int[] topRightTile = new int[] { this.nbTilesX, this.nbTilesY };
+		return topRightTile;
 	}
 	
 	/**
@@ -521,12 +500,12 @@ public class World {
 	 * 			|	this.setBuzam(null)
 	 */
 	public void removeDeadObject(GameObject object, double dt) {
+		object.setHorizontalAcceleration(0);
+		object.setVerticalAcceleration(0);
+		object.setHorizontalVelocity(0);
+		object.setVerticalVelocity(0);
 		if (Util.fuzzyGreaterThanOrEqualTo(object.getTimeDead(), 0.6)) {
 			object.setTimeDead(0);
-			object.setHorizontalAcceleration(0);
-			object.setVerticalAcceleration(0);
-			object.setHorizontalVelocity(0);
-			object.setVerticalVelocity(0);
 			if (this.getPlants().contains(object)) {
 				this.plants.remove(object);
 			}
@@ -548,8 +527,12 @@ public class World {
 	public void advanceTime(double dt) {
 		Mazub alien = this.getMazub();
 		alien.advanceTime(dt);
-		if ((alien.getNbHitPoints() == 0) 
+		if ((alien.getNbHitPoints() == 0) //TODO alien uit wereld
 				|| (alien.getPosition()[1] < 0)) {
+			alien.setHorizontalAcceleration(0);
+			alien.setHorizontalVelocity(0);
+			alien.setVerticalAcceleration(0);
+			alien.setVerticalVelocity(0);
 			if (alien.getTimeDead() >= 0.6) {
 				alien.setPosition(alien.getPosition()[0], -100);
 				this.gameOver = true;

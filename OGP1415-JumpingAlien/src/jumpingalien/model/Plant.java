@@ -173,7 +173,7 @@ public class Plant extends GameObject {
 	private void collidesWithActions(double newDt, int[] oldPosition) {
 		Mazub alien = this.getWorld().getMazub();
 //		Buzam buzam = this.getWorld().getBuzam();
-		if (((this.collidesWith(alien)) && (alien.getNbHitPoints() < 500)))
+		if (((this.collidesWith(alien)) && (!this.isDead()) && (alien.getNbHitPoints() < 500)))
 //			|| ((this.collidesWith(buzam)) && (buzam.getNbHitPoints() < 500)))
 			{
 			this.changeNbHitPoints(-1);
