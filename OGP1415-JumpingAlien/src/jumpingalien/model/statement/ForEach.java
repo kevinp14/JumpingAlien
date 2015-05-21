@@ -1,6 +1,7 @@
 package jumpingalien.model.statement;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 import jumpingalien.model.Plant;
 import jumpingalien.model.Program;
@@ -18,18 +19,18 @@ public class ForEach implements Statement {
 	private String variableName;
 	private Kind variableKind;
 	private Expression where;
-	private Expression sort;
+	private final Expression sortExpression;
 	private SortDirection sortDirection;
 	private Statement body;
 	private SourceLocation sourceLocation;
 	
 	public ForEach(String variableName, Kind variableKind,
-			Expression where, Expression sort, SortDirection sortDirection,
+			Expression where, Expression sortExpression, SortDirection sortDirection,
 			Statement body, SourceLocation sourceLocation) {
 		this.variableName = variableName;
 		this.variableKind = variableKind;
 		this.where = where;
-		this.sort = sort;
+		this.sortExpression = sortExpression;
 		this.sortDirection = sortDirection;
 		this.body = body;
 		this.sourceLocation = sourceLocation;
@@ -49,25 +50,17 @@ public class ForEach implements Statement {
 		allGameObjects.add(world.getBuzam());
 		if (this.sortDirection == SortDirection.ASCENDING) {
 			if (this.variableKind == Kind.PLANT) {
-				ArrayList<Double> sortedList = new ArrayList<Double>();
+				plants.sort((Plant plant1, Plant plant2) -> {this.sortExpression.execute(plant1, null) 
+					< this.sortExpression.execute((plant2, null);});
 				for (Plant plant: plants) {
-					double outcome = (double)this.sort.evaluate(plant);
-					for (int i=0; i < sortedList.size(); i++) {
-						if (outcome < sortedList.get(i)) {
-							sortedList.add(i, outcome);
-						}
-					}
-					body.execute(program, this.where);
 				}
 			}
 			else if (this.variableKind == Kind.SHARK) {
 				for (Shark shark: sharks) {
-					body.execute(program, this.where);
 				}
 			}
 			else if (this.variableKind == Kind.SLIME) {
 				for (Slime slime: slimes) {
-					body.execute(program, this.where);
 				}
 			}
 			else if (this.variableKind == Kind.MAZUB) {
@@ -78,24 +71,23 @@ public class ForEach implements Statement {
 			}
 			else {
 				for (GameObject gameObject: allGameObjects) {
-					body.execute(program, this.where);
 				}
+			}
+			for (GameObject o: ) {
+				body.execute(program, this.where); //TODO Hoe hier game object laten uitvoeren?
 			}
 		}
 		else if (this.sortDirection == SortDirection.DESCENDING) {
 			if (this.variableKind == Kind.PLANT) {
 				for (Plant plant: plants) {
-					body.execute(program, this.where);
 				}
 			}
 			else if (this.variableKind == Kind.SHARK) {
 				for (Shark shark: sharks) {
-					body.execute(program, this.where);
 				}
 			}
 			else if (this.variableKind == Kind.SLIME) {
 				for (Slime slime: slimes) {
-					body.execute(program, this.where);
 				}
 			}
 			else if (this.variableKind == Kind.MAZUB) {
@@ -106,24 +98,26 @@ public class ForEach implements Statement {
 			}
 			else {
 				for (GameObject gameObject: allGameObjects) {
-					body.execute(program, this.where);
 				}
+			}
+			for (GameObject o:) {
+				body.execute(program, this.where); //TODO Hoe hier game object laten uitvoeren?
 			}
 		}
 		else {
 			if (this.variableKind == Kind.PLANT) {
 				for (Plant plant: plants) {
-					body.execute(program, this.where);
+					body.execute(program, this.where); //TODO Hoe hier game object laten uitvoeren?
 				}
 			}
 			else if (this.variableKind == Kind.SHARK) {
 				for (Shark shark: sharks) {
-					body.execute(program, this.where);
+					body.execute(program, this.where); //TODO Hoe hier game object laten uitvoeren?
 				}
 			}
 			else if (this.variableKind == Kind.SLIME) {
 				for (Slime slime: slimes) {
-					body.execute(program, this.where);
+					body.execute(program, this.where); //TODO Hoe hier game object laten uitvoeren?
 				}
 			}
 			else if (this.variableKind == Kind.MAZUB) {
@@ -134,12 +128,11 @@ public class ForEach implements Statement {
 			}
 			else {
 				for (GameObject gameObject: allGameObjects) {
-					body.execute(program, this.where);
+					body.execute(program, this.where); //TODO Hoe hier game object laten uitvoeren?
 				}
 			}
 		}
 	}
-	
 
 	@Override
 	public SourceLocation getSourceLocation() {
