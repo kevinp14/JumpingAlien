@@ -48,7 +48,7 @@ public class Program {
 	public void setObjectByName(String variableName, Object value){
 		for(Entry<String, Object> entry : this.variables.entrySet()) {
 		    String name = entry.getKey();
-		    if (name == variableName){
+		    if ((name == variableName) && (this.globalVariables.get(name) == type)){
 		    	this.variables.put(name, value);
 		    }
 		}
