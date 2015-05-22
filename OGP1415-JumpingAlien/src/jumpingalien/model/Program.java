@@ -38,7 +38,7 @@ public class Program {
 		for(Entry<String, Object> entry : this.variables.entrySet()) {
 		    String name = entry.getKey();
 		    Object value = entry.getValue();
-		    if (name == variableName){
+		    if ((name == variableName) && (variableType == this.globalVariables.get(name))){
 		    	return value;
 		    }
 		}
