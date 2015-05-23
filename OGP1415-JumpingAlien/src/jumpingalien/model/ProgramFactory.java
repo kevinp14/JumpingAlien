@@ -3,6 +3,7 @@ package jumpingalien.model;
 import java.util.*;
 
 import jumpingalien.model.expression.*;
+import jumpingalien.model.expression.RandomE;
 import jumpingalien.model.statement.*;
 import jumpingalien.model.type.*;
 import jumpingalien.part3.programs.*;
@@ -12,7 +13,7 @@ public class ProgramFactory implements IProgramFactory<Expression, Statement, Ty
 	
 	public ProgramFactory(){}
 	
-	@Override //TODO
+	@Override
 	public Expression createReadVariable(String variableName, Type<?> variableType,
 			SourceLocation sourceLocation) {
 		ReadVariable readVariable = new ReadVariable(variableName, variableType, sourceLocation);
@@ -116,7 +117,7 @@ public class ProgramFactory implements IProgramFactory<Expression, Statement, Ty
 
 	@Override
 	public Expression createNot(Expression expr, SourceLocation sourceLocation) {
-		NotE notBoolean = new NotE(expr, sourceLocation);
+		NotBoolean notBoolean = new NotBoolean(expr, sourceLocation);
 		return notBoolean;
 	}
 
@@ -204,7 +205,7 @@ public class ProgramFactory implements IProgramFactory<Expression, Statement, Ty
 		return getTile;
 	}
 
-	@Override //TODO
+	@Override
 	public Expression createSearchObject(Expression direction,
 			SourceLocation sourceLocation) {
 		SearchObject searchObject = new SearchObject(direction, sourceLocation);
@@ -302,7 +303,7 @@ public class ProgramFactory implements IProgramFactory<Expression, Statement, Ty
 		return isJumping;
 	}
 
-	@Override //TODO
+	@Override
 	public Statement createAssignment(String variableName, Type<?> variableType,
 			Expression value, SourceLocation sourceLocation) {
 		Assignment assignment = new Assignment(variableName, variableType, value, sourceLocation);
@@ -424,7 +425,7 @@ public class ProgramFactory implements IProgramFactory<Expression, Statement, Ty
 		return directionType;
 	}
 
-	@Override //TODO
+	@Override 
 	public Program createProgram(Statement mainStatement, 
 			Map<String, Type<?>> globalVariables) {
 		Program program = new Program(mainStatement, globalVariables);
