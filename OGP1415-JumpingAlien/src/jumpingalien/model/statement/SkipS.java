@@ -8,7 +8,7 @@ import jumpingalien.part3.programs.SourceLocation;
  * A class to skip/wait for 0.001 seconds.
  * 
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
  * @version 1.0
  */
 public class SkipS implements Statement {
@@ -52,5 +52,9 @@ public class SkipS implements Statement {
 	public SourceLocation getSourceLocation() {
 		return this.sourceLocation;
 	}
+	
+	@Override
+	public void executeForGivenObject(Program program, Expression condition,
+			Object object) {}
 
 }
