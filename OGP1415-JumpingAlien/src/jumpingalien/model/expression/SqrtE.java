@@ -7,7 +7,7 @@ import jumpingalien.part3.programs.SourceLocation;
  * A class to get the square root of an expression.
  * 
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
  * @version 1.0
  */
 public class SqrtE implements Expression {
@@ -37,7 +37,7 @@ public class SqrtE implements Expression {
 	@Override
 	public Object evaluate(Program program) {
 		double valueExpr = (double)expr.evaluate(program);
-		return Math.pow(valueExpr, 1/2);
+		return Math.pow(valueExpr, 0.5);
 	}
 
 	/**
