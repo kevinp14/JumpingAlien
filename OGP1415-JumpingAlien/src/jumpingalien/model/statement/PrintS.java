@@ -8,7 +8,7 @@ import jumpingalien.part3.programs.SourceLocation;
  * A class to print out an expression.
  * 
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
  * @version 1.0
  */
 public class PrintS implements Statement {
@@ -53,4 +53,10 @@ public class PrintS implements Statement {
 		return this.sourceLocation;
 	}
 
+	@Override
+	public void executeForGivenObject(Program program, Expression condition,
+			Object object) {
+		double printValue = (double) this.value.evaluate(program);
+		System.out.println(printValue);
+	}
 }
