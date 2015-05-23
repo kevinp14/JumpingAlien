@@ -15,13 +15,14 @@ import jumpingalien.util.Util;
  * 
  * @invar
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
  * @version 8.0
  *
  */
 public class Slime extends GameObject {
 	private School school;
 	private double timeMovingHorizontally;
+	private boolean programRunning;
 
 	/**
 	 * @param 	positionX
@@ -56,6 +57,7 @@ public class Slime extends GameObject {
 	    this.timeMovingHorizontally = 0;
 		this.school = school;
 		this.changeNbHitPoints(100);
+		this.programRunning = false;
 	}
 	
 	/**
@@ -102,14 +104,14 @@ public class Slime extends GameObject {
 	 * @return A random direction (left or right) for the slime to move in.
 	 * 
 	 */
-	private Direction getRandomDirection(){
+	private SelfMadeDirection getRandomDirection(){
 		Random rand = new Random();
 	    int directionNumber = rand.nextInt(2);
 	    if (directionNumber == 0) {
-	    	return Direction.LEFT;
+	    	return SelfMadeDirection.LEFT;
 	    }
 	    else {
-	    	return Direction.RIGHT;
+	    	return SelfMadeDirection.RIGHT;
 	    }
 	}
 	
@@ -262,41 +264,67 @@ public class Slime extends GameObject {
 	 * 			|				slime.changeNbHitPoints(-1)
 	 */
 	private void collidesWithActions(double newDt, int[] oldPosition) {
-		for (Slime slime: this.getWorld().getSlimes()) {
-			if (this.collidesWith(slime)) {
-				this.collisionBlockMovement(slime, oldPosition, newDt);
-				if (!(this.getSchool() == slime.getSchool())) {
-					for (Slime otherSlime: this.getSchool().getSlimes()) {
-						if (!(otherSlime == this)) {
-							this.changeNbHitPoints(-1);
-							otherSlime.changeNbHitPoints(1);
-						}
-					}
-					if (this.getSchool().getSize() < slime.getSchool().getSize()) {
-						this.setSchool(slime.getSchool());
-						for (Slime otherSlime: slime.getSchool().getSlimes()) {
+		if (this.getWorld() != null){
+			for (Slime slime: this.getWorld().getSlimes()) {
+				if (this.collidesWith(slime)) {
+					this.collisionBlockMovement(slime, oldPosition, newDt);
+					if (!(this.getSchool() == slime.getSchool())) {
+						for (Slime otherSlime: this.getSchool().getSlimes()) {
 							if (!(otherSlime == this)) {
-								otherSlime.changeNbHitPoints(-1);
-								this.changeNbHitPoints(1);
+								this.changeNbHitPoints(-1);
+								otherSlime.changeNbHitPoints(1);
 							}
 						}
-					}
-					else {
-						slime.setSchool(this.getSchool());
-						for (Slime otherSlime: this.getSchool().getSlimes()) {
-							if (!(otherSlime == slime)) {
-								otherSlime.changeNbHitPoints(-1);
-								slime.changeNbHitPoints(1);
+						if (this.getSchool().getSize() < slime.getSchool().getSize()) {
+							this.setSchool(slime.getSchool());
+							for (Slime otherSlime: slime.getSchool().getSlimes()) {
+								if (!(otherSlime == this)) {
+									otherSlime.changeNbHitPoints(-1);
+									this.changeNbHitPoints(1);
+								}
+							}
+						}
+						else {
+							slime.setSchool(this.getSchool());
+							for (Slime otherSlime: this.getSchool().getSlimes()) {
+								if (!(otherSlime == slime)) {
+									otherSlime.changeNbHitPoints(-1);
+									slime.changeNbHitPoints(1);
+								}
 							}
 						}
 					}
 				}
 			}
-		}
-		for (Shark shark: this.getWorld().getSharks()) {
-			if (this.collidesWith(shark)) {
-				this.collisionBlockMovement(shark, oldPosition, newDt);
-				if (!this.bottomCollidesWith(shark)) {
+			for (Shark shark: this.getWorld().getSharks()) {
+				if (this.collidesWith(shark)) {
+					this.collisionBlockMovement(shark, oldPosition, newDt);
+					if (!this.bottomCollidesWith(shark)) {
+						if (!this.isImmune()) {
+							this.changeNbHitPoints(-50);
+							for (Slime slime: this.getSchool().getSlimes()) {
+								if (!(slime == this)) {
+									slime.changeNbHitPoints(-1);
+								}
+							}
+							this.makeImmune();
+						}
+						else {
+							if (Util.fuzzyLessThanOrEqualTo(this.getTimeImmune(), 0.60)) {
+								this.setTimeImmune(this.getTimeImmune() + newDt);
+							}
+							else {
+								this.makeVulnerable();
+								this.setTimeImmune(0);
+							}
+						}
+					}
+				}
+			}
+			Mazub alien = this.getWorld().getMazub();
+			if (this.collidesWith(alien)) {
+				this.collisionBlockMovement(alien, oldPosition, newDt);
+				if (!this.bottomCollidesWith(alien)) {
 					if (!this.isImmune()) {
 						this.changeNbHitPoints(-50);
 						for (Slime slime: this.getSchool().getSlimes()) {
@@ -317,55 +345,32 @@ public class Slime extends GameObject {
 					}
 				}
 			}
-		}
-		Mazub alien = this.getWorld().getMazub();
-		if (this.collidesWith(alien)) {
-			this.collisionBlockMovement(alien, oldPosition, newDt);
-			if (!this.bottomCollidesWith(alien)) {
-				if (!this.isImmune()) {
-					this.changeNbHitPoints(-50);
-					for (Slime slime: this.getSchool().getSlimes()) {
-						if (!(slime == this)) {
-							slime.changeNbHitPoints(-1);
+			Buzam buzam = this.getWorld().getBuzam();
+			if (buzam != null){
+				if (this.collidesWith(buzam)) {
+					this.collisionBlockMovement(buzam, oldPosition, newDt);
+					if (!this.bottomCollidesWith(buzam)) {
+						if (!this.isImmune()) {
+							this.changeNbHitPoints(-50);
+							for (Slime slime: this.getSchool().getSlimes()) {
+								if (!(slime == this)) {
+									slime.changeNbHitPoints(-1);
+								}
+							}
+							this.makeImmune();
 						}
-					}
-					this.makeImmune();
-				}
-				else {
-					if (Util.fuzzyLessThanOrEqualTo(this.getTimeImmune(), 0.60)) {
-						this.setTimeImmune(this.getTimeImmune() + newDt);
-					}
-					else {
-						this.makeVulnerable();
-						this.setTimeImmune(0);
+						else {
+							if (Util.fuzzyLessThanOrEqualTo(this.getTimeImmune(), 0.60)) {
+								this.setTimeImmune(this.getTimeImmune() + newDt);
+							}
+							else {
+								this.makeVulnerable();
+							}
+						}
 					}
 				}
 			}
 		}
-//		Buzam buzam = this.getWorld().getBuzam();
-//		if (this.collidesWith(buzam)) {
-//			this.collisionBlockMovement(buzam, oldPosition, newDt);
-//			if (!this.bottomCollidesWith(buzam)) {
-//				if (!this.isImmune()) {
-//					this.changeNbHitPoints(-50);
-//					for (Slime slime: this.getSchool().getSlimes()) {
-//						if (!(slime == this)) {
-//							slime.changeNbHitPoints(-1);
-//						}
-//					}
-//					this.makeImmune();
-//				}
-//				else {
-//					if (Util.fuzzyLessThanOrEqualTo(this.getTimeImmune(), 0.60)) {
-//						this.setTimeImmune(this.getTimeImmune() + newDt);
-//					}
-//					else {
-//						this.makeVulnerable();
-//						this.setTimeImmune(0);
-//					}
-//				}
-//			}
-//		}
 	}
 	
 	/**
@@ -434,44 +439,51 @@ public class Slime extends GameObject {
 	 * 			| !isValidDt(dt)
 	 */
 	public void advanceTime(double dt) throws IllegalArgumentException {
-		if (!this.isValidDt(dt)) {
-			throw new IllegalArgumentException("The given period of time dt is invalid!");
-		}
-		double sumDt = 0;
-		double movingTime = this.getRandomMovingTime();
-		while (!Util.fuzzyGreaterThanOrEqualTo(sumDt, dt)) {
-			double newDt = this.getNewDt(dt);
-			int[] oldPosition = this.getPosition();
-			double[] oldPositionAsDouble = this.getPositionAsDouble();
-			if (Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, movingTime)) {
-				this.timeMovingHorizontally = 0;
-				this.endMoveHorizontally(this.getLastDirection());
-				this.startMoveHorizontally(this.getRandomDirection(), this.getNormalHorizontalVelocity(),
-						this.getNormalHorizontalAcceleration());
+		if ((this.getProgram() == null) || (this.programRunning == true)){
+			if (!this.isValidDt(dt)) {
+				throw new IllegalArgumentException("The given period of time dt is invalid!");
 			}
-			if (!Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, movingTime)) {
-				this.timeMovingHorizontally += newDt;
-			}
-			if ((this.crossImpassableLeft()) || (this.crossImpassableBottom()) 
-					|| (this.crossImpassableRight())) {
-				this.crossImpassableActions(oldPosition);
-			}
-			if ((this.isInWater()) || (this.isInMagma())) {
-				this.isInFluidActions(dt);
-			}
-			this.collidesWithActions(newDt, oldPosition);
-			if ((this.isInWater()) || (this.isInMagma())) {
-				this.isInFluidActions(newDt);
-			}
-			if ((!this.crossImpassableBottom()) && (!this.crossImpassableLeft())
-					&& (!this.crossImpassableTop()) && (!this.crossImpassableRight())) {
-				if (!this.touchImpassableBottom()) {
-					this.setVerticalAcceleration(this.getNormalVerticalAcceleration());
+			double sumDt = 0;
+			double movingTime = this.getRandomMovingTime();
+			while (!Util.fuzzyGreaterThanOrEqualTo(sumDt, dt)) {
+				double newDt = this.getNewDt(dt);
+				int[] oldPosition = this.getPosition();
+				double[] oldPositionAsDouble = this.getPositionAsDouble();
+				if (Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, movingTime)) {
+					this.timeMovingHorizontally = 0;
+					this.endMoveHorizontally(this.getLastDirection());
+					this.startMoveHorizontally(this.getRandomDirection(), this.getNormalHorizontalVelocity(),
+							this.getNormalHorizontalAcceleration());
 				}
-				this.setPosition(oldPositionAsDouble[0] + 100*this.horizontalMovement(newDt),
-					oldPositionAsDouble[1] + 100*this.verticalMovement(newDt));
+				if (!Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, movingTime)) {
+					this.timeMovingHorizontally += newDt;
+				}
+				if ((this.crossImpassableLeft()) || (this.crossImpassableBottom()) 
+						|| (this.crossImpassableRight())) {
+					this.crossImpassableActions(oldPosition);
+				}
+				if ((this.isInWater()) || (this.isInMagma())) {
+					this.isInFluidActions(dt);
+				}
+				this.collidesWithActions(newDt, oldPosition);
+				if ((this.isInWater()) || (this.isInMagma())) {
+					this.isInFluidActions(newDt);
+				}
+				if ((!this.crossImpassableBottom()) && (!this.crossImpassableLeft())
+						&& (!this.crossImpassableTop()) && (!this.crossImpassableRight())) {
+					if (!this.touchImpassableBottom()) {
+						this.setVerticalAcceleration(this.getNormalVerticalAcceleration());
+					}
+					this.setPosition(oldPositionAsDouble[0] + 100*this.horizontalMovement(newDt),
+						oldPositionAsDouble[1] + 100*this.verticalMovement(newDt));
+				}
+				sumDt += newDt;
 			}
-			sumDt += newDt;
+		}
+		else{
+			Thread t = new Thread(this.getProgram());
+			t.start();
+			this.programRunning = true;
 		}
 	}
 }
