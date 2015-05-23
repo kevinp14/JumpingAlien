@@ -7,7 +7,7 @@ import jumpingalien.util.Util;
  * A class of double expressions including sum and, difference, multiplication, division and comparison.
  * 
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
  * @version 1.0
  */
 public class DoubleExpression {
@@ -38,16 +38,16 @@ public class DoubleExpression {
 	 * 			The program for which the sum has to be evaluated.
 	 * @return	The result of the sum between expr1 and expr2.
 	 */
-	public Object sum(){
+	public Object sum(Program program){
 		String testString = "test";
-		if (this.expr1.evaluate(null).getClass() == testString.getClass()){
-			String valueExpr1 = (String)this.expr1.evaluate(null);
-			String valueExpr2 = (String)this.expr2.evaluate(null);
+		if (this.expr1.evaluate(program).getClass() == testString.getClass()){
+			String valueExpr1 = (String)this.expr1.evaluate(program);
+			String valueExpr2 = (String)this.expr2.evaluate(program);
 			return (valueExpr1 + valueExpr2);
 		}
 		else{
-			double valueExpr1 = (double)this.expr1.evaluate(null);
-			double valueExpr2 = (double)this.expr2.evaluate(null);
+			double valueExpr1 = (double)this.expr1.evaluate(program);
+			double valueExpr2 = (double)this.expr2.evaluate(program);
 			return (valueExpr1 + valueExpr2);
 		}
 	}
@@ -57,9 +57,9 @@ public class DoubleExpression {
 	 * 			The program for which the difference has to be evaluated.
 	 * @return	The result of the difference between expr1 and expr2.
 	 */
-	public Object difference(){
-		double valueExpr1 = (double)this.expr1.evaluate(null);
-		double valueExpr2 = (double)this.expr2.evaluate(null);
+	public Object difference(Program program){
+		double valueExpr1 = (double)this.expr1.evaluate(program);
+		double valueExpr2 = (double)this.expr2.evaluate(program);
 		return (valueExpr1 - valueExpr2);
 	}
 	
@@ -68,9 +68,9 @@ public class DoubleExpression {
 	 * 			The program for which the multiplication has to be evaluated.
 	 * @return	The result of the multiplication between expr1 and expr2.
 	 */
-	public Object multiplication(){
-		double valueExpr1 = (double)this.expr1.evaluate(null);
-		double valueExpr2 = (double)this.expr2.evaluate(null);
+	public Object multiplication(Program program){
+		double valueExpr1 = (double)this.expr1.evaluate(program);
+		double valueExpr2 = (double)this.expr2.evaluate(program);
 		return (valueExpr1 * valueExpr2);
 	}
 	
@@ -79,9 +79,9 @@ public class DoubleExpression {
 	 * 			The program for which the division has to be evaluated.
 	 * @return	The result of the division between expr1 and expr2.
 	 */
-	public Object division(){
-		double valueExpr1 = (double)this.expr1.evaluate(null);
-		double valueExpr2 = (double)this.expr2.evaluate(null);
+	public Object division(Program program){
+		double valueExpr1 = (double)this.expr1.evaluate(program);
+		double valueExpr2 = (double)this.expr2.evaluate(program);
 		return (valueExpr1 / valueExpr2);
 	}
 	
@@ -90,9 +90,9 @@ public class DoubleExpression {
 	 * 			The program for which the comparison has to be evaluated.
 	 * @return	True if and only if expr1 is less than expr2.
 	 */
-	public boolean lessThan(){
-		return (!Util.fuzzyGreaterThanOrEqualTo((double)this.expr1.evaluate(null),
-				(double)this.expr2.evaluate(null)));
+	public boolean lessThan(Program program){
+		return (!Util.fuzzyGreaterThanOrEqualTo((double)this.expr1.evaluate(program),
+				(double)this.expr2.evaluate(program)));
 	}
 	
 	/**
@@ -100,9 +100,9 @@ public class DoubleExpression {
 	 * 			The program for which the comparison has to be evaluated.
 	 * @return	True if and only if expr1 is less than or equal to expr2.
 	 */
-	public boolean lessThanOrEqual(){
-		return (Util.fuzzyLessThanOrEqualTo((double)this.expr1.evaluate(null),
-				(double)this.expr2.evaluate(null)));
+	public boolean lessThanOrEqual(Program program){
+		return (Util.fuzzyLessThanOrEqualTo((double)this.expr1.evaluate(program),
+				(double)this.expr2.evaluate(program)));
 	}
 	
 	/**
@@ -110,9 +110,9 @@ public class DoubleExpression {
 	 * 			The program for which the comparison has to be evaluated.
 	 * @return	True if and only if expr1 is greater than expr2.
 	 */
-	public boolean greaterThan(){
-		return (!Util.fuzzyLessThanOrEqualTo((double)this.expr1.evaluate(null),
-				(double)this.expr2.evaluate(null)));
+	public boolean greaterThan(Program program){
+		return (!Util.fuzzyLessThanOrEqualTo((double)this.expr1.evaluate(program),
+				(double)this.expr2.evaluate(program)));
 	}
 	
 	/**
@@ -120,9 +120,9 @@ public class DoubleExpression {
 	 * 			The program for which the comparison has to be evaluated.
 	 * @return	True if and only if expr1 is greater than or equal to expr2.
 	 */
-	public boolean greaterThanOrEqual(){
-		return (Util.fuzzyGreaterThanOrEqualTo((double)this.expr1.evaluate(null),
-				(double)this.expr2.evaluate(null)));
+	public boolean greaterThanOrEqual(Program program){
+		return (Util.fuzzyGreaterThanOrEqualTo((double)this.expr1.evaluate(program),
+				(double)this.expr2.evaluateprogram)));
 	}
 }
 
