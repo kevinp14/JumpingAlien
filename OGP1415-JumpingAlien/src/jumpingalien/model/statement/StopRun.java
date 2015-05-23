@@ -45,7 +45,23 @@ public class StopRun implements Statement {
 	public void execute(Program program, Expression condition) {
 		GameObject gameObject = (GameObject) program.getGameObject();
 		Direction dir = (Direction) this.direction.evaluate(program);
-		gameObject.endMoveHorizontally(dir);
+		SelfMadeDirection selfMadeDir = this.convertDirection(dir);
+		gameObject.endMoveHorizontally(selfMadeDir);
+	}
+	
+	public SelfMadeDirection convertDirection(Direction direction){
+		if (direction == Direction.DOWN){
+			return SelfMadeDirection.DOWN;
+		}
+		else if (direction == Direction.LEFT){
+			return SelfMadeDirection.LEFT;
+		}
+		else if (direction == Direction.RIGHT){
+			return SelfMadeDirection.RIGHT;
+		}
+		else{
+			return SelfMadeDirection.UP;
+		}
 	}
 
 	/**
