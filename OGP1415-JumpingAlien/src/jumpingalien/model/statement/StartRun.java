@@ -46,8 +46,24 @@ public class StartRun implements Statement {
 	public void execute(Program program, Expression condition) {
 		GameObject gameObject = (GameObject) program.getGameObject();
 		Direction dir = (Direction) this.direction.evaluate(program);
-		gameObject.startMoveHorizontally(dir, gameObject.getNormalHorizontalVelocity(), 
+		SelfMadeDirection selfMadeDir = this.convertDirection(dir);
+		gameObject.startMoveHorizontally(selfMadeDir, gameObject.getNormalHorizontalVelocity(), 
 				gameObject.getNormalHorizontalAcceleration());
+	}
+	
+	public SelfMadeDirection convertDirection(Direction direction){
+		if (direction == Direction.DOWN){
+			return SelfMadeDirection.DOWN;
+		}
+		else if (direction == Direction.LEFT){
+			return SelfMadeDirection.LEFT;
+		}
+		else if (direction == Direction.RIGHT){
+			return SelfMadeDirection.RIGHT;
+		}
+		else{
+			return SelfMadeDirection.UP;
+		}
 	}
 
 	/**
