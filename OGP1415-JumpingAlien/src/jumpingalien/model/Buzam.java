@@ -27,7 +27,7 @@ import jumpingalien.util.*;
  * 			| Math.abs(this.getHorizontalAcceleration()) > 0
  * 
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
  * @version 1.0
  *
  */
@@ -226,10 +226,10 @@ public class Buzam extends GameObject {
 	 * @post	The new secondary direction should be valid.
 	 * 			| isValidMovingDirection((new this).getSecondaryDirection())
 	 */
-	public void startMoveHorizontally(Direction direction) {
+	public void startMoveHorizontally(SelfMadeDirection direction) {
 		assert (isValidMovingDirection(direction));
-		if (direction == Direction.RIGHT) {
-			this.setLastDirection(Direction.RIGHT);
+		if (direction == SelfMadeDirection.RIGHT) {
+			this.setLastDirection(SelfMadeDirection.RIGHT);
 			if (Util.fuzzyLessThanOrEqualTo(this.getHorizontalVelocity(), 
 					this.getMaxHorizontalVelocity())) {
 				this.setHorizontalVelocity(this.getNormalHorizontalVelocity());
@@ -241,7 +241,7 @@ public class Buzam extends GameObject {
 			}
 		}
 		else {
-			this.setLastDirection(Direction.LEFT);
+			this.setLastDirection(SelfMadeDirection.LEFT);
 			if (Util.fuzzyGreaterThanOrEqualTo(this.getHorizontalVelocity(),
 					(-this.getMaxHorizontalVelocity()))) {
 				this.setHorizontalVelocity(-this.getNormalHorizontalVelocity());
@@ -263,23 +263,23 @@ public class Buzam extends GameObject {
 	 * 		| isValidMovingDirection(direction)
 	 */
 	@Override
-	public void endMoveHorizontally(Direction direction) {
+	public void endMoveHorizontally(SelfMadeDirection direction) {
 		assert (isValidMovingDirection(direction));
-		if ((direction == Direction.RIGHT) 
+		if ((direction == SelfMadeDirection.RIGHT) 
 				&& (!Util.fuzzyLessThanOrEqualTo(this.getHorizontalVelocity(), 0))) {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 		}
-		if ((direction == Direction.RIGHT) 
+		if ((direction == SelfMadeDirection.RIGHT) 
 				&& (!Util.fuzzyLessThanOrEqualTo(this.getHorizontalVelocity(), 0))) {
 			this.setHorizontalAcceleration(-this.getHorizontalAcceleration());
 		}
-		if ((direction == Direction.LEFT) 
+		if ((direction == SelfMadeDirection.LEFT) 
 				&& (!Util.fuzzyGreaterThanOrEqualTo(this.getHorizontalVelocity(), 0))) {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 		}
-		if ((direction == Direction.LEFT) 
+		if ((direction == SelfMadeDirection.LEFT) 
 				&& (!Util.fuzzyGreaterThanOrEqualTo(this.getHorizontalVelocity(), 0))) {
 			this.setHorizontalAcceleration(-this.getHorizontalAcceleration());
 		}
@@ -530,46 +530,53 @@ public class Buzam extends GameObject {
 	 * 			| !isValidDt(dt)
 	 */
 	public void advanceTime(double dt) throws IllegalArgumentException {
-		if (!this.isValidDt(dt)) {
-			throw new IllegalArgumentException("The given period of time dt is invalid!");
-		}
-		double sumDt = 0;
-		while (!Util.fuzzyGreaterThanOrEqualTo(sumDt, dt)) {
-			double newDt = this.getNewDt(dt);
-			int[] oldPosition = this.getPosition();
-			double[] oldPositionAsDouble = this.getPositionAsDouble();
-			if ((this.crossImpassableBottom()) || (this.crossImpassableLeft()) 
-					|| (this.crossImpassableTop()) || (this.crossImpassableRight()))  {
-				this.crossImpassableActions(oldPosition);
+		if ((this.getProgram() == null) || (this.programRunning == true)){
+			if (!this.isValidDt(dt)) {
+				throw new IllegalArgumentException("The given period of time dt is invalid!");
 			}
-			this.collidesWithActions(newDt, oldPosition);
-			if ((this.isInWater()) || (this.isInMagma())) {
-				this.isInFluidActions(newDt);
-			}
-			if (!this.isMovingHorizontally()) {
-			    this.setTimeStalled(this.getTimeStalled() + newDt);
-				this.timeMovingHorizontally = 0;
-			}
-			if (this.isMovingHorizontally()) {
-				this.setTimeStalled(0);
-				this.timeMovingHorizontally += newDt;
-			}
-			if ((this.canEndDuck()) && (!Util.fuzzyLessThanOrEqualTo(this.timeForcedDuck, 0))) {
-				this.endDuck();
-				this.timeForcedDuck = 0;
-			}
-			if (!this.canEndDuck()) {
-				this.timeForcedDuck += newDt;
-			}
-			if ((!this.crossImpassableBottom()) && (!this.crossImpassableLeft())
-					&& (!this.crossImpassableTop()) && (!this.crossImpassableRight())) {
-				if (!this.touchImpassableBottom()) {
-					this.setVerticalAcceleration(this.getNormalVerticalAcceleration());
+			double sumDt = 0;
+			while (!Util.fuzzyGreaterThanOrEqualTo(sumDt, dt)) {
+				double newDt = this.getNewDt(dt);
+				int[] oldPosition = this.getPosition();
+				double[] oldPositionAsDouble = this.getPositionAsDouble();
+				if ((this.crossImpassableBottom()) || (this.crossImpassableLeft()) 
+						|| (this.crossImpassableTop()) || (this.crossImpassableRight()))  {
+					this.crossImpassableActions(oldPosition);
 				}
-			this.setPosition(oldPositionAsDouble[0] + 100 * this.horizontalMovement(newDt),
-						oldPositionAsDouble[1] + 100 * this.verticalMovement(newDt));
+				this.collidesWithActions(newDt, oldPosition);
+				if ((this.isInWater()) || (this.isInMagma())) {
+					this.isInFluidActions(newDt);
+				}
+				if (!this.isMovingHorizontally()) {
+				    this.setTimeStalled(this.getTimeStalled() + newDt);
+					this.timeMovingHorizontally = 0;
+				}
+				if (this.isMovingHorizontally()) {
+					this.setTimeStalled(0);
+					this.timeMovingHorizontally += newDt;
+				}
+				if ((this.canEndDuck()) && (!Util.fuzzyLessThanOrEqualTo(this.timeForcedDuck, 0))) {
+					this.endDuck();
+					this.timeForcedDuck = 0;
+				}
+				if (!this.canEndDuck()) {
+					this.timeForcedDuck += newDt;
+				}
+				if ((!this.crossImpassableBottom()) && (!this.crossImpassableLeft())
+						&& (!this.crossImpassableTop()) && (!this.crossImpassableRight())) {
+					if (!this.touchImpassableBottom()) {
+						this.setVerticalAcceleration(this.getNormalVerticalAcceleration());
+					}
+				this.setPosition(oldPositionAsDouble[0] + 100 * this.horizontalMovement(newDt),
+							oldPositionAsDouble[1] + 100 * this.verticalMovement(newDt));
+				}
+				sumDt += newDt;
 			}
-			sumDt += newDt;
+		}
+		else{
+			Thread t = new Thread(this.getProgram());
+			t.start();
+			this.programRunning = true;
 		}
 	}
 }
