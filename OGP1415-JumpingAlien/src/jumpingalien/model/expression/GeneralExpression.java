@@ -6,7 +6,7 @@ import jumpingalien.part3.programs.SourceLocation;
  * A class of general expressions to check whether expressions are equals or not.
  * 
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
  * @version 1.0
  */
 public class GeneralExpression {
@@ -37,8 +37,8 @@ public class GeneralExpression {
 	 * 			The program for which the comparison has to be evaluated.
 	 * @return	True if and only if expr1 equals expr2.
 	 */
-	public boolean equals(){
-		return (this.expr1.evaluate(null) == this.expr2.evaluate(null));
+	public boolean equals(Program program){
+		return !(this.expr1.evaluate(program) == this.expr2.evaluate(program));
 	}
 	
 	/**
@@ -46,8 +46,8 @@ public class GeneralExpression {
 	 * 			The program for which the comparison has to be evaluated.
 	 * @return	True if and only if expr1 does not equal expr2.
 	 */
-	public boolean notEquals(){
-		return (this.expr1.evaluate(null) != this.expr2.evaluate(null));
+	public boolean notEquals(Program program){
+		return !(this.expr1.evaluate(program) != this.expr2.evaluate(program));
 	}
 
 }
