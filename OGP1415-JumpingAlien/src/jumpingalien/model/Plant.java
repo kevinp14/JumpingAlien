@@ -12,13 +12,13 @@ import jumpingalien.util.Util;
  * 
  * @invar 
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
  * @version 5.0
  *
  */
 public class Plant extends GameObject {
 	
-	private Direction nextDirection;
+	private SelfMadeDirection nextDirection;
 	private double timeMovingHorizontally;
 	
 	/**
@@ -43,7 +43,7 @@ public class Plant extends GameObject {
 		super(positionX, positionY, spriteList, program);
 		this.setLastDirection(this.getRandomDirection());
 		this.setNormalHorizontalVelocity(0.5);
-	    this.nextDirection = Direction.STALLED;
+	    this.nextDirection = SelfMadeDirection.STALLED;
 	    this.timeMovingHorizontally = 0;
 	    this.changeNbHitPoints(1);
 	}
@@ -52,14 +52,14 @@ public class Plant extends GameObject {
 	 * @return A random direction (left or right) for the plant to move in.
 	 * 
 	 */
-	private Direction getRandomDirection(){
+	private SelfMadeDirection getRandomDirection(){
 		Random rand = new Random();
 	    int directionNumber = rand.nextInt(2);
 	    if (directionNumber == 0) {
-	    	return Direction.LEFT;
+	    	return SelfMadeDirection.LEFT;
 	    }
 	    else {
-	    	return Direction.RIGHT;
+	    	return SelfMadeDirection.RIGHT;
 	    }
 	}
 	
@@ -88,7 +88,7 @@ public class Plant extends GameObject {
 	 * @return The next direction in which the plant has to move.
 	 * 
 	 */
-	protected Direction getNextDirection() {
+	protected SelfMadeDirection getNextDirection() {
 		return this.nextDirection;
 	}
 	
@@ -96,7 +96,7 @@ public class Plant extends GameObject {
 	 * @param 	direction
 	 * 			The direction to which the next direction has to be set.
 	 */
-	protected void setNextDirection(Direction direction){
+	protected void setNextDirection(SelfMadeDirection direction){
 		this.nextDirection = direction;
 	}
 	
@@ -110,16 +110,16 @@ public class Plant extends GameObject {
 	 * @post	The new next direction (always the opposite of the last direction) should be valid.
 	 * 			| isValidMovingDirection((new this).getNextDirection())
 	 */
-	public void startMoveHorizontally(Direction direction) {
+	public void startMoveHorizontally(SelfMadeDirection direction) {
 		assert (isValidMovingDirection(direction));
-		if (direction == Direction.RIGHT) {
-			this.setLastDirection(Direction.RIGHT);
-			this.setNextDirection(Direction.LEFT);
+		if (direction == SelfMadeDirection.RIGHT) {
+			this.setLastDirection(SelfMadeDirection.RIGHT);
+			this.setNextDirection(SelfMadeDirection.LEFT);
 			this.setHorizontalVelocity(this.getNormalHorizontalVelocity());
 		}
 		else {
-			this.setLastDirection(Direction.LEFT);
-			this.setNextDirection(Direction.RIGHT);
+			this.setLastDirection(SelfMadeDirection.LEFT);
+			this.setNextDirection(SelfMadeDirection.RIGHT);
 			this.setHorizontalVelocity(-this.getNormalHorizontalVelocity());
 		}
 	}
@@ -131,13 +131,13 @@ public class Plant extends GameObject {
 	 * 		| isValidMovingDirection(direction)
 	 */
 	@Override
-	public void endMoveHorizontally(Direction direction) {
+	public void endMoveHorizontally(SelfMadeDirection direction) {
 		assert (isValidMovingDirection(direction));
-		if ((direction == Direction.RIGHT)
+		if ((direction == SelfMadeDirection.RIGHT)
 				&& (!Util.fuzzyLessThanOrEqualTo(this.getHorizontalVelocity(), 0))) {
 			this.setHorizontalVelocity(0);
 		}
-		if ((direction == Direction.LEFT) 
+		if ((direction == SelfMadeDirection.LEFT) 
 				& (!Util.fuzzyGreaterThanOrEqualTo(this.getHorizontalVelocity(), 0))) {
 			this.setHorizontalVelocity(0);
 		}
@@ -205,31 +205,38 @@ public class Plant extends GameObject {
 	 * 			| !isValidDt(dt)
 	 */
 	public void advanceTime(double dt) throws IllegalArgumentException {
-		if (!this.isValidDt(dt)) {
-			throw new IllegalArgumentException("The given period of time dt is invalid!");
+		if ((this.getProgram() == null) || (this.programRunning == true)){
+			if (!this.isValidDt(dt)) {
+				throw new IllegalArgumentException("The given period of time dt is invalid!");
+			}
+			double sumDt = 0;
+			while (!Util.fuzzyGreaterThanOrEqualTo(sumDt, dt)) {
+				double newDt = this.getNewDt(dt);
+				int[] oldPosition = this.getPosition();
+				double[] oldPositionAsDouble = this.getPositionAsDouble();
+				if (Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, 0.50)) {
+					this.timeMovingHorizontally = 0;
+					this.endMoveHorizontally(this.getLastDirection());
+					this.startMoveHorizontally(this.getNextDirection());
+				}
+				else if (!Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, 0.50)) {
+					this.timeMovingHorizontally += newDt;
+				}
+				if ((this.crossImpassableLeft()) || (this.crossImpassableRight()))  {
+					this.crossImpassableActions(oldPosition);
+				}
+				this.collidesWithActions(newDt, oldPosition);
+				if ((!this.crossImpassableLeft()) && (!this.crossImpassableRight())) {
+					this.setPosition(oldPositionAsDouble[0] + (100 * this.horizontalMovement(
+							newDt)), oldPositionAsDouble[1]);
+				}
+				sumDt += newDt;
+			}
 		}
-		double sumDt = 0;
-		while (!Util.fuzzyGreaterThanOrEqualTo(sumDt, dt)) {
-			double newDt = this.getNewDt(dt);
-			int[] oldPosition = this.getPosition();
-			double[] oldPositionAsDouble = this.getPositionAsDouble();
-			if (Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, 0.50)) {
-				this.timeMovingHorizontally = 0;
-				this.endMoveHorizontally(this.getLastDirection());
-				this.startMoveHorizontally(this.getNextDirection());
-			}
-			else if (!Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, 0.50)) {
-				this.timeMovingHorizontally += newDt;
-			}
-			if ((this.crossImpassableLeft()) || (this.crossImpassableRight()))  {
-				this.crossImpassableActions(oldPosition);
-			}
-			this.collidesWithActions(newDt, oldPosition);
-			if ((!this.crossImpassableLeft()) && (!this.crossImpassableRight())) {
-				this.setPosition(oldPositionAsDouble[0] + (100 * this.horizontalMovement(
-						newDt)), oldPositionAsDouble[1]);
-			}
-			sumDt += newDt;
+		else{
+			Thread t = new Thread(this.getProgram());
+			t.start();
+			this.programRunning = true;
 		}
 	}
 }
