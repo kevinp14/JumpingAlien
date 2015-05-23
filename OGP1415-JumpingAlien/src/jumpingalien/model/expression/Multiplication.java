@@ -7,7 +7,7 @@ import jumpingalien.part3.programs.SourceLocation;
  * A class of multiplication, to take the product of two doubles.
  * 
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
  * @version 1.0
  */
 public class Multiplication extends DoubleExpression implements Expression {
@@ -35,7 +35,7 @@ public class Multiplication extends DoubleExpression implements Expression {
 	 */
 	@Override
 	public Object evaluate(Program program) {
-		return this.multiplication();
+		return this.multiplication(program);
 	}
 	
 	/**
