@@ -7,7 +7,7 @@ import jumpingalien.part3.programs.SourceLocation;
  * A class to get the "not" of an expression.
  * 
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
  * @version 1.0
  */
 public class NotE implements Expression {
@@ -36,7 +36,7 @@ public class NotE implements Expression {
 	 */
 	@Override
 	public Object evaluate(Program program) {
-		boolean valueExpr = (boolean)this.expr.evaluate(null);
+		boolean valueExpr = (boolean)this.expr.evaluate(program);
 		return (!valueExpr);
 	}
 	
