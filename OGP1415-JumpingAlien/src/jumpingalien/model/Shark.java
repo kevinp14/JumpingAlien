@@ -14,7 +14,7 @@ import jumpingalien.util.Util;
  * 
  * @invar
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
  * @version 9.0
  *
  */
@@ -78,26 +78,26 @@ public class Shark extends GameObject {
 	 * 			down and right) for the shark to move in.
 	 * 
 	 */
-	private Direction getRandomDirection(){
+	private SelfMadeDirection getRandomDirection(){
 		Random rand = new Random();
 	    int directionNumber = rand.nextInt(6);
 	    if (directionNumber == 0){
-	    	return Direction.LEFT;
+	    	return SelfMadeDirection.LEFT;
 	    }
 	    if (directionNumber == 1){
-	    	return Direction.RIGHT;
+	    	return SelfMadeDirection.RIGHT;
 	    }
 	    if (directionNumber == 2){
-	    	return Direction.UPLEFT;
+	    	return SelfMadeDirection.UPLEFT;
 	    }
 	    if (directionNumber == 3){
-	    	return Direction.UPRIGHT;
+	    	return SelfMadeDirection.UPRIGHT;
 	    }
 	    if (directionNumber == 4){
-	    	return Direction.DOWNLEFT;
+	    	return SelfMadeDirection.DOWNLEFT;
 	    }
 	    else{
-	    	return Direction.DOWNRIGHT;
+	    	return SelfMadeDirection.DOWNRIGHT;
 	    }
 	}
 	
@@ -137,13 +137,13 @@ public class Shark extends GameObject {
 	 * @return	True if and only if the direction is right, left, upleft, upright, downleft, downright.
 	 */
 	@Override
-	protected boolean isValidMovingDirection(Direction direction) {
-		return ((direction == Direction.RIGHT) 
-				|| (direction == Direction.LEFT)
-				|| (direction == Direction.UPLEFT)
-				|| (direction == Direction.UPRIGHT)
-				|| (direction == Direction.DOWNLEFT)
-				|| (direction == Direction.DOWNRIGHT));
+	protected boolean isValidMovingDirection(SelfMadeDirection direction) {
+		return ((direction == SelfMadeDirection.RIGHT) 
+				|| (direction == SelfMadeDirection.LEFT)
+				|| (direction == SelfMadeDirection.UPLEFT)
+				|| (direction == SelfMadeDirection.UPRIGHT)
+				|| (direction == SelfMadeDirection.DOWNLEFT)
+				|| (direction == SelfMadeDirection.DOWNRIGHT));
 	}
 	
 	/**
@@ -175,31 +175,31 @@ public class Shark extends GameObject {
 			this.timeMovingHorizontally = 0;
 			this.endMoveHorizontally(this.getLastDirection());
 			this.endMoveVertically();
-			Direction direction = this.getRandomDirection();
-			if ((direction == Direction.RIGHT) || (direction == Direction.LEFT)) {
+			SelfMadeDirection direction = this.getRandomDirection();
+			if ((direction == SelfMadeDirection.RIGHT) || (direction == SelfMadeDirection.LEFT)) {
 				this.startMoveHorizontally(direction, this.getNormalHorizontalVelocity(),
 						this.getNormalHorizontalAcceleration());
 				this.timesNotJumped += 1;
 			}
-			else if (direction == Direction.UPRIGHT) {
-				this.startMoveHorizontally(Direction.RIGHT, this.getNormalHorizontalVelocity(),
+			else if (direction == SelfMadeDirection.UPRIGHT) {
+				this.startMoveHorizontally(SelfMadeDirection.RIGHT, this.getNormalHorizontalVelocity(),
 						this.getNormalHorizontalAcceleration());
-				this.startMoveVertically(Direction.UP);
+				this.startMoveVertically(SelfMadeDirection.UP);
 			}
-			else if (direction == Direction.UPLEFT) {
-				this.startMoveHorizontally(Direction.LEFT, this.getNormalHorizontalVelocity(),
+			else if (direction == SelfMadeDirection.UPLEFT) {
+				this.startMoveHorizontally(SelfMadeDirection.LEFT, this.getNormalHorizontalVelocity(),
 						this.getNormalHorizontalAcceleration());
-				this.startMoveVertically(Direction.UP);
+				this.startMoveVertically(SelfMadeDirection.UP);
 			}
-			else if (direction == Direction.DOWNRIGHT) {
-				this.startMoveHorizontally(Direction.RIGHT, this.getNormalHorizontalVelocity(),
+			else if (direction == SelfMadeDirection.DOWNRIGHT) {
+				this.startMoveHorizontally(SelfMadeDirection.RIGHT, this.getNormalHorizontalVelocity(),
 						this.getNormalHorizontalAcceleration());
-				this.startMoveVertically(Direction.DOWN);
+				this.startMoveVertically(SelfMadeDirection.DOWN);
 			}
-			else if (direction == Direction.DOWNLEFT) {
-				this.startMoveHorizontally(Direction.LEFT, this.getNormalHorizontalVelocity(),
+			else if (direction == SelfMadeDirection.DOWNLEFT) {
+				this.startMoveHorizontally(SelfMadeDirection.LEFT, this.getNormalHorizontalVelocity(),
 						this.getNormalHorizontalAcceleration());
-				this.startMoveVertically(Direction.DOWN);
+				this.startMoveVertically(SelfMadeDirection.DOWN);
 			}
 		}
 		if (!Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, movingTime)) {
@@ -253,8 +253,8 @@ public class Shark extends GameObject {
 	 * 			| if ((direction == Direction.DOWN) && (this.isSubmergedInWater()))
 	 * 			|	this.startDive()
 	 */
-	public void startMoveVertically(Direction direction) {
-		if (direction == Direction.UP) {
+	public void startMoveVertically(SelfMadeDirection direction) {
+		if (direction == SelfMadeDirection.UP) {
 			if (this.isSubmergedInWater()) {
 				this.startRise();
 				this.timesNotJumped += 1;
@@ -266,7 +266,7 @@ public class Shark extends GameObject {
 				}
 			}
 		}
-		if (direction == Direction.DOWN) {
+		if (direction == SelfMadeDirection.DOWN) {
 			this.timesNotJumped += 1;
 			if (this.isSubmergedInWater()) {
 				this.startDive();
@@ -497,33 +497,40 @@ public class Shark extends GameObject {
 	 * 			| !isValidDt(dt)
 	 */
 	public void advanceTime(double dt) throws IllegalArgumentException {
-		if (!this.isValidDt(dt)) {
-			throw new IllegalArgumentException("The given period of time dt is invalid!");
-		}
-		double sumDt = 0;
-		double movingTime = this.getRandomMovingTime();
-		while (!Util.fuzzyGreaterThanOrEqualTo(sumDt, dt)) {
-			double newDt = this.getNewDt(dt);
-			int[] oldPosition = this.getPosition();
-			double[] oldPositionAsDouble = this.getPositionAsDouble();
-			if ((this.crossImpassableBottom()) || (this.crossImpassableLeft()) 
-					|| (this.crossImpassableTop()) || (this.crossImpassableRight()))  {
-				this.crossImpassableActions(oldPosition);
+		if ((this.getProgram() == null) || (this.programRunning == true)){
+			if (!this.isValidDt(dt)) {
+				throw new IllegalArgumentException("The given period of time dt is invalid!");
 			}
-			this.collidesWithActions(newDt, oldPosition);
-			if ((this.isInAir()) || (this.isInMagma())) {
-				this.isInFluidActions(newDt);
-			}
-			this.move(movingTime, newDt);
-			if ((!this.crossImpassableBottom()) && (!this.crossImpassableLeft())
-					&& (!this.crossImpassableTop()) && (!this.crossImpassableRight())) {
-				if ((!this.touchImpassableBottom()) && (!this.isSubmergedInWater())) {
-					this.setVerticalAcceleration(this.getNormalVerticalAcceleration());
+			double sumDt = 0;
+			double movingTime = this.getRandomMovingTime();
+			while (!Util.fuzzyGreaterThanOrEqualTo(sumDt, dt)) {
+				double newDt = this.getNewDt(dt);
+				int[] oldPosition = this.getPosition();
+				double[] oldPositionAsDouble = this.getPositionAsDouble();
+				if ((this.crossImpassableBottom()) || (this.crossImpassableLeft()) 
+						|| (this.crossImpassableTop()) || (this.crossImpassableRight()))  {
+					this.crossImpassableActions(oldPosition);
 				}
-				this.setPosition(oldPositionAsDouble[0] + 100*this.horizontalMovement(newDt),
-					oldPositionAsDouble[1] + 100*this.verticalMovement(newDt));
+				this.collidesWithActions(newDt, oldPosition);
+				if ((this.isInAir()) || (this.isInMagma())) {
+					this.isInFluidActions(newDt);
+				}
+				this.move(movingTime, newDt);
+				if ((!this.crossImpassableBottom()) && (!this.crossImpassableLeft())
+						&& (!this.crossImpassableTop()) && (!this.crossImpassableRight())) {
+					if ((!this.touchImpassableBottom()) && (!this.isSubmergedInWater())) {
+						this.setVerticalAcceleration(this.getNormalVerticalAcceleration());
+					}
+					this.setPosition(oldPositionAsDouble[0] + 100*this.horizontalMovement(newDt),
+						oldPositionAsDouble[1] + 100*this.verticalMovement(newDt));
+				}
+				sumDt += newDt;
 			}
-			sumDt += newDt;
+		}
+		else{
+			Thread t = new Thread(this.getProgram());
+			t.start();
+			this.programRunning =true;
 		}
 	}
 }
