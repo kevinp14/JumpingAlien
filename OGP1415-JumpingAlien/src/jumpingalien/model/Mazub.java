@@ -421,6 +421,7 @@ public class Mazub extends GameObject {
 		for (Plant plant: this.getWorld().getPlants()) {
 			if ((this.collidesWith(plant)) && (!plant.isDead()) && (this.getNbHitPoints() < 500)) {
 					this.changeNbHitPoints(50);
+					plant.changeNbHitPoints(-1);
 			}
 		}
 		for (Shark shark: this.getWorld().getSharks()) {
@@ -430,7 +431,7 @@ public class Mazub extends GameObject {
 					if (!this.isImmune()) {
 						this.changeNbHitPoints(-50);
 						this.makeImmune();
-						}
+					}
 					else {
 						if (Util.fuzzyLessThanOrEqualTo(this.getTimeImmune(), 0.60)) {
 							this.setTimeImmune(this.getTimeImmune() + newDt);

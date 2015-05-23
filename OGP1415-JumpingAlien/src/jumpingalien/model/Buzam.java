@@ -390,6 +390,7 @@ public class Buzam extends GameObject {
 		for (Plant plant: this.getWorld().getPlants()) {
 			if ((this.collidesWith(plant)) && (!plant.isDead()) && (this.getNbHitPoints() < 500)) {
 					this.changeNbHitPoints(50);
+					plant.changeNbHitPoints(-1);
 			}
 		}
 		for (Shark shark: this.getWorld().getSharks()) {

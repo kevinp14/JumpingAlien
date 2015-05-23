@@ -234,7 +234,7 @@ public class GameObject {
 	 * 
 	 */
 	@Basic
-	protected Program getProgram() {
+	public Program getProgram() {
 		return this.program;
 	}
 	
@@ -500,7 +500,7 @@ public class GameObject {
 	protected ArrayList<Integer> getHorizontalPixels() {
 		double width = this.getCurrentSprite().getWidth();
 		ArrayList<Integer> horizontalPixels = new ArrayList<Integer>();
-		for (int x=0; x < this.getCurrentSprite().getWidth(); x += (width/10)) {
+		for (int x=0; x < width; x++) {
 			horizontalPixels.add(this.getPosition()[0] + x);
 		}
 		return horizontalPixels;
@@ -514,7 +514,7 @@ public class GameObject {
 	protected ArrayList<Integer> getVerticalPixels() {
 		double height = this.getCurrentSprite().getHeight();
 		ArrayList<Integer> verticalPixels = new ArrayList<Integer>();
-		for (int y=0; y < this.getCurrentSprite().getHeight(); y += (height/10)) {
+		for (int y=0; y < height; y++) {
 			verticalPixels.add(this.getPosition()[1] + y);
 		}
 		return verticalPixels;
@@ -764,6 +764,24 @@ public class GameObject {
 	 */
 	public boolean isDucking() {
 		return (Util.fuzzyEquals(this.getMaxHorizontalVelocity(), this.getMaxDuckingVelocity()));
+	}
+	
+	/**
+	 * @return	True if and only if the game object's vertical velocity is bigger than 0 and its vertical
+	 * 			acceleration is not -10.
+	 */
+	protected boolean isRising() {
+		return ((!Util.fuzzyLessThanOrEqualTo(this.getVerticalVelocity(), 0)) 
+				&& (!Util.fuzzyEquals(this.getVerticalAcceleration(), -10)));
+	}
+	
+	/**
+	 * @return	True if and only if the game object's vertical velocity is smaller than 0 and its vertical
+	 * 			acceleration is not -10.
+	 */
+	protected boolean isDiving() {
+		return ((!Util.fuzzyGreaterThanOrEqualTo(this.getVerticalVelocity(), 0))
+				&& (!Util.fuzzyEquals(this.getVerticalAcceleration(), -10)));
 	}
 	
 	/**
@@ -1199,11 +1217,13 @@ public class GameObject {
 	 */ //TODO: defensief, misschien zelf exception maken
 	public void endDuck() {
 		this.setMaxHorizontalVelocity(this.maxRunningVelocity);
-		if (this.isMovingLeft()) {
-			this.setHorizontalAcceleration(-this.getNormalHorizontalAcceleration());
-		}
-		else if (this.isMovingRight()) {
-			this.setHorizontalAcceleration(this.getNormalHorizontalAcceleration());
+		if (this.isMovingHorizontally()) {
+			if (this.isMovingLeft()) {
+				this.setHorizontalAcceleration(-this.getNormalHorizontalAcceleration());
+			}
+			else if (this.isMovingRight()) {
+				this.setHorizontalAcceleration(this.getNormalHorizontalAcceleration());
+			}
 		}
 	}
 	
@@ -1295,7 +1315,7 @@ public class GameObject {
 				this.timeBlocked = 0;
 			}
 		}
-		if ((this.bottomCollidesWith(object)) && (this.isFalling())) { //TODO shark?
+		if ((this.bottomCollidesWith(object)) && ((this.isFalling()) || (this.isDiving()))) { 
 			if (!Util.fuzzyGreaterThanOrEqualTo(this.timeBlocked, 0.6)) {
 				this.timeBlocked += dt;
 				this.setVerticalAcceleration(0);

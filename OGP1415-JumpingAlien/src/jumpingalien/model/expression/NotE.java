@@ -4,48 +4,48 @@ import jumpingalien.model.Program;
 import jumpingalien.part3.programs.SourceLocation;
 
 /**
- * A class to get the square root of an expression.
+ * A class to get the "not" of an expression.
  * 
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
  * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
  * @version 1.0
  */
-public class SqrtE implements Expression {
+public class NotE implements Expression {
 	
 	private Expression expr;
 	private SourceLocation sourceLocation;
-
+	
 	/**
-	 * Initialize the square root.
+	 * Initialize the "not".
 	 * 
 	 * @param	expr
-	 * 			The expression to get the square root of.
+	 * 			The expression to get the "not" of.
 	 * @param	sourceLocation
-	 * 			The location in the source file where this square root was called.
+	 * 			The location in the source file where this "not" was called.
 	 */
-	public SqrtE(Expression expr, SourceLocation sourceLocation){
+	public NotE(Expression expr, SourceLocation sourceLocation){
 		this.expr = expr;
 		this.sourceLocation = sourceLocation;
 	}
 
 	/**
 	 * @param	program
-	 * 			The program in which the square root has to be evaluated.
-	 * @return	The square root of the given expression.
+	 * 			The program in which the "not" has to be evaluated.
+	 * @return	True if and only if not valueExpr.
 	 * 
 	 */
 	@Override
 	public Object evaluate(Program program) {
-		double valueExpr = (double)expr.evaluate(program);
-		return Math.pow(valueExpr, 1/2);
+		boolean valueExpr = (boolean)this.expr.evaluate(null);
+		return (!valueExpr);
 	}
-
+	
 	/**
 	 * @param	program
-	 * 			The program in which the square root has to be evaluated.
+	 * 			The program in which the "not" has to be evaluated.
 	 * @param	object
-	 * 			The object for which the square root has to be evaluated.
-	 * @return	The square root of the given expression.
+	 * 			The object in which the "not" has to be evaluated.
+	 * @return	True if and only if not valueExpr.
 	 * 
 	 */
 	@Override
@@ -54,7 +54,7 @@ public class SqrtE implements Expression {
 	}
 	
 	/**
-	 * @return	The location in the source file where this square root was called.
+	 * @return	The location in the source file where this "not" was called.
 	 * 
 	 */
 	@Override

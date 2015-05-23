@@ -147,24 +147,6 @@ public class Shark extends GameObject {
 	}
 	
 	/**
-	 * @return	True if and only if the shark's vertical velocity is bigger than 0 and its vertical
-	 * 			acceleration is not -10.
-	 */
-	private boolean isRising() {
-		return ((!Util.fuzzyLessThanOrEqualTo(this.getVerticalVelocity(), 0)) 
-				&& (!Util.fuzzyEquals(this.getVerticalAcceleration(), -10)));
-	}
-	
-	/**
-	 * @return	True if and only if the shark's vertical velocity is smaller than 0 and its vertical
-	 * 			acceleration is not -10.
-	 */
-	private boolean isDiving() {
-		return ((!Util.fuzzyGreaterThanOrEqualTo(this.getVerticalVelocity(), 0))
-				&& (!Util.fuzzyEquals(this.getVerticalAcceleration(), -10)));
-	}
-	
-	/**
 	 * @return	True if and only if the geological feature at the shark's tile's top perimeter 
 	 * 			equals 2 (water).
 	 */

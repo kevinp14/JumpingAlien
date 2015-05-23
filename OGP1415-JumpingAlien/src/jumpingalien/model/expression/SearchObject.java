@@ -1,5 +1,5 @@
 package jumpingalien.model.expression;
-
+//TODO commentaar
 import jumpingalien.model.Buzam;
 import jumpingalien.model.Mazub;
 import jumpingalien.model.Plant;
@@ -69,12 +69,17 @@ public class SearchObject implements Expression {
 		}
 	}
 	
+	@Override
+	public Object evaluateForGivenObject(Program program, Object object) {
+		return false;
+	}
+	
 	private Object searchTileUp(int iterateTile, int tileX, Program program) {
 		World world = program.getGameObject().getWorld();
 		while (iterateTile <= world.getTopRightTile()[1]) {
 			int[] tilePosition = world.getBottomLeftPixelOfTile(tileX, iterateTile);
 			if (world.getGeologicalFeature(tilePosition[0], tilePosition[1]) == 2) {
-				return tilePosition; //TODO wat returnen?
+				return tilePosition;
 			}
 			iterateTile += 1;
 		}
@@ -86,7 +91,7 @@ public class SearchObject implements Expression {
 		while (iterateTile <= world.getTopRightTile()[0]) {
 			int[] tilePosition = world.getBottomLeftPixelOfTile(iterateTile, tileY);
 			if (world.getGeologicalFeature(tilePosition[0], tilePosition[1]) == 2) {
-				return tilePosition; //TODO wat returnen?
+				return tilePosition;
 			}
 			iterateTile += 1;
 		}
@@ -98,7 +103,7 @@ public class SearchObject implements Expression {
 		while (iterateTile >= 0) {
 			int[] tilePosition = world.getBottomLeftPixelOfTile(tileX, iterateTile);
 			if (world.getGeologicalFeature(tilePosition[0], tilePosition[1]) == 2) {
-				return tilePosition; //TODO wat returnen?
+				return tilePosition;
 			}
 			iterateTile -= 1;
 		}
@@ -110,7 +115,7 @@ public class SearchObject implements Expression {
 		while (iterateTile >= 0) {
 			int[] tilePosition = world.getBottomLeftPixelOfTile(iterateTile, tileY);
 			if (world.getGeologicalFeature(tilePosition[0], tilePosition[1]) == 2) {
-				return tilePosition; //TODO wat returnen?
+				return tilePosition;
 			}
 			iterateTile -= 1;
 		}

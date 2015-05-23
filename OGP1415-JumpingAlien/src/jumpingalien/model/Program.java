@@ -1,16 +1,16 @@
 package jumpingalien.model;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import jumpingalien.model.GameObject;
 import jumpingalien.model.statement.Statement;
 import jumpingalien.model.type.Type;
 
-public class Program {
+public class Program implements Runnable{
 	private final Statement mainStatement;
 	private Map<String, Type<?>> globalVariables;
-	private Map<String, Object> variables;
+	private Map<String, Object> variables = new HashMap<String, Object>();
 	private GameObject gameObject;
 	
 	public Program(Statement mainStatement, Map<String, Type<?>> globalVariables){
@@ -20,6 +20,14 @@ public class Program {
 			String variableName = entry.getKey();
 			this.variables.put(variableName, null);
 		}
+	}
+	
+	public Statement getMainStatement(){
+		return this.mainStatement;
+	}
+	
+	public Map<String,Type<?>> getGlobalVariables(){
+		return this.globalVariables;
 	}
 	
 	public GameObject getGameObject() {
@@ -34,7 +42,7 @@ public class Program {
 		return true;
 	}
 	
-	public Object getObjectByName(String variableName){
+	public Object getObjectByName(String variableName, Type<?> variableType){
 		for(Entry<String, Object> entry : this.variables.entrySet()) {
 		    String name = entry.getKey();
 		    Object value = entry.getValue();
@@ -45,7 +53,7 @@ public class Program {
 		return null;
 	}
 	
-	public void setObjectByName(String variableName, Object value){
+	public void setObjectByName(String variableName, Type<?> type, Object value){
 		for(Entry<String, Object> entry : this.variables.entrySet()) {
 		    String name = entry.getKey();
 		    if ((name == variableName) && (this.globalVariables.get(name) == type)){
@@ -53,8 +61,9 @@ public class Program {
 		    }
 		}
 	}
-	
-	public void executeProgram(){
+
+	@Override
+	public void run() {
 		this.mainStatement.execute(this, null);
 	}
 }

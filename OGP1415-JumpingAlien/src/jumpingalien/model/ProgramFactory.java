@@ -3,7 +3,6 @@ package jumpingalien.model;
 import java.util.*;
 
 import jumpingalien.model.expression.*;
-import jumpingalien.model.expression.RandomE;
 import jumpingalien.model.statement.*;
 import jumpingalien.model.type.*;
 import jumpingalien.part3.programs.*;
@@ -117,8 +116,8 @@ public class ProgramFactory implements IProgramFactory<Expression, Statement, Ty
 
 	@Override
 	public Expression createNot(Expression expr, SourceLocation sourceLocation) {
-		NotE notE = new NotE(expr, sourceLocation);
-		return notE;
+		NotE notBoolean = new NotE(expr, sourceLocation);
+		return notBoolean;
 	}
 
 	@Override
@@ -205,15 +204,14 @@ public class ProgramFactory implements IProgramFactory<Expression, Statement, Ty
 		return getTile;
 	}
 
-	//TODO 
-	@Override
+	@Override //TODO
 	public Expression createSearchObject(Expression direction,
 			SourceLocation sourceLocation) {
 		SearchObject searchObject = new SearchObject(direction, sourceLocation);
 		return searchObject;
 	}
 
-	@Override //TODO
+	@Override 
 	public Expression createIsMazub(Expression expr, 
 			SourceLocation sourceLocation) {
 		IsMazub isMazub = new IsMazub(expr, sourceLocation);
@@ -428,7 +426,7 @@ public class ProgramFactory implements IProgramFactory<Expression, Statement, Ty
 
 	@Override //TODO
 	public Program createProgram(Statement mainStatement, 
-			Map<String, Type<?>> globalVariables) { //Map<naam, type>?
+			Map<String, Type<?>> globalVariables) {
 		Program program = new Program(mainStatement, globalVariables);
 		return program;
 	}

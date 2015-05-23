@@ -1,7 +1,7 @@
 package jumpingalien.model.statement;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.Comparator;
 
 import jumpingalien.model.Plant;
 import jumpingalien.model.Program;
@@ -13,13 +13,13 @@ import jumpingalien.model.expression.Expression;
 import jumpingalien.part3.programs.SourceLocation;
 import jumpingalien.part3.programs.IProgramFactory.Kind;
 import jumpingalien.part3.programs.IProgramFactory.SortDirection;
-
+//TODO commentaar
 public class ForEach implements Statement {
 	
 	private String variableName;
 	private Kind variableKind;
 	private Expression where;
-	private final Expression sortExpression;
+	private Expression sortExpression;
 	private SortDirection sortDirection;
 	private Statement body;
 	private SourceLocation sourceLocation;
@@ -35,7 +35,7 @@ public class ForEach implements Statement {
 		this.body = body;
 		this.sourceLocation = sourceLocation;
 	}
-
+	
 	@Override
 	public void execute(Program program, Expression condition) {
 		World world = program.getGameObject().getWorld();
@@ -43,92 +43,140 @@ public class ForEach implements Statement {
 		ArrayList<Shark> sharks = world.getSharks();
 		ArrayList<Slime> slimes = world.getSlimes();
 		ArrayList<GameObject> allGameObjects = new ArrayList<GameObject>();
-		allGameObjects.addAll(world.getPlants());
-		allGameObjects.addAll(world.getSharks());
-		allGameObjects.addAll(world.getSlimes());
+		allGameObjects.addAll(plants);
+		allGameObjects.addAll(sharks);
+		allGameObjects.addAll(slimes);
 		allGameObjects.add(world.getMazub());
 		allGameObjects.add(world.getBuzam());
+		Comparator<GameObject> ascendingComparator = new Comparator<GameObject>() {
+			public int compare(GameObject gameObject1, GameObject gameObject2){
+				int a = ((int)ForEach.this.sortExpression.evaluateForGivenObject(program, gameObject1) 
+						- (int)ForEach.this.sortExpression.evaluateForGivenObject(program, gameObject2));
+				if (a < 0) {
+					return -1;
+				}
+				if (a > 0)
+					return 1;
+				else {
+					return 0;
+				}
+			}
+		};
+		Comparator<GameObject> descendingComparator = new Comparator<GameObject>() {
+			public int compare(GameObject gameObject1, GameObject gameObject2){
+				int a = ((int)ForEach.this.sortExpression.evaluateForGivenObject(program, gameObject2) 
+						- (int)ForEach.this.sortExpression.evaluateForGivenObject(program, gameObject1));
+				if (a < 0) {
+					return -1;
+				}
+				if (a > 0)
+					return 1;
+				else {
+					return 0;
+				}
+			}
+		};
+		if (this.variableKind == Kind.MAZUB) {
+			body.evaluateForGivenObject(program, world.getMazub());
+		}
+		if (this.variableKind == Kind.BUZAM) {
+			body.evaluateForGivenObject(program, world.getBuzam());
+		}
 		if (this.sortDirection == SortDirection.ASCENDING) {
 			if (this.variableKind == Kind.PLANT) {
-				plants.sort((Plant plant1, Plant plant2) -> {this.sortExpression.execute(plant1, null) 
-					< this.sortExpression.execute((plant2, null);});
+				plants.sort(ascendingComparator);
 				for (Plant plant: plants) {
+					if ((boolean)this.where.evaluateForGivenObject(program, plant)) {
+						body.evaluateForGivenObject(program, plant);
+					}
 				}
 			}
 			else if (this.variableKind == Kind.SHARK) {
+				sharks.sort(ascendingComparator);
 				for (Shark shark: sharks) {
+					if ((boolean)this.where.evaluateForGivenObject(program, shark)) {
+						body.evaluateForGivenObject(program, shark);
+					}
 				}
 			}
 			else if (this.variableKind == Kind.SLIME) {
+				slimes.sort(ascendingComparator);
 				for (Slime slime: slimes) {
+					if ((boolean)this.where.evaluateForGivenObject(program, slime)) {
+						body.evaluateForGivenObject(program, slime);
+					}
 				}
-			}
-			else if (this.variableKind == Kind.MAZUB) {
-				body.execute(program, this.where);
-			}
-			else if (this.variableKind == Kind.BUZAM) {
-				body.execute(program, this.where);
 			}
 			else {
+				allGameObjects.sort(ascendingComparator);
 				for (GameObject gameObject: allGameObjects) {
+					if ((boolean)this.where.evaluateForGivenObject(program, gameObject)) {
+						body.evaluateForGivenObject(program, gameObject);
+					}
 				}
-			}
-			for (GameObject o: ) {
-				body.execute(program, this.where); //TODO Hoe hier game object laten uitvoeren?
 			}
 		}
 		else if (this.sortDirection == SortDirection.DESCENDING) {
 			if (this.variableKind == Kind.PLANT) {
+				plants.sort(descendingComparator);
 				for (Plant plant: plants) {
+					if ((boolean)this.where.evaluateForGivenObject(program, plant)) {
+						body.evaluateForGivenObject(program, plant);
+					}
 				}
 			}
 			else if (this.variableKind == Kind.SHARK) {
+				sharks.sort(descendingComparator);
 				for (Shark shark: sharks) {
+					if ((boolean)this.where.evaluateForGivenObject(program, shark)) {
+						body.evaluateForGivenObject(program, shark);
+					}
 				}
 			}
 			else if (this.variableKind == Kind.SLIME) {
+				slimes.sort(descendingComparator);
 				for (Slime slime: slimes) {
+					if ((boolean)this.where.evaluateForGivenObject(program, slime)) {
+						body.evaluateForGivenObject(program, slime);
+					}
 				}
-			}
-			else if (this.variableKind == Kind.MAZUB) {
-				body.execute(program, this.where);
-			}
-			else if (this.variableKind == Kind.BUZAM) {
-				body.execute(program, this.where);
 			}
 			else {
+				allGameObjects.sort(descendingComparator);
 				for (GameObject gameObject: allGameObjects) {
+					if ((boolean)this.where.evaluateForGivenObject(program, gameObject)) {
+						body.evaluateForGivenObject(program, gameObject);
+					}
 				}
-			}
-			for (GameObject o:) {
-				body.execute(program, this.where); //TODO Hoe hier game object laten uitvoeren?
 			}
 		}
 		else {
 			if (this.variableKind == Kind.PLANT) {
 				for (Plant plant: plants) {
-					body.execute(program, this.where); //TODO Hoe hier game object laten uitvoeren?
+					if ((boolean)this.where.evaluateForGivenObject(program, plant)) {
+						body.evaluateForGivenObject(program, plant);
+					}
 				}
 			}
 			else if (this.variableKind == Kind.SHARK) {
 				for (Shark shark: sharks) {
-					body.execute(program, this.where); //TODO Hoe hier game object laten uitvoeren?
+					if ((boolean)this.where.evaluateForGivenObject(program, shark)) {
+						body.evaluateForGivenObject(program, shark);
+					}
 				}
 			}
 			else if (this.variableKind == Kind.SLIME) {
 				for (Slime slime: slimes) {
-					body.execute(program, this.where); //TODO Hoe hier game object laten uitvoeren?
+					if ((boolean)this.where.evaluateForGivenObject(program, slime)) {
+						body.evaluateForGivenObject(program, slime);
+					}
 				}
-			}
-			else if (this.variableKind == Kind.MAZUB) {
-				body.execute(program, this.where);
-			}
-			else if (this.variableKind == Kind.BUZAM) {
-				body.execute(program, this.where);
 			}
 			else {
 				for (GameObject gameObject: allGameObjects) {
-					body.execute(program, this.where); //TODO Hoe hier game object laten uitvoeren?
+					if ((boolean)this.where.evaluateForGivenObject(program, gameObject)) {
+						body.evaluateForGivenObject(program, gameObject);
+					}
 				}
 			}
 		}
