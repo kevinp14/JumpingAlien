@@ -1,6 +1,6 @@
 package jumpingalien.model;
 
-public enum Direction {
+public enum SelfMadeDirection {
 	RIGHT,
 	LEFT,
 	UP, 
