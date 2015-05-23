@@ -186,4 +186,8 @@ public class ForEach implements Statement {
 	public SourceLocation getSourceLocation() {
 		return sourceLocation;
 	}
+	
+	@Override
+	public void executeForGivenObject(Program program, Expression condition,
+			Object object) {}
 }
