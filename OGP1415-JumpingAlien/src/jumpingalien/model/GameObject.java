@@ -54,12 +54,13 @@ public class GameObject {
 	private double timeImmune;
 	private double timeBlocked;
 	private double timeDead;
-	private Direction lastDirection;
+	private SelfMadeDirection lastDirection;
 	private int hitPoints = 0;
 	private boolean isImmune;
 	private boolean isImmuneForMagma;
 	private World world;
 	private Program program;
+	protected boolean programRunning;
 
 
 	/**
@@ -135,10 +136,14 @@ public class GameObject {
 	    this.setTimeImmune(0);
 		this.timeBlocked = 0;
 	    this.setTimeDead(0);
-	    this.setLastDirection(Direction.STALLED);
+	    this.setLastDirection(SelfMadeDirection.STALLED);
 		this.isImmune = false;
 		this.isImmuneForMagma = false;
 		this.world = null;
+		if (this.getProgram() != null){
+			this.getProgram().setGameObject(this);
+		}
+		this.programRunning = false;
 	}
 	
 	/**
@@ -478,7 +483,7 @@ public class GameObject {
 	 * @return The last direction in which the game object has moved.
 	 * 
 	 */
-	protected Direction getLastDirection() {
+	protected SelfMadeDirection getLastDirection() {
 		return this.lastDirection;
 	}
 	
@@ -488,7 +493,7 @@ public class GameObject {
 	 * @param 	direction
 	 * 			The direction to which the last direction has to be set.
 	 */
-	protected void setLastDirection(Direction direction){
+	protected void setLastDirection(SelfMadeDirection direction){
 		this.lastDirection = direction;
 	}
 	
@@ -635,9 +640,9 @@ public class GameObject {
 	 * 			The direction which has to be checked.
 	 * @return	True if and only if the direction is right, left.
 	 */
-	protected boolean isValidMovingDirection(Direction direction) {
-		return ((direction == Direction.RIGHT) 
-				|| (direction == Direction.LEFT));
+	protected boolean isValidMovingDirection(SelfMadeDirection direction) {
+		return ((direction == SelfMadeDirection.RIGHT) 
+				|| (direction == SelfMadeDirection.LEFT));
 	}
 
 	/**
@@ -721,7 +726,7 @@ public class GameObject {
 	 * @return	True if and only if the last direction of the game object is left.
 	 */
 	public boolean isMovingLeft(){
-		return (this.getLastDirection() == Direction.LEFT);
+		return (this.getLastDirection() == SelfMadeDirection.LEFT);
 	}
 	
 	/**
@@ -731,7 +736,7 @@ public class GameObject {
 	 * @return	True if and only if the last direction of the game object is right.
 	 */
 	protected boolean isMovingRight() {
-		return (this.getLastDirection() == Direction.RIGHT);
+		return (this.getLastDirection() == SelfMadeDirection.RIGHT);
 	}
 	
 	/**
@@ -1117,11 +1122,11 @@ public class GameObject {
 	 * @post	The new last direction should be valid.
 	 * 			| isValidMovingDirection((new this).getLastDirection())
 	 */
-	public void startMoveHorizontally(Direction direction, double initalVelocity, 
+	public void startMoveHorizontally(SelfMadeDirection direction, double initalVelocity, 
 			double initialAcceleration) {
 		assert (isValidMovingDirection(direction));
-		if (direction == Direction.RIGHT) {
-			this.setLastDirection(Direction.RIGHT);
+		if (direction == SelfMadeDirection.RIGHT) {
+			this.setLastDirection(SelfMadeDirection.RIGHT);
 			if (Util.fuzzyLessThanOrEqualTo(this.getHorizontalVelocity(), 
 					this.getMaxHorizontalVelocity())) {
 				this.setHorizontalVelocity(initalVelocity);
@@ -1133,7 +1138,7 @@ public class GameObject {
 			}
 		}
 		else {
-			this.setLastDirection(Direction.LEFT);
+			this.setLastDirection(SelfMadeDirection.LEFT);
 			if (Util.fuzzyGreaterThanOrEqualTo(this.getHorizontalVelocity(),
 					(-this.getMaxHorizontalVelocity()))) {
 				this.setHorizontalVelocity(-initalVelocity);
@@ -1154,14 +1159,14 @@ public class GameObject {
 	 * @pre	The given direction should be valid.
 	 * 		| isValidMovingDirection(direction)
 	 */
-	public void endMoveHorizontally(Direction direction) {
+	public void endMoveHorizontally(SelfMadeDirection direction) {
 		assert (isValidMovingDirection(direction));
-		if ((direction == Direction.RIGHT) 
+		if ((direction == SelfMadeDirection.RIGHT) 
 				&& (!Util.fuzzyLessThanOrEqualTo(this.getHorizontalVelocity(), 0))) {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
 		}
-		if ((direction == Direction.LEFT) 
+		if ((direction == SelfMadeDirection.LEFT) 
 				&& (!Util.fuzzyGreaterThanOrEqualTo(this.getHorizontalVelocity(), 0))) {
 			this.setHorizontalAcceleration(0);
 			this.setHorizontalVelocity(0);
