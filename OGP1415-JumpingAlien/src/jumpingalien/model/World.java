@@ -23,7 +23,7 @@ import be.kuleuven.cs.som.annotate.Basic;
  * 			| isValidTargetTile(targetTileX, targetTileY)
  * 
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
  * @version 7.0
  * 
  */
@@ -199,6 +199,7 @@ public class World {
 	public void addPlant(Plant plant){
 		if (this.canAddMore()){
 			this.plants.add(plant);
+			plant.setWorld(this);
 		}
 	}
 	
@@ -221,6 +222,7 @@ public class World {
 	public void addShark(Shark shark){
 		if (this.canAddMore()){
 			this.sharks.add(shark);
+			shark.setWorld(this);
 		}
 	}
 	
@@ -243,6 +245,7 @@ public class World {
 	public void addSlime(Slime slime){
 		if (this.canAddMore()){
 			this.slimes.add(slime);
+			slime.setWorld(this);
 		}
 	}
 	
