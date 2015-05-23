@@ -8,7 +8,7 @@ import jumpingalien.part3.programs.SourceLocation;
  * A class to make a while statement.
  * 
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
  * @version 1.0
  */
 public class WhileS implements Statement {
@@ -58,6 +58,15 @@ public class WhileS implements Statement {
 	@Override
 	public SourceLocation getSourceLocation() {
 		return sourceLocation;
+	}
+	
+	@Override
+	public void executeForGivenObject(Program program, Expression condition,
+			Object object) {
+		boolean cond = (boolean) this.condition.evaluateForGivenObject(program, object);
+		while (cond){
+			body.executeForGivenObject(program, this.condition, object);
+		}
 	}
 
 }
