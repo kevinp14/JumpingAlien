@@ -7,7 +7,7 @@ import jumpingalien.part3.programs.SourceLocation;
  * A class to check if a double is less than or equal to the other.
  * 
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
  * @version 1.0
  */
 public class LessThanOrEqual extends DoubleExpression implements Expression {
@@ -35,7 +35,7 @@ public class LessThanOrEqual extends DoubleExpression implements Expression {
 	 */
 	@Override
 	public Object evaluate(Program program) {
-		return this.lessThanOrEqual();
+		return this.lessThanOrEqual(program);
 	}
 	
 	/**
