@@ -7,7 +7,7 @@ import jumpingalien.part3.programs.SourceLocation;
  * A class of to check if two expressions are equal.
  * 
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
  * @version 1.0
  */
 public class Equals extends GeneralExpression implements Expression {
@@ -34,7 +34,7 @@ public class Equals extends GeneralExpression implements Expression {
 	 */
 	@Override
 	public Object evaluate(Program program) {
-		return this.equals();
+		return this.equals(program);
 	}
 	
 	/**
