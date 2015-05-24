@@ -566,7 +566,7 @@ public class Buzam extends GameObject {
 					if (!this.touchImpassableBottom()) {
 						this.setVerticalAcceleration(this.getNormalVerticalAcceleration());
 					}
-				this.setPosition(oldPositionAsDouble[0] + 100 * this.horizontalMovement(newDt),
+					this.setPosition(oldPositionAsDouble[0] + 100 * this.horizontalMovement(newDt),
 							oldPositionAsDouble[1] + 100 * this.verticalMovement(newDt));
 				}
 				sumDt += newDt;

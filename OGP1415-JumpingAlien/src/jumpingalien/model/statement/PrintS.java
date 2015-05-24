@@ -40,7 +40,7 @@ public class PrintS implements Statement {
 	 */
 	@Override
 	public void execute(Program program, Expression condition) {
-		double printValue = (double) this.value.evaluate(program);
+		Object printValue = (Object) this.value.evaluate(program);
 		System.out.println(printValue);
 	}
 	

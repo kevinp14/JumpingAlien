@@ -13,9 +13,7 @@ double oy;
 double distance;
 object o;
 
-
 while true do
-
 
   currentxdir := up;
   if (ismoving (self, left)) then currentxdir := left; fi

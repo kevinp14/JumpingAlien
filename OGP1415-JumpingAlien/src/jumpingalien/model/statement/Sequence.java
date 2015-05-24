@@ -43,7 +43,9 @@ public class Sequence implements Statement {
 	@Override
 	public void execute(Program program, Expression condition) {
 		for (Statement statement: this.statements) {
-			statement.execute(program, condition);
+			if (statement != null) {
+				statement.execute(program, condition);
+			}
 		}
 	}
 	

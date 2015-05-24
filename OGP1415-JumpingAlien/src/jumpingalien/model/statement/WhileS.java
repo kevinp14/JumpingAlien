@@ -45,10 +45,8 @@ public class WhileS implements Statement {
 	 */
 	@Override
 	public void execute(Program program, Expression condition) {
-		if (condition != null) {
-			while ((boolean) this.condition.evaluate(program)){
-				body.execute(program, this.condition);
-			}
+		while ((boolean)this.condition.evaluate(program)){
+			body.execute(program, this.condition);
 		}
 	}
 	
