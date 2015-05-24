@@ -40,11 +40,11 @@ public class DoubleExpression {
 	 * @return	The result of the sum between expr1 and expr2.
 	 */
 	public Object sum(Program program){
-		String testString = "test";
-		if (this.expr1.evaluate(program).getClass() == testString.getClass()){
-			String valueExpr1 = (String)this.expr1.evaluate(program);
-			String valueExpr2 = (String)this.expr2.evaluate(program);
-			return (valueExpr1 + valueExpr2);
+		if (this.expr1 == null){
+			return this.expr2.evaluate(program);
+		}
+		if (this.expr2.evaluate(program) == null){
+			return this.expr1.evaluate(program);
 		}
 		else{
 			double valueExpr1 = (double)this.expr1.evaluate(program);
