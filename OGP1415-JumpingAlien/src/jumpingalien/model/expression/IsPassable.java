@@ -37,7 +37,7 @@ public class IsPassable implements Expression {
 	 */
 	@Override
 	public Object evaluate(Program program) {
-		int[] tile = (int[])this.expr.evaluate(null);
+		int[] tile = (int[])this.expr.evaluate(program);
 		World world = program.getGameObject().getWorld();
 		return (!world.isNotPassable(world.getGeologicalFeature(tile[0], tile[1])));
 	}

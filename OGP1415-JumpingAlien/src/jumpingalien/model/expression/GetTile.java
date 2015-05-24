@@ -33,8 +33,8 @@ public class GetTile extends DoubleExpression implements Expression {
 	 */
 	@Override
 	public Object evaluate(Program program) {
-		int positionX = (int) this.expr1.evaluate(null);
-		int positionY = (int) this.expr2.evaluate(null);
+		int positionX = (int)(double)this.expr1.evaluate(program);
+		int positionY = (int)(double)this.expr2.evaluate(program);
 		int tileLength = program.getGameObject().getWorld().getTileLength();
 		int[] tile = new int[] { (positionX / tileLength), (positionY / tileLength) };
 		return tile;
