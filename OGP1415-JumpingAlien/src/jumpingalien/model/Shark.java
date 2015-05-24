@@ -156,55 +156,12 @@ public class Shark extends GameObject {
 	}
 	
 	/**
-	 * @param	movingTime
-	 * 			The time during which the shark has to move in a given direction.
-	 * @param	dt
-	 * 			The period of time with which the time is being advanced.
-	 * @effect	If the shark is already moving longer than the moving time, all ongoing movements are
-	 * 			ended, and it starts moving in another random direction.
-	 * 			| if (this.timeMovingHorizontally >= movingTime)
-	 * 			|	this.endMoveHorizontally(this.getLastDirection())
-	 * 			|	this.endMoveVertically()
-	 * 			|	Direction direction = this.getRandomDirection()
-	 * 			|	this.startMoveHorizontally(direction, this.getNormalHorizontalVelocity(),
-	 * 			|		this.getNormalHorizontalAcceleration())
-	 * 			|		this.startMoveVertically(direction)
+	 * @return	True if and only if the geological feature at the shark's tile's bottom perimeter 
+	 * 			equals 2 (water).
 	 */
-	private void move(double movingTime, double dt) {
-		if (Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, movingTime)) {
-			this.timeMovingHorizontally = 0;
-			this.endMoveHorizontally(this.getLastDirection());
-			this.endMoveVertically();
-			SelfMadeDirection direction = this.getRandomDirection();
-			if ((direction == SelfMadeDirection.RIGHT) || (direction == SelfMadeDirection.LEFT)) {
-				this.startMoveHorizontally(direction, this.getNormalHorizontalVelocity(),
-						this.getNormalHorizontalAcceleration());
-				this.timesNotJumped += 1;
-			}
-			else if (direction == SelfMadeDirection.UPRIGHT) {
-				this.startMoveHorizontally(SelfMadeDirection.RIGHT, this.getNormalHorizontalVelocity(),
-						this.getNormalHorizontalAcceleration());
-				this.startMoveVertically(SelfMadeDirection.UP);
-			}
-			else if (direction == SelfMadeDirection.UPLEFT) {
-				this.startMoveHorizontally(SelfMadeDirection.LEFT, this.getNormalHorizontalVelocity(),
-						this.getNormalHorizontalAcceleration());
-				this.startMoveVertically(SelfMadeDirection.UP);
-			}
-			else if (direction == SelfMadeDirection.DOWNRIGHT) {
-				this.startMoveHorizontally(SelfMadeDirection.RIGHT, this.getNormalHorizontalVelocity(),
-						this.getNormalHorizontalAcceleration());
-				this.startMoveVertically(SelfMadeDirection.DOWN);
-			}
-			else if (direction == SelfMadeDirection.DOWNLEFT) {
-				this.startMoveHorizontally(SelfMadeDirection.LEFT, this.getNormalHorizontalVelocity(),
-						this.getNormalHorizontalAcceleration());
-				this.startMoveVertically(SelfMadeDirection.DOWN);
-			}
-		}
-		if (!Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, movingTime)) {
-			this.timeMovingHorizontally += dt;
-		}
+	private boolean touchesWater() {
+		return (this.getWorld().getGeologicalFeature(this.getPosition()[0], this.getPosition()[1])
+				== 2);
 	}
 	
 	/**
@@ -259,7 +216,7 @@ public class Shark extends GameObject {
 				this.startRise();
 				this.timesNotJumped += 1;
 			}
-			else {
+			else if ((!this.isSubmergedInWater()) && (this.touchesWater())) {
 				if (!(this.timesNotJumped < 4)) {
 					this.startJump();
 					this.timesNotJumped = 0;
@@ -294,6 +251,58 @@ public class Shark extends GameObject {
 		}
 		if (this.isDiving()) {
 			this.endDive();
+		}
+	}
+	
+	/**
+	 * @param	movingTime
+	 * 			The time during which the shark has to move in a given direction.
+	 * @param	dt
+	 * 			The period of time with which the time is being advanced.
+	 * @effect	If the shark is already moving longer than the moving time, all ongoing movements are
+	 * 			ended, and it starts moving in another random direction.
+	 * 			| if (this.timeMovingHorizontally >= movingTime)
+	 * 			|	this.endMoveHorizontally(this.getLastDirection())
+	 * 			|	this.endMoveVertically()
+	 * 			|	Direction direction = this.getRandomDirection()
+	 * 			|	this.startMoveHorizontally(direction, this.getNormalHorizontalVelocity(),
+	 * 			|		this.getNormalHorizontalAcceleration())
+	 * 			|		this.startMoveVertically(direction)
+	 */
+	private void move(double movingTime, double dt) {
+		if (Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, movingTime)) {
+			this.timeMovingHorizontally = 0;
+			this.endMoveHorizontally(this.getLastDirection());
+			this.endMoveVertically();
+			SelfMadeDirection direction = this.getRandomDirection();
+			if ((direction == SelfMadeDirection.RIGHT) || (direction == SelfMadeDirection.LEFT)) {
+				this.startMoveHorizontally(direction, this.getNormalHorizontalVelocity(),
+						this.getNormalHorizontalAcceleration());
+				this.timesNotJumped += 1;
+			}
+			else if (direction == SelfMadeDirection.UPRIGHT) {
+				this.startMoveHorizontally(SelfMadeDirection.RIGHT, this.getNormalHorizontalVelocity(),
+						this.getNormalHorizontalAcceleration());
+				this.startMoveVertically(SelfMadeDirection.UP);
+			}
+			else if (direction == SelfMadeDirection.UPLEFT) {
+				this.startMoveHorizontally(SelfMadeDirection.LEFT, this.getNormalHorizontalVelocity(),
+						this.getNormalHorizontalAcceleration());
+				this.startMoveVertically(SelfMadeDirection.UP);
+			}
+			else if (direction == SelfMadeDirection.DOWNRIGHT) {
+				this.startMoveHorizontally(SelfMadeDirection.RIGHT, this.getNormalHorizontalVelocity(),
+						this.getNormalHorizontalAcceleration());
+				this.startMoveVertically(SelfMadeDirection.DOWN);
+			}
+			else if (direction == SelfMadeDirection.DOWNLEFT) {
+				this.startMoveHorizontally(SelfMadeDirection.LEFT, this.getNormalHorizontalVelocity(),
+						this.getNormalHorizontalAcceleration());
+				this.startMoveVertically(SelfMadeDirection.DOWN);
+			}
+		}
+		if (!Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, movingTime)) {
+			this.timeMovingHorizontally += dt;
 		}
 	}
 	
@@ -357,6 +366,52 @@ public class Shark extends GameObject {
 	}
 	
 	/**
+	 * The actions the shark has to take when trying to cross an impassable tile.
+	 * 
+	 * @param	oldPosition
+	 * 			The old position of the shark.
+	 * @effect	If the shark is trying to cross an impassable tile to the left or right its horizontal
+	 * 			acceleration and velocity are set to 0 and its position is set back to its old 
+	 * 			position.
+	 * 			| if ((this.crossImpassableLeft()) || (this.crossImpassableRight())) 
+	 * 			|	this.setHorizontalAcceleration(0)
+	 * 			|	this.setHorizontalVelocity(0)
+	 * 			|	this.setPosition(oldPosition[0], oldPosition[1])
+	 * @effect	If the shark is trying to cross an impassable tile to the bottom its vertical
+	 * 			acceleration and velocity are set to 0 and its position is set back to its old 
+	 * 			position.
+	 * 			| if (this.crossImpassableBottom()) 
+	 * 			|	this.setVerticalAcceleration(0)
+	 * 			|	this.setVerticalVelocity(0)
+	 * 			|	this.setPosition(oldPosition[0], oldPosition[1])
+	 * @effect	If the shark is trying to cross an impassable tile to the top its vertical
+	 * 			acceleration is set to the normal vertical acceleration and its velocity is set to 0,
+	 * 			and its position is set back to its old position.
+	 * 			| if ((this.crossImpassableBottom()) && (!this.isSubmergedInWater())) 
+	 * 			|	this.setVerticalAcceleration(this.getNormalVerticalAcceleration())
+	 * 			|	this.setVerticalVelocity(0)
+	 * 			|	this.setPosition(oldPosition[0], oldPosition[1])
+	 */
+	@Override
+	protected void crossImpassableActions(int[] oldPosition) {
+		if ((this.crossImpassableLeft()) || (this.crossImpassableRight())) {
+			this.setHorizontalAcceleration(0);
+			this.setHorizontalVelocity(0);
+			this.setPosition(oldPosition[0], oldPosition[1]);
+		}
+		if (this.crossImpassableBottom()) {
+			this.setVerticalAcceleration(0);
+			this.setVerticalVelocity(0);
+			this.setPosition(oldPosition[0], oldPosition[1]);
+		}
+		if ((this.crossImpassableTop()) && (!this.isSubmergedInWater())) {
+			this.setVerticalAcceleration(this.getNormalVerticalAcceleration());
+			this.setVerticalVelocity(0);
+			this.setPosition(oldPosition[0], oldPosition[1]);
+		}
+	}
+	
+	/**
 	 * @param	newDt
 	 * 			The period of time on which collision has to be detected.
 	 * @param	oldPosition
@@ -409,19 +464,25 @@ public class Shark extends GameObject {
 				}
 			}
 		}
-//		Buzam buzam = this.getWorld().getBuzam();
-//		if (this.collidesWith(buzam)) {
-//			this.collisionBlockMovement(buzam, oldPosition, newDt);
-//			if (!this.bottomCollidesWith(buzam)) {
-//				if (!this.isImmune()) {
-//					this.changeNbHitPoints(-50);
-//					this.makeImmune();
-//				}
-//				else {
-//					this.setTimeImmune(this.getTimeImmune() + newDt);
-//				}
-//			}
-//		}
+		Buzam buzam = this.getWorld().getBuzam();
+		if (this.collidesWith(buzam)) {
+			this.collisionBlockMovement(buzam, oldPosition, newDt);
+			if (!this.bottomCollidesWith(buzam)) {
+				if (!this.isImmune()) {
+					this.changeNbHitPoints(-50);
+					this.makeImmune();
+				}
+				else {
+					if (Util.fuzzyLessThanOrEqualTo(this.getTimeImmune(), 0.60)) {
+						this.setTimeImmune(this.getTimeImmune() + newDt);
+					}
+					else {
+						this.makeVulnerable();
+						this.setTimeImmune(0);
+					}
+				}
+			}
+		}
 		for (Shark shark: this.getWorld().getSharks()) {
 			if ((this.collidesWith(shark)) && (!this.bottomCollidesWith(shark))) {
 				this.collisionBlockMovement(shark, oldPosition, newDt);
@@ -526,10 +587,16 @@ public class Shark extends GameObject {
 					this.isInFluidActions(newDt);
 				}
 				this.move(movingTime, newDt);
+				if ((this.isRising()) && (!this.isSubmergedInWater()) && (this.timesNotJumped < 4)) {
+					this.startJump();
+				}
 				if ((!this.crossImpassableBottom()) && (!this.crossImpassableLeft())
-						&& (!this.crossImpassableTop()) && (!this.crossImpassableRight())) {
-					if ((!this.touchImpassableBottom()) && (!this.isSubmergedInWater())) {
-						this.setVerticalAcceleration(this.getNormalVerticalAcceleration());
+						&& (!((this.crossImpassableTop()) && (!this.isSubmergedInWater()))) 
+						&& (!this.crossImpassableRight())) {
+					if (!this.isSubmergedInWater()) {
+						if (!this.touchImpassableBottom()) {
+							this.setVerticalAcceleration(this.getNormalVerticalAcceleration());
+						}
 					}
 					this.setPosition(oldPositionAsDouble[0] + 100*this.horizontalMovement(newDt),
 						oldPositionAsDouble[1] + 100*this.verticalMovement(newDt));

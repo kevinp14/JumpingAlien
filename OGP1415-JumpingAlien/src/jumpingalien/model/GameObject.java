@@ -140,9 +140,6 @@ public class GameObject {
 		this.isImmune = false;
 		this.isImmuneForMagma = false;
 		this.world = null;
-		if (this.getProgram() != null){
-			this.getProgram().setGameObject(this);
-		}
 		this.programRunning = false;
 	}
 	
@@ -1235,7 +1232,8 @@ public class GameObject {
 	/**
 	 * The actions the game object has to take when trying to cross an impassable tile.
 	 * 
-	 * @param oldPosition
+	 * @param	oldPosition
+	 * 			The old position of the game object.
 	 * @effect	If the game object is trying to cross an impassable tile to the left or right its horizontal
 	 * 			acceleration and velocity are set to 0 and its position is set back to its old 
 	 * 			position.

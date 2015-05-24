@@ -302,6 +302,7 @@ public class Facade implements IFacadePart3 {
 	public Slime createSlimeWithProgram(int x, int y, Sprite[] sprites,
 			School school, Program program) {
 		Slime slime = new Slime(x, y, sprites, school, program);
+		program.setGameObject(slime);
 		return slime;
 	}
 	
@@ -419,6 +420,7 @@ public class Facade implements IFacadePart3 {
 	public Shark createSharkWithProgram(int x, int y, Sprite[] sprites,
 			Program program) {
 		Shark shark = new Shark(x, y, sprites, program);
+		program.setGameObject(shark);
 		return shark;
 	}
 	
@@ -515,6 +517,7 @@ public class Facade implements IFacadePart3 {
 	public Plant createPlantWithProgram(int x, int y, Sprite[] sprites,
 			Program program) {
 		Plant plant = new Plant(x, y, sprites, program);
+		program.setGameObject(plant);
 		return plant;
 	}
 	
@@ -820,6 +823,7 @@ public class Facade implements IFacadePart3 {
 	public Buzam createBuzamWithProgram(int pixelLeftX, int pixelBottomY,
 			Sprite[] sprites, Program program) {
 		Buzam buzam = new Buzam(pixelLeftX, pixelBottomY, sprites, program);
+		program.setGameObject(buzam);
 		return buzam;
 	}
 	

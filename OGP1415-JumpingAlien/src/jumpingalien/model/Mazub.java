@@ -454,25 +454,25 @@ public class Mazub extends GameObject {
 				}
 			}
 		}
-//		Buzam buzam = this.getWorld().getBuzam();
-//		if (this.collidesWith(buzam)) {
-//			this.collisionBlockMovement(buzam, oldPosition, newDt);
-//			if (!this.bottomCollidesWith(buzam)) {
-//				if (!this.isImmune()) {
-//					this.changeNbHitPoints(-50);
-//					this.makeImmune();
-//					}
-//				else {
-//					if (Util.fuzzyLessThanOrEqualTo(this.getTimeImmune(), 0.60)) {
-//						this.setTimeImmune(this.getTimeImmune() + newDt);
-//					}
-//					else {
-//						this.makeVulnerable();
-//						this.setTimeImmune(0);
-//					}
-//				}
-//			}
-//		}
+		Buzam buzam = this.getWorld().getBuzam();
+		if (this.collidesWith(buzam)) {
+			this.collisionBlockMovement(buzam, oldPosition, newDt);
+			if (!this.bottomCollidesWith(buzam)) {
+				if (!this.isImmune()) {
+					this.changeNbHitPoints(-50);
+					this.makeImmune();
+					}
+				else {
+					if (Util.fuzzyLessThanOrEqualTo(this.getTimeImmune(), 0.60)) {
+						this.setTimeImmune(this.getTimeImmune() + newDt);
+					}
+					else {
+						this.makeVulnerable();
+						this.setTimeImmune(0);
+					}
+				}
+			}
+		}
 	}
 	
 	/**

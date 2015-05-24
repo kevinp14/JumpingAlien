@@ -549,8 +549,8 @@ public class World {
 			this.gameOver = true;
 			this.gameState = GameState.STOPPED;
 		}
-//		Buzam buzam = this.getBuzam();
-//		buzam.advanceTime(dt);
+		Buzam buzam = this.getBuzam();
+		buzam.advanceTime(dt);
 //		if (buzam.isDead()) {
 //			this.removeDeadObject(buzam, dt);
 //		}

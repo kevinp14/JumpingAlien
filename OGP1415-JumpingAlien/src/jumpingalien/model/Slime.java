@@ -343,31 +343,31 @@ public class Slime extends GameObject {
 					}
 				}
 			}
-//			Buzam buzam = this.getWorld().getBuzam();
-//			if (buzam != null){
-//				if (this.collidesWith(buzam)) {
-//					this.collisionBlockMovement(buzam, oldPosition, newDt);
-//					if (!this.bottomCollidesWith(buzam)) {
-//						if (!this.isImmune()) {
-//							this.changeNbHitPoints(-50);
-//							for (Slime slime: this.getSchool().getSlimes()) {
-//								if (!(slime == this)) {
-//									slime.changeNbHitPoints(-1);
-//								}
-//							}
-//							this.makeImmune();
-//						}
-//						else {
-//							if (Util.fuzzyLessThanOrEqualTo(this.getTimeImmune(), 0.60)) {
-//								this.setTimeImmune(this.getTimeImmune() + newDt);
-//							}
-//							else {
-//								this.makeVulnerable();
-//							}
-//						}
-//					}
-//				}
-//			}
+			Buzam buzam = this.getWorld().getBuzam();
+			if (buzam != null){
+				if (this.collidesWith(buzam)) {
+					this.collisionBlockMovement(buzam, oldPosition, newDt);
+					if (!this.bottomCollidesWith(buzam)) {
+						if (!this.isImmune()) {
+							this.changeNbHitPoints(-50);
+							for (Slime slime: this.getSchool().getSlimes()) {
+								if (!(slime == this)) {
+									slime.changeNbHitPoints(-1);
+								}
+							}
+							this.makeImmune();
+						}
+						else {
+							if (Util.fuzzyLessThanOrEqualTo(this.getTimeImmune(), 0.60)) {
+								this.setTimeImmune(this.getTimeImmune() + newDt);
+							}
+							else {
+								this.makeVulnerable();
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 	

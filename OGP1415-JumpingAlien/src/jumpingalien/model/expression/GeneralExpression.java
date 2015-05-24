@@ -41,7 +41,10 @@ public class GeneralExpression {
 	public boolean equals(Program program){
 		Object object1 = this.expr1.evaluate(program);
 		Object object2 = this.expr2.evaluate(program);
-		return (object1 == object2);
+		if ((object1 != null) && (object2 != null)) {
+			return (object1.equals(object2));
+		}
+		return false;
 	}
 	
 	/**
@@ -52,7 +55,10 @@ public class GeneralExpression {
 	public boolean notEquals(Program program){
 		Object object1 = this.expr1.evaluate(program);
 		Object object2 = this.expr2.evaluate(program);
-		return (object1 != object2);
+		if ((object1 != null) && (object2 != null)) {
+			return (!object1.equals(object2));
+		}
+		return false;
 	}
 
 }
