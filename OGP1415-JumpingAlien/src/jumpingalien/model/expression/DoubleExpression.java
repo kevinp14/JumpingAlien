@@ -1,5 +1,6 @@
 package jumpingalien.model.expression;
 
+import jumpingalien.model.Program;
 import jumpingalien.part3.programs.SourceLocation;
 import jumpingalien.util.Util;
 
@@ -122,7 +123,7 @@ public class DoubleExpression {
 	 */
 	public boolean greaterThanOrEqual(Program program){
 		return (Util.fuzzyGreaterThanOrEqualTo((double)this.expr1.evaluate(program),
-				(double)this.expr2.evaluateprogram)));
+				(double)this.expr2.evaluate(program)));
 	}
 }
 

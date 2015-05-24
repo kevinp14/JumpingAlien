@@ -117,8 +117,8 @@ public class ProgramFactory implements IProgramFactory<Expression, Statement, Ty
 
 	@Override
 	public Expression createNot(Expression expr, SourceLocation sourceLocation) {
-		NotBoolean notBoolean = new NotBoolean(expr, sourceLocation);
-		return notBoolean;
+		NotE notE = new NotE(expr, sourceLocation);
+		return notE;
 	}
 
 	@Override

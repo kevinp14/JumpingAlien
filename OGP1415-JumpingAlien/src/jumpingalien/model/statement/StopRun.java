@@ -2,8 +2,9 @@ package jumpingalien.model.statement;
 
 import jumpingalien.model.GameObject;
 import jumpingalien.model.Program;
+import jumpingalien.model.SelfMadeDirection;
 import jumpingalien.model.expression.Expression;
-import jumpingalien.model.Direction;
+import jumpingalien.part3.programs.IProgramFactory.Direction;
 import jumpingalien.part3.programs.SourceLocation;
 
 /**
@@ -77,7 +78,9 @@ public class StopRun implements Statement {
 	public void executeForGivenObject(Program program, Expression condition,
 			Object object) {
 		GameObject gameObject = (GameObject) object;
-		gameObject.stopRun();
+		Direction dir = (Direction) this.direction.evaluate(program);
+		SelfMadeDirection selfMadeDir = this.convertDirection(dir);
+		gameObject.endMoveHorizontally(selfMadeDir);
 	}
 
 }

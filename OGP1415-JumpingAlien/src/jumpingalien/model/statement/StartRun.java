@@ -2,8 +2,9 @@ package jumpingalien.model.statement;
 
 import jumpingalien.model.GameObject;
 import jumpingalien.model.Program;
+import jumpingalien.model.SelfMadeDirection;
 import jumpingalien.model.expression.Expression;
-import jumpingalien.model.Direction;
+import jumpingalien.part3.programs.IProgramFactory.Direction;
 import jumpingalien.part3.programs.SourceLocation;
 
 /**
@@ -51,6 +52,16 @@ public class StartRun implements Statement {
 				gameObject.getNormalHorizontalAcceleration());
 	}
 	
+	@Override
+	public void executeForGivenObject(Program program, Expression condition,
+			Object object) {
+		GameObject gameObject = (GameObject) object;
+		Direction dir = (Direction) this.direction.evaluate(program);
+		SelfMadeDirection selfMadeDir = this.convertDirection(dir);
+		gameObject.startMoveHorizontally(selfMadeDir, gameObject.getNormalHorizontalVelocity(), 
+				gameObject.getNormalHorizontalAcceleration());
+	}
+	
 	public SelfMadeDirection convertDirection(Direction direction){
 		if (direction == Direction.DOWN){
 			return SelfMadeDirection.DOWN;
@@ -73,13 +84,6 @@ public class StartRun implements Statement {
 	@Override
 	public SourceLocation getSourceLocation() {
 		return this.sourceLocation;
-	}
-	
-	@Override
-	public void executeForGivenObject(Program program, Expression condition,
-			Object object) {
-		GameObject gameObject = (GameObject) object;
-		gameObject.startRun();
 	}
 
 }

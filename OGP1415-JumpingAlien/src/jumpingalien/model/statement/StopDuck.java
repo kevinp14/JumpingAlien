@@ -41,6 +41,13 @@ public class StopDuck implements Statement {
 		gameObject.endDuck();
 	}
 
+	@Override
+	public void executeForGivenObject(Program program, Expression condition,
+			Object object) {
+		GameObject gameObject = (GameObject) object;
+		gameObject.endDuck();
+	}
+	
 	/**
 	 * @return	The location in the source file where this stop duck statement was called.
 	 * 
@@ -49,12 +56,4 @@ public class StopDuck implements Statement {
 	public SourceLocation getSourceLocation() {
 		return this.sourceLocation;
 	}
-	
-	@Override
-	public void executeForGivenObject(Program program, Expression condition,
-			Object object) {
-		GameObject gameObject = (GameObject) object;
-		gameObject.stopDuck();
-	}
-
 }

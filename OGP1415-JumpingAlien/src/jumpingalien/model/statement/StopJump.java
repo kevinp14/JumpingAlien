@@ -54,7 +54,7 @@ public class StopJump implements Statement {
 	public void executeForGivenObject(Program program, Expression condition,
 			Object object) {
 		GameObject gameObject = (GameObject) object;
-		gameObject.stopJump();
+		gameObject.endJump();
 	}
 
 }
