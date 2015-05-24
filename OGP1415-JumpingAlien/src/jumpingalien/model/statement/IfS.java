@@ -58,8 +58,10 @@ public class IfS implements Statement {
 		if (cond){
 			this.ifBody.execute(program, condition);
 		}
-		else if (this.elseBody != null){
-			this.elseBody.execute(program, condition);
+		if ((this.condition == null) || (cond == false)) {
+			if (this.elseBody != null){
+				this.elseBody.execute(program, condition);
+			}
 		}
 	}
 	

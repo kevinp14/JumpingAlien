@@ -38,7 +38,7 @@ public class GetWidth implements Expression {
 	@Override
 	public Object evaluate(Program program) {
 		GameObject gameObject = (GameObject) this.expression.evaluate(program);
-		int width = gameObject.getCurrentSprite().getWidth();
+		double width = (double)gameObject.getCurrentSprite().getWidth();
 		return width;
 	}
 	
@@ -53,7 +53,7 @@ public class GetWidth implements Expression {
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
 		GameObject gameObject = (GameObject) object;
-		int width = gameObject.getCurrentSprite().getWidth();
+		double width = (double)gameObject.getCurrentSprite().getWidth();
 		return width;
 	}
 

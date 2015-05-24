@@ -38,7 +38,7 @@ public class GetY implements Expression {
 	@Override
 	public Object evaluate(Program program) {
 		GameObject gameObject = (GameObject) this.expr.evaluate(program);
-		int positionX = gameObject.getPosition()[1];
+		double positionX = (double)gameObject.getPosition()[1];
 		return positionX;
 	}
 	
@@ -53,7 +53,7 @@ public class GetY implements Expression {
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
 		GameObject gameObject = (GameObject) object;
-		int positionX = gameObject.getPosition()[1];
+		double positionX = (double)gameObject.getPosition()[1];
 		return positionX;
 	}
 

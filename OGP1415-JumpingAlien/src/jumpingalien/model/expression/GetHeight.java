@@ -38,7 +38,7 @@ public class GetHeight implements Expression {
 	@Override
 	public Object evaluate(Program program) {
 		GameObject gameObject = (GameObject) this.expression.evaluate(program);
-		int height = gameObject.getCurrentSprite().getHeight();
+		double height = (double)gameObject.getCurrentSprite().getHeight();
 		return height;
 	}
 
@@ -53,7 +53,7 @@ public class GetHeight implements Expression {
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
 		GameObject gameObject = (GameObject) object;
-		int height = gameObject.getCurrentSprite().getHeight();
+		double height = (double)gameObject.getCurrentSprite().getHeight();
 		return height;
 	}
 	

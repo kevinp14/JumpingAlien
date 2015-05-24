@@ -38,7 +38,7 @@ public class GetHP implements Expression {
 	@Override
 	public Object evaluate(Program program) {
 		GameObject gameObject = (GameObject) this.expression.evaluate(program);
-		int hitPoints = gameObject.getNbHitPoints();
+		double hitPoints = (double)gameObject.getNbHitPoints();
 		return hitPoints;
 	}
 	
@@ -53,7 +53,7 @@ public class GetHP implements Expression {
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
 		GameObject gameObject = (GameObject) object;
-		int hitPoints = gameObject.getNbHitPoints();
+		double hitPoints = (double)gameObject.getNbHitPoints();
 		return hitPoints;
 	}
 

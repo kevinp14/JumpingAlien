@@ -47,8 +47,8 @@ public class DoubleExpression {
 			return this.expr1.evaluate(program);
 		}
 		else{
-			double valueExpr1 = (double)(int)this.expr1.evaluate(program);
-			double valueExpr2 = (double)(int)this.expr2.evaluate(program);
+			double valueExpr1 = (double)this.expr1.evaluate(program);
+			double valueExpr2 = (double)this.expr2.evaluate(program);
 			return (valueExpr1 + valueExpr2);
 		}
 	}
