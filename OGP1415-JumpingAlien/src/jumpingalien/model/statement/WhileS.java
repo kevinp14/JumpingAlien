@@ -45,9 +45,8 @@ public class WhileS implements Statement {
 	 */
 	@Override
 	public void execute(Program program, Expression condition) {
-		boolean cond = (boolean) this.condition.evaluate(program);
-		while (cond){
-			this.body.execute(program, this.condition);
+		while ((boolean) this.condition.evaluate(program)){
+			body.execute(program, this.condition);
 		}
 	}
 
@@ -63,8 +62,7 @@ public class WhileS implements Statement {
 	@Override
 	public void executeForGivenObject(Program program, Expression condition,
 			Object object) {
-		boolean cond = (boolean) this.condition.evaluateForGivenObject(program, object);
-		while (cond){
+		while (boolean cond = (boolean) this.condition.evaluateForGivenObject(program, object);){
 			body.executeForGivenObject(program, this.condition, object);
 		}
 	}
