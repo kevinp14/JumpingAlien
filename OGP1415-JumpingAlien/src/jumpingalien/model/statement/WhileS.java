@@ -62,7 +62,7 @@ public class WhileS implements Statement {
 	@Override
 	public void executeForGivenObject(Program program, Expression condition,
 			Object object) {
-		while (boolean cond = (boolean) this.condition.evaluateForGivenObject(program, object);){
+		while ((boolean) this.condition.evaluateForGivenObject(program, object)){
 			body.executeForGivenObject(program, this.condition, object);
 		}
 	}
