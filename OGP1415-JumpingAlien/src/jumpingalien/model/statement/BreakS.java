@@ -42,6 +42,26 @@ public class BreakS implements Statement {
 		Expression notCondition = new NotE(condition, this.sourceLocation);
 		condition = notCondition;
 	}
+	
+	/**
+	 * @param	program
+	 * 			The program in which the break statement has to be executed.
+	 * @param	condition
+	 * 			The condition under which the break statement has to be executed.
+	 * @param	object
+	 * 			The object for which the break statement has to be executed.
+	 * @post	The given condition is set to the contrary of the condition.
+	 * 			| Expression notCondition = new NotE(condition, this.sourceLocation)
+	 * 			| condition = notCondition;
+	 */
+	@Override
+	public void executeForGivenObject(Program program, Expression condition,
+			Object object) {
+		SourceLocation srcLoc = (SourceLocation)object;
+		this.sourceLocation = srcLoc;
+		Expression notCondition = new NotE(condition, this.sourceLocation);
+		condition = notCondition;
+	}
 
 	/**
 	 * @return	The location in the source file where this break statement was called.
@@ -50,17 +70,6 @@ public class BreakS implements Statement {
 	@Override
 	public SourceLocation getSourceLocation() {
 		return this.sourceLocation;
-	}
-	
-	@Override
-	public void executeForGivenObject(Program program, Expression condition,
-			Object object) {
-		SourceLocation srcLoc = condition.getSourceLocation();
-		boolean cond = (boolean)condition.evaluate(program);
-		while (cond) {
-			break;
-		}
-		this.sourceLocation = srcLoc;
 	}
 
 }

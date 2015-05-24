@@ -50,7 +50,8 @@ public class IsAir implements Expression {
 	 */
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
-		return (object == (Object)0);
+		int[] tile = (int[])object;
+		return (program.getGameObject().getWorld().getGeologicalFeature(tile[0], tile[1]) == 0);
 	}
 
 	/**

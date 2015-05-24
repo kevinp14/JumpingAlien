@@ -322,7 +322,6 @@ public class Buzam extends GameObject {
 		}
 		this.setHorizontalVelocity(this.getHorizontalVelocity() + this.getHorizontalAcceleration() * dt);
 		double newPositionX = this.getHorizontalVelocity() * dt 
-				- this.getHorizontalAcceleration() * Math.pow(dt, 2) 
 				+ this.getHorizontalAcceleration() * Math.pow(dt, 2) / 2;
 		return newPositionX;
 	}
@@ -345,7 +344,6 @@ public class Buzam extends GameObject {
 	private double verticalMovement(double dt) {
 		this.setVerticalVelocity(this.getVerticalVelocity() + this.getVerticalAcceleration() * dt);
 		double newPositionY = this.getVerticalVelocity() * dt 
-				- this.getVerticalAcceleration() * Math.pow(dt, 2)
 				+ this.getVerticalAcceleration() * Math.pow(dt, 2) / 2;
 		return newPositionY;
 	}
@@ -362,6 +360,7 @@ public class Buzam extends GameObject {
 	 * 			| for (Plant plant: this.getWorld().getPlants())
 	 * 			|	if ((this.collidesWith(plant)) && (!plant.isDead()) && (this.getNbHitPoints() < 500))
 	 * 			|			this.changeNbHitPoints(50)
+	 * 			|			plant.changeNbHitPoints(-1)
 	 * @effect	If the alien collides with a shark in its game world, its movement is blocked if it
 	 * 			is trying to move in the direction in which it collided, and it loses 50 hitpoints if
 	 * 			it didn't fall on top of the shark.

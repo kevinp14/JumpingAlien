@@ -48,7 +48,8 @@ public class OrE extends BooleanExpression implements Expression {
 	 */
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
-		return false;
+		this.expr1 = (Expression)object;
+		return this.or(program);
 	}
 	
 	/**

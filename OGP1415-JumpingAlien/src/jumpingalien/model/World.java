@@ -530,14 +530,13 @@ public class World {
 	public void advanceTime(double dt) {
 		Mazub alien = this.getMazub();
 		alien.advanceTime(dt);
-		if ((alien.getNbHitPoints() == 0) //TODO alien uit wereld
+		if ((alien.getNbHitPoints() == 0)
 				|| (alien.getPosition()[1] < 0)) {
 			alien.setHorizontalAcceleration(0);
 			alien.setHorizontalVelocity(0);
 			alien.setVerticalAcceleration(0);
 			alien.setVerticalVelocity(0);
 			if (alien.getTimeDead() >= 0.6) {
-				alien.setPosition(alien.getPosition()[0], -100);
 				this.gameOver = true;
 				this.gameState = GameState.STOPPED;
 			}

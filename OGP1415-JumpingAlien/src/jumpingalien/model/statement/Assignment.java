@@ -51,7 +51,25 @@ public class Assignment implements Statement {
 	 */
 	@Override
 	public void execute(Program program, Expression condition) {
-		Type<?> val = (Type<?>)this.value.evaluate(program);
+		Object val = this.value.evaluate(program);
+		program.setObjectByName(this.variableName, this.variableType, val);
+	}
+	
+	/**
+	 * @param	program
+	 * 			The program in which the assignment has to be executed.
+	 * @param	condition
+	 * 			The condition under which the assignment has to be executed.
+	 * @param	object
+	 * 			The object for which the assignment has to be executed.
+	 * @effect	The variable is set by its name to the given value.
+	 * 			| Object val = this.value.evaluate(program)
+	 * 			| program.setObjectByName(this.variableName, this.variableType, val)
+	 */
+	@Override
+	public void executeForGivenObject(Program program, Expression condition,
+			Object object) {
+		Object val = this.value.evaluate(program);
 		program.setObjectByName(this.variableName, this.variableType, val);
 	}
 
@@ -62,13 +80,6 @@ public class Assignment implements Statement {
 	@Override
 	public SourceLocation getSourceLocation() {
 		return this.sourceLocation;
-	}
-	
-	@Override
-	public void executeForGivenObject(Program program, Expression condition,
-			Object object) {
-		Object val = this.value.evaluate(program);
-		program.setObjectByName(this.variableName, this.variableType, val);
 	}
 
 }

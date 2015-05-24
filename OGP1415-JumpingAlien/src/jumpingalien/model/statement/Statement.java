@@ -23,6 +23,16 @@ public interface Statement {
 	 */
 	void execute(Program program, Expression condition);
 	
+	/**
+	 * Execute the statement.
+	 * 
+	 * @param	program
+	 * 			The program in which the statement has to be executed.
+	 * @param	condition
+	 * 			The condition under which the statement has to be executed.
+	 * @param	object
+	 * 			The object for which the statement has to be executed.
+	 */
 	void executeForGivenObject(Program program, Expression condition, Object object);
 	
 	/**

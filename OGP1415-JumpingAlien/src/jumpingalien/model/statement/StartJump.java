@@ -39,8 +39,25 @@ public class StartJump implements Statement {
 	public void execute(Program program, Expression condition) {
 		GameObject gameObject = (GameObject) program.getGameObject();
 		gameObject.startJump();
+	}	
+	
+	/**
+	 * @param	program
+	 * 			The program in which the start jump statement has to be executed.
+	 * @param	condition
+	 * 			The condition under which the start jump statement has to be executed.
+	 * @param	object
+	 * 			The object for which the start jump statement has to be executed.
+	 * @effect	The game object in the given program starts to jump.
+	 * 			| GameObject gameObject = (GameObject) program.getGameObject()
+	 * 			| gameObject.startJump()
+	 */
+	@Override
+	public void executeForGivenObject(Program program, Expression condition,
+			Object object) {
+		GameObject gameObject = (GameObject) object;
+		gameObject.startJump();
 	}
-
 
 	/**
 	 * @return	The location in the source file where this start jump statement was called.
@@ -50,12 +67,4 @@ public class StartJump implements Statement {
 	public SourceLocation getSourceLocation() {
 		return this.sourceLocation;
 	}
-	
-	@Override
-	public void executeForGivenObject(Program program, Expression condition,
-			Object object) {
-		GameObject gameObject = (GameObject) object;
-		gameObject.startJump();
-	}
-
 }

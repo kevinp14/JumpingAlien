@@ -7,6 +7,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import jumpingalien.model.*;
 import jumpingalien.part2.facade.Facade;
@@ -171,7 +172,7 @@ public class PartialFacadeTest {
 		Mazub alien = facade.createMazub(0, 0, spriteArrayForSize(3,3));
 		facade.setMazub(world, alien);
 		int[] visibleWindow = new int[]{0,0,1,1};
-		assertEquals(world.getVisibleWindow(), visibleWindow);
+		assertEquals(Arrays.toString(world.getVisibleWindow()), Arrays.toString(visibleWindow));
 	}
 	
 	@Test

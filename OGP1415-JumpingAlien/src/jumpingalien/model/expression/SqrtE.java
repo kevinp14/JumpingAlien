@@ -50,7 +50,8 @@ public class SqrtE implements Expression {
 	 */
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
-		return false;
+		double valueExpr = (double)object;
+		return Math.pow(valueExpr, 0.5);
 	}
 	
 	/**

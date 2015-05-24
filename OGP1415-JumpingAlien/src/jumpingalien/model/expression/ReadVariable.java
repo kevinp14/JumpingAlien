@@ -47,7 +47,7 @@ public class ReadVariable implements Expression {
 
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
-		return null;
+		return object;
 	}
 
 	/**

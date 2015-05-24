@@ -50,7 +50,12 @@ public class GetTile extends DoubleExpression implements Expression {
 	 */
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
-		return false;
+		int[] tilePosition = (int[])object;
+		int positionX = (int) tilePosition[0];
+		int positionY = (int) tilePosition[1];
+		int tileLength = program.getGameObject().getWorld().getTileLength();
+		int[] tile = new int[] { (positionX / tileLength), (positionY / tileLength) };
+		return tile;
 	}
 
 	/**

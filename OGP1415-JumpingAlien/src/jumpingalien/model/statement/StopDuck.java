@@ -41,6 +41,17 @@ public class StopDuck implements Statement {
 		gameObject.endDuck();
 	}
 
+	/**
+	 * @param	program
+	 * 			The program in which the stop duck statement has to be executed.
+	 * @param	condition
+	 * 			The condition under which the stop duck statement has to be executed.
+	 * @param	object
+	 * 			The object for which the stop duck statement has to be executed.
+	 * @effect	The game object in the given program stops ducking.
+	 * 			| GameObject gameObject = (GameObject) program.getGameObject()
+	 * 			| gameObject.endDuck()
+	 */
 	@Override
 	public void executeForGivenObject(Program program, Expression condition,
 			Object object) {

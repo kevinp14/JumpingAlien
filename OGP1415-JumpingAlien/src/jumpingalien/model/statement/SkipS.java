@@ -38,10 +38,28 @@ public class SkipS implements Statement {
 	public void execute(Program program, Expression condition) {
 		long duration = (long)0.001;
 		try {
-			program.wait(duration);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+			Thread.sleep(duration);
+		} catch (InterruptedException e) {}
+	}
+	
+	/**
+	 * @param	program
+	 * 			The program in which the skip statement has to be executed.
+	 * @param	condition
+	 * 			The condition under which the skip statement has to be executed.
+	 * @param	object
+	 * 			The object for which the skip statement has to be executed.
+	 * @effect	Wait for 0.001 seconds.
+	 * 			| long duration = (long)0.001
+	 * 			| program.wait(duration)
+	 */
+	@Override
+	public void executeForGivenObject(Program program, Expression condition,
+			Object object) {
+		long duration = (long)0.001;
+		try {
+			Thread.sleep(duration);
+		} catch (InterruptedException e) {}
 	}
 
 	/**
@@ -52,9 +70,4 @@ public class SkipS implements Statement {
 	public SourceLocation getSourceLocation() {
 		return this.sourceLocation;
 	}
-	
-	@Override
-	public void executeForGivenObject(Program program, Expression condition,
-			Object object) {}
-
 }

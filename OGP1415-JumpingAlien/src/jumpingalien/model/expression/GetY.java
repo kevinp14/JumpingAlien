@@ -52,7 +52,9 @@ public class GetY implements Expression {
 	 */
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
-		return false;
+		GameObject gameObject = (GameObject) object;
+		int positionX = gameObject.getPosition()[1];
+		return positionX;
 	}
 
 	/**

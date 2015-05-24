@@ -40,23 +40,26 @@ public class WaitS implements Statement {
 	 */
 	@Override
 	public void execute(Program program, Expression condition) {
-		long dur = (long) this.duration.evaluate(program);
-		try {
-			program.wait(dur);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		if (this.duration.evaluate(program) != null){
+			double dur = (double) this.duration.evaluate(program);
+			long time = (long) dur;
+			try {
+				Thread.sleep(time);
+			} catch (InterruptedException e) {}
 		}
 	}
-
-	/**
-	 * @return	The location in the source file where this wait statement was called.
-	 * 
-	 */
-	@Override
-	public SourceLocation getSourceLocation() {
-		return this.sourceLocation;
-	}
 	
+	/**
+	 * @param	program
+	 * 			The program in which the wait statement has to be executed.
+	 * @param	condition
+	 * 			The condition under which the wait statement has to be executed.
+	 * @param	object
+	 * 			The object for which the wait statement has to be executed.
+	 * @effect	Wait for 0.001 seconds.
+	 * 			| long dur = this.duration.evaluate(program)
+	 * 			| program.wait(dur)
+	 */
 	@Override
 	public void executeForGivenObject(Program program, Expression condition,
 			Object object) {
@@ -69,4 +72,12 @@ public class WaitS implements Statement {
 		}
 	}
 
+	/**
+	 * @return	The location in the source file where this wait statement was called.
+	 * 
+	 */
+	@Override
+	public SourceLocation getSourceLocation() {
+		return this.sourceLocation;
+	}
 }

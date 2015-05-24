@@ -52,7 +52,9 @@ public class GetHP implements Expression {
 	 */
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
-		return false;
+		GameObject gameObject = (GameObject) object;
+		int hitPoints = gameObject.getNbHitPoints();
+		return hitPoints;
 	}
 
 	/**

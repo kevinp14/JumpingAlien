@@ -50,6 +50,27 @@ public class StopRun implements Statement {
 		gameObject.endMoveHorizontally(selfMadeDir);
 	}
 	
+	/**
+	 * @param	program
+	 * 			The program in which the stop run statement has to be executed.
+	 * @param	condition
+	 * 			The condition under which the stop run statement has to be executed.
+	 * @param	object
+	 * 			The object for which the stop run statement has to be executed.
+	 * @effect	The game object in the given program stops running in the given direction.
+	 * 			| GameObject gameObject = (GameObject) program.getGameObject()
+	 * 			| Direction dir = (Direction) this.direction.evaluate(program)
+	 * 			| gameObject.endMoveHorizontally(dir)
+	 */
+	@Override
+	public void executeForGivenObject(Program program, Expression condition,
+			Object object) {
+		GameObject gameObject = (GameObject) object;
+		Direction dir = (Direction) this.direction.evaluate(program);
+		SelfMadeDirection selfMadeDir = this.convertDirection(dir);
+		gameObject.endMoveHorizontally(selfMadeDir);
+	}
+	
 	public SelfMadeDirection convertDirection(Direction direction){
 		if (direction == Direction.DOWN){
 			return SelfMadeDirection.DOWN;
@@ -73,14 +94,4 @@ public class StopRun implements Statement {
 	public SourceLocation getSourceLocation() {
 		return this.sourceLocation;
 	}
-	
-	@Override
-	public void executeForGivenObject(Program program, Expression condition,
-			Object object) {
-		GameObject gameObject = (GameObject) object;
-		Direction dir = (Direction) this.direction.evaluate(program);
-		SelfMadeDirection selfMadeDir = this.convertDirection(dir);
-		gameObject.endMoveHorizontally(selfMadeDir);
-	}
-
 }

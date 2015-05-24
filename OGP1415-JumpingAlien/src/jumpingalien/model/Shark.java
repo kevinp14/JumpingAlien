@@ -332,7 +332,6 @@ public class Shark extends GameObject {
 		}
 		this.setHorizontalVelocity(this.getHorizontalVelocity() + this.getHorizontalAcceleration() * dt);
 		double newPositionX = this.getHorizontalVelocity() * dt 
-				- this.getHorizontalAcceleration() * Math.pow(dt, 2) 
 				+ this.getHorizontalAcceleration() * Math.pow(dt, 2) / 2;
 		return newPositionX;
 	}
@@ -353,7 +352,6 @@ public class Shark extends GameObject {
 	private double verticalMovement(double dt) {
 		this.setVerticalVelocity(this.getVerticalVelocity() + this.getVerticalAcceleration()*dt);
 		double newPositionY = this.getVerticalVelocity() * dt 
-				- this.getVerticalAcceleration() * Math.pow(dt, 2)
 				+ this.getVerticalAcceleration() * Math.pow(dt, 2) / 2;
 		return newPositionY;
 	}
@@ -401,7 +399,13 @@ public class Shark extends GameObject {
 					this.makeImmune();
 				}
 				else {
-					this.setTimeImmune(this.getTimeImmune() + newDt);
+					if (Util.fuzzyLessThanOrEqualTo(this.getTimeImmune(), 0.60)) {
+						this.setTimeImmune(this.getTimeImmune() + newDt);
+					}
+					else {
+						this.makeVulnerable();
+						this.setTimeImmune(0);
+					}
 				}
 			}
 		}
@@ -431,7 +435,13 @@ public class Shark extends GameObject {
 					this.makeImmune();
 				}
 				else {
-					this.setTimeImmune(this.getTimeImmune() + newDt);
+					if (Util.fuzzyLessThanOrEqualTo(this.getTimeImmune(), 0.60)) {
+						this.setTimeImmune(this.getTimeImmune() + newDt);
+					}
+					else {
+						this.makeVulnerable();
+						this.setTimeImmune(0);
+					}
 				}
 			}
 		}

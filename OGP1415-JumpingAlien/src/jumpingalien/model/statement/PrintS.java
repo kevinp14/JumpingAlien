@@ -43,6 +43,24 @@ public class PrintS implements Statement {
 		double printValue = (double) this.value.evaluate(program);
 		System.out.println(printValue);
 	}
+	
+	/**
+	 * @param	program
+	 * 			The program in which the print statement has to be executed.
+	 * @param	condition
+	 * 			The condition under which the print statement has to be executed.
+	 * @param	object
+	 * 			The object for which the print statement has to be executed.
+	 * @effect	The given value is printed out.
+	 * 			| double printValue = (double) this.value.evaluate(program)
+	 * 			| System.out.println(printValue)
+	 */
+	@Override
+	public void executeForGivenObject(Program program, Expression condition,
+			Object object) {
+		double printValue = (double) object;
+		System.out.println(printValue);
+	}
 
 	/**
 	 * @return	The location in the source file where this print statement was called.
@@ -51,12 +69,5 @@ public class PrintS implements Statement {
 	@Override
 	public SourceLocation getSourceLocation() {
 		return this.sourceLocation;
-	}
-
-	@Override
-	public void executeForGivenObject(Program program, Expression condition,
-			Object object) {
-		double printValue = (double) this.value.evaluate(program);
-		System.out.println(printValue);
 	}
 }

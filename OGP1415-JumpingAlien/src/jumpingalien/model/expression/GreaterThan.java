@@ -48,7 +48,8 @@ public class GreaterThan extends DoubleExpression implements Expression {
 	 */
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
-		return false;
+		this.expr1 = (Expression)object;
+		return this.greaterThan(program);
 	}
 
 	/**

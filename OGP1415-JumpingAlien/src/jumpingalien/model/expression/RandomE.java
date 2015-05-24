@@ -50,7 +50,8 @@ public class RandomE implements Expression {
 	 */
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
-		return false;
+		double maxValue = (double)object;
+		return Math.random() * maxValue;
 	}
 
 	/**

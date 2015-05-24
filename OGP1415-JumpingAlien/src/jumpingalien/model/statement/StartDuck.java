@@ -40,6 +40,25 @@ public class StartDuck implements Statement {
 		GameObject gameObject = (GameObject) program.getGameObject();
 		gameObject.startDuck();
 	}
+	
+	/**
+	 * @param	program
+	 * 			The program in which the start duck statement has to be executed.
+	 * @param	condition
+	 * 			The condition under which the start duck statement has to be executed.
+	 * @param	object
+	 * 			The object for which the start duck statement has to be executed.
+	 * @effect	The game object in the given program starts to duck.
+	 * 			| GameObject gameObject = (GameObject) program.getGameObject()
+	 * 			| gameObject.startDuck()
+	 */
+	@Override
+	public void executeForGivenObject(Program program, Expression condition,
+			Object object) {
+		GameObject gameObject = (GameObject) object;
+		gameObject.startDuck();
+	}
+
 
 	/**
 	 * @return	The location in the source file where this start duck statement was called.
@@ -49,12 +68,4 @@ public class StartDuck implements Statement {
 	public SourceLocation getSourceLocation() {
 		return this.sourceLocation;
 	}
-	
-	@Override
-	public void executeForGivenObject(Program program, Expression condition,
-			Object object) {
-		GameObject gameObject = (GameObject) object;
-		gameObject.startDuck();
-	}
-
 }

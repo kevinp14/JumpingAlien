@@ -160,24 +160,12 @@ public class Plant extends GameObject {
 	 * 			The period of time on which collision has to be detected.
 	 * @param	oldPosition
 	 * 			The plant's old position.
-	 * @effect	If the plant collides with an alien (Mazub or Buzam) in it's game world and the alien's 
-	 * 			current number of hitpoints is smaller than 500, it loses 1 hitpoint.
-	 * 			| if (((this.collidesWith(alien)) && (alien.getNbHitPoints() < 500))
-	 * 			|	|| ((this.collidesWith(buzam)) && (buzam.getNbHitPoints() < 500)))
-	 * 			|		this.changeNbHitPoints(-1)
 	 * @effect	If the plant collides with another plant in the game world, its movement is blocked.
 	 * 			| for (Plant plant: this.getWorld().getPlants())
 	 * 			|	if (this.collidesWith(plant))
 	 * 			|		this.collisionBlockMovement(plant, oldPosition, newDt)
 	 */
 	private void collidesWithActions(double newDt, int[] oldPosition) {
-//		Mazub alien = this.getWorld().getMazub();
-////		Buzam buzam = this.getWorld().getBuzam();
-//		if (((this.collidesWith(alien)) && (!this.isDead()) && (alien.getNbHitPoints() < 500)))
-////			|| ((this.collidesWith(buzam)) && (buzam.getNbHitPoints() < 500)))
-//			{
-//			this.changeNbHitPoints(-1);
-//		}
 		for (Plant plant: this.getWorld().getPlants()) {
 			if (this.collidesWith(plant)) {
 				this.collisionBlockMovement(plant, oldPosition, newDt);

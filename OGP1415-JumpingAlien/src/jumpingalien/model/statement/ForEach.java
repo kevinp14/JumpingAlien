@@ -10,7 +10,6 @@ import jumpingalien.model.Slime;
 import jumpingalien.model.World;
 import jumpingalien.model.GameObject;
 import jumpingalien.model.expression.Expression;
-import jumpingalien.model.type.*;
 import jumpingalien.part3.programs.SourceLocation;
 import jumpingalien.part3.programs.IProgramFactory.Kind;
 import jumpingalien.part3.programs.IProgramFactory.SortDirection;
@@ -78,26 +77,17 @@ public class ForEach implements Statement {
 			}
 		};
 		if (this.variableKind == Kind.MAZUB) {
-			Assignment assign = new Assignment(this.variableName, Type<GameObjectType>, 
-					world.getMazub(), this.sourceLocation);
-			assign.execute(program, condition);
-			body.execute(program, condition);
+			body.executeForGivenObject(program, condition, world.getMazub());
 		}
 		if (this.variableKind == Kind.BUZAM) {
-			Assignment assign = new Assignment(this.variableName, Type<GameObjectType>, 
-					world.getBuzam(), this.sourceLocation);
-			assign.execute(program, condition);
-			body.execute(program, condition);
+			body.executeForGivenObject(program, condition, world.getBuzam());
 		}
 		if (this.sortDirection == SortDirection.ASCENDING) {
 			if (this.variableKind == Kind.PLANT) {
 				plants.sort(ascendingComparator);
 				for (Plant plant: plants) {
 					if ((boolean)this.where.evaluateForGivenObject(program, plant)) {
-						Assignment assign = new Assignment(this.variableName, Type<GameObjectType>, 
-								plant, this.sourceLocation);
-						assign.execute(program, condition);
-						body.execute(program, condition);
+						body.executeForGivenObject(program, condition, plant);
 					}
 				}
 			}
@@ -105,10 +95,7 @@ public class ForEach implements Statement {
 				sharks.sort(ascendingComparator);
 				for (Shark shark: sharks) {
 					if ((boolean)this.where.evaluateForGivenObject(program, shark)) {
-						Assignment assign = new Assignment(this.variableName, Type<GameObjectType>, 
-								shark, this.sourceLocation);
-						assign.execute(program, condition);
-						body.execute(program, condition);
+						body.executeForGivenObject(program, condition, shark);
 					}
 				}
 			}
@@ -116,10 +103,7 @@ public class ForEach implements Statement {
 				slimes.sort(ascendingComparator);
 				for (Slime slime: slimes) {
 					if ((boolean)this.where.evaluateForGivenObject(program, slime)) {
-						Assignment assign = new Assignment(this.variableName, Type<GameObjectType>, 
-								slime, this.sourceLocation);
-						assign.execute(program, condition);
-						body.execute(program, condition);
+						body.executeForGivenObject(program, condition, slime);
 					}
 				}
 			}
@@ -127,10 +111,7 @@ public class ForEach implements Statement {
 				allGameObjects.sort(ascendingComparator);
 				for (GameObject gameObject: allGameObjects) {
 					if ((boolean)this.where.evaluateForGivenObject(program, gameObject)) {
-						Assignment assign = new Assignment(this.variableName, Type<GameObjectType>, 
-								gameObject, this.sourceLocation);
-						assign.execute(program, condition);
-						body.execute(program, condition);
+						body.executeForGivenObject(program, condition, gameObject);
 					}
 				}
 			}
@@ -140,10 +121,7 @@ public class ForEach implements Statement {
 				plants.sort(descendingComparator);
 				for (Plant plant: plants) {
 					if ((boolean)this.where.evaluateForGivenObject(program, plant)) {
-						Assignment assign = new Assignment(this.variableName, Type<GameObjectType>, 
-								plant, this.sourceLocation);
-						assign.execute(program, condition);
-						body.execute(program, condition);
+						body.executeForGivenObject(program, condition, plant);
 					}
 				}
 			}
@@ -151,10 +129,7 @@ public class ForEach implements Statement {
 				sharks.sort(descendingComparator);
 				for (Shark shark: sharks) {
 					if ((boolean)this.where.evaluateForGivenObject(program, shark)) {
-						Assignment assign = new Assignment(this.variableName, Type<GameObjectType>, 
-								shark, this.sourceLocation);
-						assign.execute(program, condition);
-						body.execute(program, condition);
+						body.executeForGivenObject(program, condition, shark);
 					}
 				}
 			}
@@ -162,10 +137,7 @@ public class ForEach implements Statement {
 				slimes.sort(descendingComparator);
 				for (Slime slime: slimes) {
 					if ((boolean)this.where.evaluateForGivenObject(program, slime)) {
-						Assignment assign = new Assignment(this.variableName, Type<GameObjectType>, 
-								slime, this.sourceLocation);
-						assign.execute(program, condition);
-						body.execute(program, condition);
+						body.executeForGivenObject(program, condition, slime);
 					}
 				}
 			}
@@ -173,10 +145,7 @@ public class ForEach implements Statement {
 				allGameObjects.sort(descendingComparator);
 				for (GameObject gameObject: allGameObjects) {
 					if ((boolean)this.where.evaluateForGivenObject(program, gameObject)) {
-						Assignment assign = new Assignment(this.variableName, Type<GameObjectType>, 
-								gameObject, this.sourceLocation);
-						assign.execute(program, condition);
-						body.execute(program, condition);
+						body.executeForGivenObject(program, condition, gameObject);
 					}
 				}
 			}
@@ -185,40 +154,28 @@ public class ForEach implements Statement {
 			if (this.variableKind == Kind.PLANT) {
 				for (Plant plant: plants) {
 					if ((boolean)this.where.evaluateForGivenObject(program, plant)) {
-						Assignment assign = new Assignment(this.variableName, Type<GameObjectType>, 
-								plant, this.sourceLocation);
-						assign.execute(program, condition);
-						body.execute(program, condition);
+						body.executeForGivenObject(program, condition, plant);
 					}
 				}
 			}
 			else if (this.variableKind == Kind.SHARK) {
 				for (Shark shark: sharks) {
 					if ((boolean)this.where.evaluateForGivenObject(program, shark)) {
-						Assignment assign = new Assignment(this.variableName, Type<GameObjectType>, 
-								shark, this.sourceLocation);
-						assign.execute(program, condition);
-						body.execute(program, condition);
+						body.executeForGivenObject(program, condition, shark);
 					}
 				}
 			}
 			else if (this.variableKind == Kind.SLIME) {
 				for (Slime slime: slimes) {
 					if ((boolean)this.where.evaluateForGivenObject(program, slime)) {
-						Assignment assign = new Assignment(this.variableName, Type<GameObjectType>, 
-								slime, this.sourceLocation);
-						assign.execute(program, condition);
-						body.execute(program, condition);
+						body.executeForGivenObject(program, condition, slime);
 					}
 				}
 			}
 			else {
 				for (GameObject gameObject: allGameObjects) {
 					if ((boolean)this.where.evaluateForGivenObject(program, gameObject)) {
-						Assignment assign = new Assignment(this.variableName, Type<GameObjectType>, 
-								gameObject, this.sourceLocation);
-						assign.execute(program, condition);
-						body.execute(program, condition);
+						body.executeForGivenObject(program, condition, gameObject);
 					}
 				}
 			}

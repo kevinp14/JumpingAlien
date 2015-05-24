@@ -171,9 +171,8 @@ public class Slime extends GameObject {
 			}
 		}
 		this.setHorizontalVelocity(this.getHorizontalVelocity() + this.getHorizontalAcceleration() * dt);
-		double newPositionX = this.getHorizontalVelocity() * dt - 
-				this.getHorizontalAcceleration() * Math.pow(dt, 2) + 
-				this.getHorizontalAcceleration() * Math.pow(dt, 2) / 2;
+		double newPositionX = this.getHorizontalVelocity() * dt 
+				+ this.getHorizontalAcceleration() * Math.pow(dt, 2) / 2;
 		return newPositionX;
 	}
 	
@@ -193,7 +192,6 @@ public class Slime extends GameObject {
 	private double verticalMovement(double dt) {
 		this.setVerticalVelocity(this.getVerticalVelocity() + this.getVerticalAcceleration()*dt);
 		double newPositionY = this.getVerticalVelocity() * dt 
-				- this.getVerticalAcceleration() * Math.pow(dt, 2)
 				+ this.getVerticalAcceleration() * Math.pow(dt, 2)/2;
 		return newPositionY;
 	}
@@ -345,31 +343,31 @@ public class Slime extends GameObject {
 					}
 				}
 			}
-			Buzam buzam = this.getWorld().getBuzam();
-			if (buzam != null){
-				if (this.collidesWith(buzam)) {
-					this.collisionBlockMovement(buzam, oldPosition, newDt);
-					if (!this.bottomCollidesWith(buzam)) {
-						if (!this.isImmune()) {
-							this.changeNbHitPoints(-50);
-							for (Slime slime: this.getSchool().getSlimes()) {
-								if (!(slime == this)) {
-									slime.changeNbHitPoints(-1);
-								}
-							}
-							this.makeImmune();
-						}
-						else {
-							if (Util.fuzzyLessThanOrEqualTo(this.getTimeImmune(), 0.60)) {
-								this.setTimeImmune(this.getTimeImmune() + newDt);
-							}
-							else {
-								this.makeVulnerable();
-							}
-						}
-					}
-				}
-			}
+//			Buzam buzam = this.getWorld().getBuzam();
+//			if (buzam != null){
+//				if (this.collidesWith(buzam)) {
+//					this.collisionBlockMovement(buzam, oldPosition, newDt);
+//					if (!this.bottomCollidesWith(buzam)) {
+//						if (!this.isImmune()) {
+//							this.changeNbHitPoints(-50);
+//							for (Slime slime: this.getSchool().getSlimes()) {
+//								if (!(slime == this)) {
+//									slime.changeNbHitPoints(-1);
+//								}
+//							}
+//							this.makeImmune();
+//						}
+//						else {
+//							if (Util.fuzzyLessThanOrEqualTo(this.getTimeImmune(), 0.60)) {
+//								this.setTimeImmune(this.getTimeImmune() + newDt);
+//							}
+//							else {
+//								this.makeVulnerable();
+//							}
+//						}
+//					}
+//				}
+//			}
 		}
 	}
 	

@@ -50,7 +50,8 @@ public class NotE implements Expression {
 	 */
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
-		return false;
+		boolean valueExpr = (boolean)object;
+		return (!valueExpr);
 	}
 	
 	/**

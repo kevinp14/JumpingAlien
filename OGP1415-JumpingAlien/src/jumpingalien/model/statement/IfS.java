@@ -58,20 +58,27 @@ public class IfS implements Statement {
 		if (cond){
 			this.ifBody.execute(program, condition);
 		}
-		else{
+		else if (this.elseBody != null){
 			this.elseBody.execute(program, condition);
 		}
 	}
-
-	/**
-	 * @return	The location in the source file where this if statement was called.
-	 * 
-	 */
-	@Override
-	public SourceLocation getSourceLocation() {
-		return this.sourceLocation;
-	}
 	
+	/**
+	 * @param	program
+	 * 			The program in which the if statement has to be executed.
+	 * @param	condition
+	 * 			The condition under which the if statement has to be executed.
+	 * @param	object
+	 * 			The object for which the if statement has to be executed.
+	 * @effect	If the given condition is true, the given if body is executed.
+	 * 			| boolean cond = (boolean) this.condition.evaluate(program)
+	 * 			| if (cond)
+	 * 			|	this.ifBody.execute(program, condition)
+	 * @effect	If the given condition is not true, the given else body is executed.
+	 * 			| boolean cond = (boolean) this.condition.evaluate(program)
+	 * 			| if (!cond)
+	 * 			|	this.elseBody.execute(program, condition)
+	 */
 	@Override
 	public void executeForGivenObject(Program program, Expression condition,
 			Object object) {
@@ -84,4 +91,12 @@ public class IfS implements Statement {
 		}
 	}
 
+	/**
+	 * @return	The location in the source file where this if statement was called.
+	 * 
+	 */
+	@Override
+	public SourceLocation getSourceLocation() {
+		return this.sourceLocation;
+	}
 }

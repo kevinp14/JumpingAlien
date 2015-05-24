@@ -52,7 +52,9 @@ public class GetHeight implements Expression {
 	 */
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
-		return false;
+		GameObject gameObject = (GameObject) object;
+		int height = gameObject.getCurrentSprite().getHeight();
+		return height;
 	}
 	
 	/**

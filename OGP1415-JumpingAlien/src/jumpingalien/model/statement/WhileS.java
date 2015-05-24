@@ -49,6 +49,26 @@ public class WhileS implements Statement {
 			body.execute(program, this.condition);
 		}
 	}
+	
+	/**
+	 * @param	program
+	 * 			The program in which the while statement has to be executed.
+	 * @param	condition
+	 * 			The condition under which the while statement has to be executed.
+	 * @param	object
+	 * 			The object for which the while statement has to be executed.
+	 * @effect	While the given condition is true, the given body is executed.
+	 * 			| boolean cond = (boolean) this.condition.evaluate(program)
+	 * 			| while (cond)
+	 * 			|	this.body.execute(program, condition)
+	 */
+	@Override
+	public void executeForGivenObject(Program program, Expression condition,
+			Object object) {
+		while ((boolean) this.condition.evaluateForGivenObject(program, object)){
+			body.executeForGivenObject(program, this.condition, object);
+		}
+	}
 
 	/**
 	 * @return	The location in the source file where this while statement was called.
@@ -58,13 +78,4 @@ public class WhileS implements Statement {
 	public SourceLocation getSourceLocation() {
 		return sourceLocation;
 	}
-	
-	@Override
-	public void executeForGivenObject(Program program, Expression condition,
-			Object object) {
-		while ((boolean) this.condition.evaluateForGivenObject(program, object)){
-			body.executeForGivenObject(program, this.condition, object);
-		}
-	}
-
 }

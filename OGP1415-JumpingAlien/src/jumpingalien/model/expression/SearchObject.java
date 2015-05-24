@@ -71,7 +71,50 @@ public class SearchObject implements Expression {
 	
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
-		return false;
+		Direction direction = (Direction) object;
+		World world = program.getGameObject().getWorld();
+		int[] position = program.getGameObject().getPosition();
+		int[] maxPosition = program.getGameObject().getMaxPosition();
+		int tileX = position[0] / world.getTileLength();
+		int tileY = position[1] / world.getTileLength();
+		if (direction == Direction.DOWN){
+			int iterateTile = tileY - 1;
+			if ((int)this.searchObjectDown(position, world) == position[1]) {
+				return this.searchTileDown(iterateTile, tileX, program);
+			}
+			else {
+				return this.searchObjectDown(position, world);
+			}
+		}
+		if (direction == Direction.LEFT){
+			int iterateTile = tileX - 1;
+			if ((int)this.searchObjectLeft(position, world) == position[0]) {
+				return this.searchTileLeft(iterateTile, tileY, program);
+			}
+			else {
+				return this.searchObjectLeft(position, world);
+			}
+		}
+		if (direction == Direction.RIGHT){
+			int iterateTile = tileX + 1;
+			if ((int)this.searchObjectRight(position, maxPosition, world) 
+					== maxPosition[0] - position[0]) {
+				return this.searchTileRight(iterateTile, tileY, program);
+			}
+			else {
+				return this.searchObjectRight(position, maxPosition, world);
+			}
+		}
+		else {
+			int iterateTile = tileY + 1;
+			if ((int)this.searchObjectUp(position, maxPosition, world) 
+					== maxPosition[1] - position[1]) {
+				return this.searchTileUp(iterateTile, tileX, program);
+			}
+			else {
+				return this.searchObjectUp(position, maxPosition, world);
+			}
+		}
 	}
 	
 	private Object searchTileUp(int iterateTile, int tileX, Program program) {

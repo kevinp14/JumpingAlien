@@ -45,7 +45,7 @@ public class NullE implements Expression {
 	 */
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
-		return false;
+		return null;
 	}
 	
 	/**

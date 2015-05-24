@@ -46,6 +46,25 @@ public class Sequence implements Statement {
 			statement.execute(program, condition);
 		}
 	}
+	
+	/**
+	 * @param	program
+	 * 			The program in which the sequence of statements has to be executed.
+	 * @param	condition
+	 * 			The condition under which the sequence of statements has to be executed.
+	 * @param	object
+	 * 			The object for which the sequence of statements has to be executed.
+	 * @effect	Every statement in the sequence is executed.
+	 * 			| for (Statement statement: this.statements)
+	 * 			|	statement.execute(program, condition)
+	 */
+	@Override
+	public void executeForGivenObject(Program program, Expression condition,
+			Object object) {
+		for (Statement statement: this.statements) {
+			statement.executeForGivenObject(program, condition, object);
+		}
+	}
 
 	/**
 	 * @return	The location in the source file where this sequence of statements was called.
@@ -55,13 +74,4 @@ public class Sequence implements Statement {
 	public SourceLocation getSourceLocation() {
 		return this.sourceLocation;
 	}
-	
-	@Override
-	public void executeForGivenObject(Program program, Expression condition,
-			Object object) {
-		for (Statement statement: this.statements) {
-			statement.executeForGivenObject(program, condition, object);
-		}
-	}
-
 }

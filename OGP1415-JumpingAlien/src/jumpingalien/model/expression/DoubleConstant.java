@@ -49,7 +49,7 @@ public class DoubleConstant implements Expression {
 	 */
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
-		return false;
+		return (double)object;
 	}
 	
 	/**

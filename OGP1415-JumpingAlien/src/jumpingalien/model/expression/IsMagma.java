@@ -36,8 +36,8 @@ public class IsMagma implements Expression {
 	 */
 	@Override
 	public Object evaluate(Program program) {
-		int object = (int)this.expr.evaluate(null);
-		return (object == 3);
+		int[] tile = (int[])this.expr.evaluate(null);
+		return (program.getGameObject().getWorld().getGeologicalFeature(tile[0], tile[1]) == 3);
 	}
 	
 	/**
@@ -50,8 +50,8 @@ public class IsMagma implements Expression {
 	 */
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
-		int obj = (int)object;
-		return (obj == 3);
+		int[] tile = (int[]) object;
+		return (program.getGameObject().getWorld().getGeologicalFeature(tile[0], tile[1]) == 3);
 	}
 
 	/**

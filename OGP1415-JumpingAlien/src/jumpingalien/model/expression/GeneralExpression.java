@@ -39,7 +39,9 @@ public class GeneralExpression {
 	 * @return	True if and only if expr1 equals expr2.
 	 */
 	public boolean equals(Program program){
-		return !(this.expr1.evaluate(program) == this.expr2.evaluate(program));
+		Object object1 = this.expr1.evaluate(program);
+		Object object2 = this.expr2.evaluate(program);
+		return (object1 == object2);
 	}
 	
 	/**
@@ -48,7 +50,9 @@ public class GeneralExpression {
 	 * @return	True if and only if expr1 does not equal expr2.
 	 */
 	public boolean notEquals(Program program){
-		return !(this.expr1.evaluate(program) != this.expr2.evaluate(program));
+		Object object1 = this.expr1.evaluate(program);
+		Object object2 = this.expr2.evaluate(program);
+		return (object1 != object2);
 	}
 
 }

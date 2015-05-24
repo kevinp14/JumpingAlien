@@ -2,7 +2,7 @@ package jumpingalien.part2.facade;
 
 import java.util.ArrayList;
 
-import jumpingalien.model.Direction;
+import jumpingalien.model.SelfMadeDirection;
 import jumpingalien.model.Mazub;
 import jumpingalien.model.Plant;
 import jumpingalien.model.School;
@@ -600,7 +600,7 @@ public class Facade implements IFacadePart2 {
 	 *            The alien that has to start moving left.
 	 */
 	public void startMoveLeft(Mazub alien) {
-		alien.startMoveHorizontally(Direction.LEFT);
+		alien.startMoveHorizontally(SelfMadeDirection.LEFT);
 	}
 	
 	/**
@@ -610,7 +610,7 @@ public class Facade implements IFacadePart2 {
 	 *            The alien that has to start moving right.
 	 */
 	public void startMoveRight(Mazub alien) {
-		alien.startMoveHorizontally(Direction.RIGHT);
+		alien.startMoveHorizontally(SelfMadeDirection.RIGHT);
 	}
 	
 	/**
@@ -620,7 +620,7 @@ public class Facade implements IFacadePart2 {
 	 *            The alien that has to stop moving left.
 	 */
 	public void endMoveLeft(Mazub alien) {
-		alien.endMoveHorizontally(Direction.LEFT);
+		alien.endMoveHorizontally(SelfMadeDirection.LEFT);
 	}
 	
 	/**
@@ -630,7 +630,7 @@ public class Facade implements IFacadePart2 {
 	 *            The alien that has to stop moving right.
 	 */
 	public void endMoveRight(Mazub alien) {
-		alien.endMoveHorizontally(Direction.RIGHT);
+		alien.endMoveHorizontally(SelfMadeDirection.RIGHT);
 	}
 	
 	/**

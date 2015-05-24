@@ -40,7 +40,7 @@ public class DoubleExpression {
 	 * @return	The result of the sum between expr1 and expr2.
 	 */
 	public Object sum(Program program){
-		if (this.expr1 == null){
+		if (this.expr1.evaluate(program) == null){
 			return this.expr2.evaluate(program);
 		}
 		if (this.expr2.evaluate(program) == null){
@@ -92,8 +92,11 @@ public class DoubleExpression {
 	 * @return	True if and only if expr1 is less than expr2.
 	 */
 	public boolean lessThan(Program program){
-		return (!Util.fuzzyGreaterThanOrEqualTo((double)this.expr1.evaluate(program),
-				(double)this.expr2.evaluate(program)));
+		if ((this.expr1.evaluate(program) != null) && (this.expr2.evaluate(program) != null)){
+			return (! Util.fuzzyGreaterThanOrEqualTo((double)this.expr1.evaluate(program),
+					(double)this.expr2.evaluate(program)));
+		}
+		return false;
 	}
 	
 	/**
@@ -102,8 +105,11 @@ public class DoubleExpression {
 	 * @return	True if and only if expr1 is less than or equal to expr2.
 	 */
 	public boolean lessThanOrEqual(Program program){
-		return (Util.fuzzyLessThanOrEqualTo((double)this.expr1.evaluate(program),
-				(double)this.expr2.evaluate(program)));
+		if ((this.expr1.evaluate(program) != null) && (this.expr2.evaluate(program) != null)){
+			return (Util.fuzzyLessThanOrEqualTo((double)this.expr1.evaluate(program),
+					(double)this.expr2.evaluate(program)));
+		}
+		return false;
 	}
 	
 	/**
@@ -112,8 +118,11 @@ public class DoubleExpression {
 	 * @return	True if and only if expr1 is greater than expr2.
 	 */
 	public boolean greaterThan(Program program){
-		return (!Util.fuzzyLessThanOrEqualTo((double)this.expr1.evaluate(program),
-				(double)this.expr2.evaluate(program)));
+		if ((this.expr1.evaluate(program) != null) && (this.expr2.evaluate(program) != null)){
+			return (!Util.fuzzyLessThanOrEqualTo((double)this.expr1.evaluate(program),
+					(double)this.expr2.evaluate(program)));
+		}
+		return false;
 	}
 	
 	/**
@@ -122,8 +131,11 @@ public class DoubleExpression {
 	 * @return	True if and only if expr1 is greater than or equal to expr2.
 	 */
 	public boolean greaterThanOrEqual(Program program){
-		return (Util.fuzzyGreaterThanOrEqualTo((double)this.expr1.evaluate(program),
-				(double)this.expr2.evaluate(program)));
+		if ((this.expr1.evaluate(program) != null) && (this.expr2.evaluate(program) != null)){
+			return (Util.fuzzyGreaterThanOrEqualTo((double)this.expr1.evaluate(program),
+					(double)this.expr2.evaluate(program)));
+		}
+		return false;
 	}
 }
 

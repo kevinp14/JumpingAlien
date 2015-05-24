@@ -52,6 +52,19 @@ public class StartRun implements Statement {
 				gameObject.getNormalHorizontalAcceleration());
 	}
 	
+	/**
+	 * @param	program
+	 * 			The program in which the start run statement has to be executed.
+	 * @param	condition
+	 * 			The condition under which the start run statement has to be executed.
+	 * @param	object
+	 * 			The object for which the start run statement has to be executed.
+	 * @effect	The game object in the given program starts to run in the given direction.
+	 * 			| GameObject gameObject = (GameObject) program.getGameObject()
+	 * 			| Direction dir = (Direction) this.direction.evaluate(program)
+	 * 			| gameObject.startMoveHorizontally(dir, gameObject.getNormalHorizontalVelocity(),
+	 * 			|	gameObject.getNormalHorizontalAcceleration())
+	 */
 	@Override
 	public void executeForGivenObject(Program program, Expression condition,
 			Object object) {

@@ -49,7 +49,7 @@ public class BooleanE implements Expression {
 	 */
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
-		return false;
+		return (boolean)object;
 	}
 
 	/**
