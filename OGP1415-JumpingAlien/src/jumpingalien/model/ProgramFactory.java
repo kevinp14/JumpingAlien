@@ -317,7 +317,7 @@ public class ProgramFactory implements IProgramFactory<Expression, Statement, Ty
 		return whileS;
 	}
 
-	@Override //TODO
+	@Override 
 	public Statement createForEach(String variableName, Kind variableKind,
 			Expression where, Expression sort, SortDirection sortDirection,
 			Statement body, SourceLocation sourceLocation) {
@@ -326,7 +326,7 @@ public class ProgramFactory implements IProgramFactory<Expression, Statement, Ty
 		return forEach;
 	}
 
-	@Override//TODO
+	@Override
 	public Statement createBreak(SourceLocation sourceLocation) {
 		BreakS breakS = new BreakS(sourceLocation);
 		return breakS;

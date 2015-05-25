@@ -650,7 +650,7 @@ public class GameObject {
 	 * @return	True if and only if the position is bigger than 0 (both in x- and y-direction) and 
 	 * 			smaller than the maximum position in the game world (both in x- and y-direction).
 	 */
-	protected boolean isValidPosition(int[] position) {
+	public boolean isValidPosition(int[] position) {
 		return (position[0] <= this.getMaxPosition()[0]) && (position[0] >= 0) && 
 				(position[1] <= this.getMaxPosition()[1]) && (position[1] >= 0);
 	}
@@ -1176,7 +1176,7 @@ public class GameObject {
 	 * @effect	The new vertical velocity and acceleration are set to the normal ones.
 	 * 			| this.setVerticalVelocity(this.normalVerticalVelocity)
 	 * 			| this.setVerticalAcceleration(this.getNormalVerticalAcceleration())
-	 */ //TODO: defensief, misschien zelf exception maken
+	 */
 	public void startJump() {
 		if (this.isValidJumpingPosition(this.getPosition())) {
 			this.setVerticalVelocity(this.normalVerticalVelocity);
@@ -1191,7 +1191,7 @@ public class GameObject {
 	 * 			0.
 	 * 			| if (this.getVerticalVelocity() > 0)
 	 * 			|	this.setVerticalVelocity(0)
-	 */ //TODO: defensief, misschien zelf exception maken
+	 */
 	public void endJump() {
 		if (!Util.fuzzyLessThanOrEqualTo(this.getVerticalVelocity(), 0)) {
 			this.setVerticalVelocity(0);
@@ -1205,7 +1205,7 @@ public class GameObject {
 	 * 			set to the maximum ducking velocity.
 	 * 			| this.setHorizontalAcceleration(0)
 	 * 			| this.setMaxHorizontalVelocity(this.getMaxDuckingVelocity())
-	 */ //TODO: defensief, misschien zelf exception maken
+	 */
 	public void startDuck() {
 		this.setHorizontalAcceleration(0);
 		this.setMaxHorizontalVelocity(this.getMaxDuckingVelocity());
@@ -1216,7 +1216,7 @@ public class GameObject {
 	 * 
 	 * @effect	The new maximum horizontal velocity is set to the maximum running velocity.
 	 * 			| this.setMaxHorizontalVelocity(this.maxRunningVelocity)
-	 */ //TODO: defensief, misschien zelf exception maken
+	 */
 	public void endDuck() {
 		this.setMaxHorizontalVelocity(this.maxRunningVelocity);
 		if (this.isMovingHorizontally()) {

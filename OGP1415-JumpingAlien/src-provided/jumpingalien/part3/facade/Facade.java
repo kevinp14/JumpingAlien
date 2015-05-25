@@ -625,10 +625,13 @@ public class Facade implements IFacadePart3 {
 	 * 
 	 * @return an array, consisting of 2 integers {x, y}, that represents the
 	 *         coordinates of the given alien's bottom left pixel in the world.
-	 */ //TODO
-	public int[] getLocation(Mazub alien){
+	 */
+	public int[] getLocation(Mazub alien) throws ModelException {
 		int[] location = new int[]{(int) alien.getPosition()[0], 
 				(int) alien.getPosition()[1]};
+		if (!alien.isValidPosition(location)) {
+			throw new ModelException("This alien is on an invalid position!");
+		}
 		return location;
 	}
 	
@@ -640,7 +643,7 @@ public class Facade implements IFacadePart3 {
 	 * 
 	 * @return An array, consisting of 2 integers {w, h}, that represents the
 	 *         current width and height of the given alien, in number of pixels.
-	 */ //TODO
+	 */
 	public int[] getSize(Mazub alien) {
 		Sprite sprite = alien.getCurrentSprite();
 		int[] size = new int[] {sprite.getWidth(), sprite.getHeight()};
@@ -724,10 +727,10 @@ public class Facade implements IFacadePart3 {
 	 * 
 	 * @param alien
 	 *            The alien that has to start ducking.
-	 */ //TODO
+	 */
 	public void startDuck(Mazub alien) throws ModelException {
-//		if (alien.isDucking())
-//			throw new ModelException("The alien is already ducking!");
+		if (alien.isDucking())
+			throw new ModelException("The alien is already ducking!");
 		alien.startDuck();
 	}
 	
@@ -736,10 +739,10 @@ public class Facade implements IFacadePart3 {
 	 * 
 	 * @param alien
 	 *            The alien that has to stop ducking.
-	 */ //TODO
+	 */
 	public void endDuck(Mazub alien) throws ModelException {
-//		if (!alien.canEndDuck())
-//			throw new ModelException("The alien can not stop ducking here!");
+		if (!alien.canEndDuck())
+			throw new ModelException("The alien can not stop ducking here!");
 		if (alien.canEndDuck())
 			alien.endDuck();
 	}
@@ -749,10 +752,10 @@ public class Facade implements IFacadePart3 {
 	 * 
 	 * @param alien
 	 *            The alien that has to start jumping.
-	 */ //TODO
+	 */
 	public void startJump(Mazub alien) throws ModelException {
-//		if (!alien.isValidJumpingPosition(alien.getPosition()))
-//			throw new ModelException("The alien can not jump when not on solid terrain!");
+		if (!alien.isValidJumpingPosition(alien.getPosition()))
+			throw new ModelException("The alien can not jump when not on solid terrain!");
 		alien.startJump();
 	}
 	
@@ -761,10 +764,10 @@ public class Facade implements IFacadePart3 {
 	 * 
 	 * @param alien
 	 *            The alien that has to stop jumping.
-	 */ //TODO
+	 */ 
 	public void endJump(Mazub alien) throws ModelException {
-//		if (!alien.isJumping())
-//			throw new ModelException("The alien has already stopped jumping");
+		if (!alien.isJumping())
+			throw new ModelException("The alien has already stopped jumping");
 		alien.endJump();
 	}
 	

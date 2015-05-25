@@ -13,9 +13,10 @@ import jumpingalien.model.expression.Expression;
 import jumpingalien.part3.programs.SourceLocation;
 import jumpingalien.part3.programs.IProgramFactory.Kind;
 import jumpingalien.part3.programs.IProgramFactory.SortDirection;
-//TODO commentaar
+
 public class ForEach implements Statement {
 	
+	@SuppressWarnings("unused")
 	private String variableName;
 	private Kind variableKind;
 	private Expression where;
