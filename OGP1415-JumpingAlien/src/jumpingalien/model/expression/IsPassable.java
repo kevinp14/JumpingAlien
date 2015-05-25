@@ -1,5 +1,6 @@
 package jumpingalien.model.expression;
 
+import jumpingalien.model.GameObject;
 import jumpingalien.model.Program;
 import jumpingalien.model.World;
 import jumpingalien.part3.programs.SourceLocation;
@@ -53,7 +54,8 @@ public class IsPassable implements Expression {
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
 		int[] tile = (int[])this.expr.evaluate(program);
-		World world = program.getGameObject().getWorld();
+		GameObject gameObject = (GameObject) object;
+		World world = gameObject.getWorld();
 		return (!world.isNotPassable(world.getGeologicalFeature(tile[0], tile[1])));
 	}
 	

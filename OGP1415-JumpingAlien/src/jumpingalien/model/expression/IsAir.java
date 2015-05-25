@@ -1,5 +1,6 @@
 package jumpingalien.model.expression;
 
+import jumpingalien.model.GameObject;
 import jumpingalien.model.Program;
 import jumpingalien.part3.programs.SourceLocation;
 
@@ -51,7 +52,8 @@ public class IsAir implements Expression {
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
 		int[] tile = (int[])this.expr.evaluate(null);
-		return (program.getGameObject().getWorld().getGeologicalFeature(tile[0], tile[1]) == 0);
+		GameObject gameObject = (GameObject)object;
+		return (gameObject.getWorld().getGeologicalFeature(tile[0], tile[1]) == 0);
 	}
 
 	/**

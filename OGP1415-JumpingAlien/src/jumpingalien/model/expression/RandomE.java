@@ -1,5 +1,7 @@
 package jumpingalien.model.expression;
 
+import java.util.Random;
+
 import jumpingalien.model.Program;
 import jumpingalien.part3.programs.SourceLocation;
 
@@ -36,8 +38,11 @@ public class RandomE implements Expression {
 	 */
 	@Override
 	public Object evaluate(Program program) {
-		double maxValue = (double)this.maxValue.evaluate(program);
-		return Math.random() * maxValue;
+		Double maxValue = (Double)this.maxValue.evaluate(program);
+		Integer intMaxValue = maxValue.intValue();
+		Random rn = new Random();
+		int randomValue = rn.nextInt(intMaxValue + 1);
+		return randomValue;
 	}
 	
 	/**
@@ -50,8 +55,11 @@ public class RandomE implements Expression {
 	 */
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
-		double maxValue = (double)this.maxValue.evaluate(program);
-		return Math.random() * maxValue;
+		Double maxValue = (Double)this.maxValue.evaluate(program);
+		Integer intMaxValue = maxValue.intValue();
+		Random rn = new Random();
+		int randomValue = rn.nextInt(intMaxValue + 1);
+		return randomValue;
 	}
 
 	/**
