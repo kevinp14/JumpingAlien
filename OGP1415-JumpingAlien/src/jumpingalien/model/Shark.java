@@ -568,7 +568,7 @@ public class Shark extends GameObject {
 	 * 			| !isValidDt(dt)
 	 */
 	public void advanceTime(double dt) throws IllegalArgumentException {
-		if ((this.getProgram() == null)){
+		if (this.getProgram() == null){
 			if (!this.isValidDt(dt)) {
 				throw new IllegalArgumentException("The given period of time dt is invalid!");
 			}
@@ -578,12 +578,6 @@ public class Shark extends GameObject {
 				double newDt = this.getNewDt(dt);
 				int[] oldPosition = this.getPosition();
 				double[] oldPositionAsDouble = this.getPositionAsDouble();
-				if (this.programRunning != true) {
-					this.move(movingTime, newDt);
-					if ((this.isRising()) && (!this.isSubmergedInWater()) && (this.timesNotJumped < 4)) {
-						this.startJump();
-					}
-				}
 				if ((this.crossImpassableBottom()) || (this.crossImpassableLeft()) 
 						|| (this.crossImpassableTop()) || (this.crossImpassableRight()))  {
 					this.crossImpassableActions(oldPosition);
@@ -591,6 +585,10 @@ public class Shark extends GameObject {
 				this.collidesWithActions(newDt, oldPosition);
 				if ((this.isInAir()) || (this.isInMagma())) {
 					this.isInFluidActions(newDt);
+				}
+				this.move(movingTime, newDt);
+				if ((this.isRising()) && (!this.isSubmergedInWater()) && (this.timesNotJumped < 4)) {
+					this.startJump();
 				}
 				if ((!this.crossImpassableBottom()) && (!this.crossImpassableLeft())
 						&& (!((this.crossImpassableTop()) && (!this.isSubmergedInWater()))) 
@@ -602,6 +600,34 @@ public class Shark extends GameObject {
 					}
 					this.setPosition(oldPositionAsDouble[0] + 100*this.horizontalMovement(newDt),
 						oldPositionAsDouble[1] + 100*this.verticalMovement(newDt));
+				}
+				sumDt += newDt;
+			}
+		}
+		if (this.programRunning){
+			if (!this.isValidDt(dt)) {
+				throw new IllegalArgumentException("The given period of time dt is invalid!");
+			}
+			double sumDt = 0;
+			while (!Util.fuzzyGreaterThanOrEqualTo(sumDt, dt)) {
+				double newDt = this.getNewDt(dt);
+				int[] oldPosition = this.getPosition();
+				double[] oldPositionAsDouble = this.getPositionAsDouble();
+				if ((this.crossImpassableBottom()) || (this.crossImpassableLeft()) 
+						|| (this.crossImpassableTop()) || (this.crossImpassableRight()))  {
+					this.crossImpassableActions(oldPosition);
+				}
+				this.collidesWithActions(newDt, oldPosition);
+				if ((this.isInAir()) || (this.isInMagma())) {
+					this.isInFluidActions(newDt);
+				}
+				if ((this.isRising()) && (!this.isSubmergedInWater()) && (this.timesNotJumped < 4)) {
+					this.startJump();
+				}
+				if ((!this.crossImpassableBottom()) && (!this.crossImpassableLeft())
+						&& (!this.crossImpassableTop()) && (!this.crossImpassableRight())) {
+					this.setPosition(oldPositionAsDouble[0] + 100 * this.horizontalMovement(newDt),
+							oldPositionAsDouble[1] + 100 * this.verticalMovement(newDt));
 				}
 				sumDt += newDt;
 			}
