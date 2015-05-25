@@ -12,7 +12,7 @@ import jumpingalien.util.Util;
  * 
  * @invar 
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
  * @version 5.0
  *
  */
@@ -193,7 +193,7 @@ public class Plant extends GameObject {
 	 * 			| !isValidDt(dt)
 	 */
 	public void advanceTime(double dt) throws IllegalArgumentException {
-		if (this.getProgram() == null){
+		if (this.getProgram() == null) {
 			if (!this.isValidDt(dt)) {
 				throw new IllegalArgumentException("The given period of time dt is invalid!");
 			}
@@ -202,16 +202,34 @@ public class Plant extends GameObject {
 				double newDt = this.getNewDt(dt);
 				int[] oldPosition = this.getPosition();
 				double[] oldPositionAsDouble = this.getPositionAsDouble();
-				if (this.programRunning != true) {
-					if (Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, 0.50)) {
-						this.timeMovingHorizontally = 0;
-						this.endMoveHorizontally(this.getLastDirection());
-						this.startMoveHorizontally(this.getNextDirection());
-					}
-					else if (!Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, 0.50)) {
-						this.timeMovingHorizontally += newDt;
-					}
+				if (Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, 0.50)) {
+					this.timeMovingHorizontally = 0;
+					this.endMoveHorizontally(this.getLastDirection());
+					this.startMoveHorizontally(this.getNextDirection());
 				}
+				else if (!Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, 0.50)) {
+					this.timeMovingHorizontally += newDt;
+				}
+				if ((this.crossImpassableLeft()) || (this.crossImpassableRight()))  {
+					this.crossImpassableActions(oldPosition);
+				}
+				this.collidesWithActions(newDt, oldPosition);
+				if ((!this.crossImpassableLeft()) && (!this.crossImpassableRight())) {
+					this.setPosition(oldPositionAsDouble[0] + (100 * this.horizontalMovement(
+							newDt)), oldPositionAsDouble[1]);
+				}
+				sumDt += newDt;
+			}
+		}
+		if (this.programRunning){
+			if (!this.isValidDt(dt)) {
+				throw new IllegalArgumentException("The given period of time dt is invalid!");
+			}
+			double sumDt = 0;
+			while (!Util.fuzzyGreaterThanOrEqualTo(sumDt, dt)) {
+				double newDt = this.getNewDt(dt);
+				int[] oldPosition = this.getPosition();
+				double[] oldPositionAsDouble = this.getPositionAsDouble();
 				if ((this.crossImpassableLeft()) || (this.crossImpassableRight()))  {
 					this.crossImpassableActions(oldPosition);
 				}
