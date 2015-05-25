@@ -36,6 +36,9 @@ public class NotE implements Expression {
 	 */
 	@Override
 	public Object evaluate(Program program) {
+		if (this.expr.evaluate(program) == null) {
+			return null;
+		}
 		boolean valueExpr = (boolean)this.expr.evaluate(program);
 		return (!valueExpr);
 	}

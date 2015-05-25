@@ -39,15 +39,17 @@ public class BooleanExpression {
 	 * @return	The result of the "and" between expr1 and expr2.
 	 */
 	public Object and(Program program){
-		if (this.expr1 == null) {
+		if (this.expr1.evaluate(program) == null) {
 			return ((boolean) this.expr2.evaluate(program));
 		}
-		if (this.expr2 == null) {
+		if (this.expr2.evaluate(program) == null) {
 			return ((boolean) this.expr1.evaluate(program));
 		}
-		boolean expr1Evaluated = (boolean) this.expr1.evaluate(program);
-		boolean expr2Evaluated = (boolean) this.expr2.evaluate(program);
-		return ((expr1Evaluated) && (expr2Evaluated));
+		else {
+			boolean expr1Evaluated = (boolean) this.expr1.evaluate(program);
+			boolean expr2Evaluated = (boolean) this.expr2.evaluate(program);
+			return ((expr1Evaluated) && (expr2Evaluated));
+		}
 	}
 	
 	/**
@@ -56,10 +58,10 @@ public class BooleanExpression {
 	 * @return	The result of the "or" between expr1 and expr2.
 	 */
 	public Object or(Program program){
-		if (this.expr1 == null) {
+		if (this.expr1.evaluate(program) == null) {
 			return ((boolean) this.expr2.evaluate(program));
 		}
-		if (this.expr2 == null) {
+		if (this.expr2.evaluate(program) == null) {
 			return ((boolean) this.expr1.evaluate(program));
 		}
 		else {
