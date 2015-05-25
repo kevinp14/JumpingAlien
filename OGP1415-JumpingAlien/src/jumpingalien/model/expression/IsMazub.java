@@ -40,7 +40,10 @@ public class IsMazub implements Expression {
 	public Object evaluate(Program program) {
 		GameObject gameObject = (GameObject) this.expr.evaluate(program);
 		Mazub mazub = gameObject.getWorld().getMazub();
-		return (mazub == gameObject);
+		if ((mazub != null) && (gameObject != null)) {
+			return (mazub == gameObject);
+		}
+		return false;
 	}
 
 	/**
@@ -55,7 +58,10 @@ public class IsMazub implements Expression {
 	public Object evaluateForGivenObject(Program program, Object object) {
 		GameObject gameObject = (GameObject) object;
 		Mazub mazub = gameObject.getWorld().getMazub();
-		return (mazub == gameObject);
+		if ((mazub != null) && (gameObject != null)) {
+			return (mazub == gameObject);
+		}
+		return false;
 	}
 	
 	/**

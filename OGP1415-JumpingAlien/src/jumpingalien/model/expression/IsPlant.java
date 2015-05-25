@@ -39,7 +39,10 @@ public class IsPlant implements Expression {
 	@Override
 	public Object evaluate(Program program) {
 		GameObject gameObject = (GameObject) this.expr.evaluate(program);
-		return (gameObject.getWorld().getPlants().contains(gameObject));
+		if (gameObject != null) {
+			return (gameObject.getWorld().getPlants().contains(gameObject));
+		}
+		return false;
 	}
 
 	/**
@@ -54,7 +57,10 @@ public class IsPlant implements Expression {
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
 		GameObject gameObject = (GameObject) object;
-		return (gameObject.getWorld().getPlants().contains(gameObject));
+		if (gameObject != null) {
+			return (gameObject.getWorld().getPlants().contains(gameObject));
+		}
+		return false;
 	}
 	
 	/**

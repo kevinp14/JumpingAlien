@@ -71,7 +71,7 @@ public class SearchObject implements Expression {
 	
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
-		Direction direction = (Direction) object;
+		Direction direction = (Direction) this.expr.evaluate(program);
 		World world = program.getGameObject().getWorld();
 		int[] position = program.getGameObject().getPosition();
 		int[] maxPosition = program.getGameObject().getMaxPosition();

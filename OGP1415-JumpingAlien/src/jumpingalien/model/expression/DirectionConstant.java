@@ -50,7 +50,7 @@ public class DirectionConstant implements Expression {
 	 */
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
-		return (Direction)object;
+		return this.direction;
 	}
 	
 	/**

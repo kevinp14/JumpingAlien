@@ -47,7 +47,6 @@ public class Equals extends GeneralExpression implements Expression {
 	 */
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
-		this.expr1 = (Expression)object;
 		return this.equals(program);
 	}
 	

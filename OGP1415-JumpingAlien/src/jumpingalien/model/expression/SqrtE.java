@@ -36,7 +36,7 @@ public class SqrtE implements Expression {
 	 */
 	@Override
 	public Object evaluate(Program program) {
-		double valueExpr = (double)expr.evaluate(program);
+		double valueExpr = (double)this.expr.evaluate(program);
 		return Math.pow(valueExpr, 0.5);
 	}
 
@@ -50,7 +50,7 @@ public class SqrtE implements Expression {
 	 */
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
-		double valueExpr = (double)object;
+		double valueExpr = (double)this.expr.evaluate(program);
 		return Math.pow(valueExpr, 0.5);
 	}
 	

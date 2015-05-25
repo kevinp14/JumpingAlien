@@ -48,7 +48,6 @@ public class Multiplication extends DoubleExpression implements Expression {
 	 */
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
-		this.expr1 = (Expression)object;
 		return this.multiplication(program);
 	}
 

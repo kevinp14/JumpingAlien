@@ -45,7 +45,7 @@ public class SelfE implements Expression {
 	 */
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
-		return object;
+		return program.getGameObject();
 	}
 
 	/**

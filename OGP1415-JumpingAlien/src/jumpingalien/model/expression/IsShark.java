@@ -39,7 +39,10 @@ public class IsShark implements Expression {
 	@Override
 	public Object evaluate(Program program) {
 		GameObject gameObject = (GameObject) this.expr.evaluate(program);
-		return (gameObject.getWorld().getSharks().contains(gameObject));
+		if (gameObject != null) {
+			return (gameObject.getWorld().getSharks().contains(gameObject));
+		}
+		return false;
 	}
 	
 	/**

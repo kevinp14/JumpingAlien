@@ -50,7 +50,7 @@ public class IsWater implements Expression {
 	 */
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
-		int[] tile = (int[])object;
+		int[] tile = (int[])this.expr.evaluate(null);
 		return (program.getGameObject().getWorld().getGeologicalFeature(tile[0], tile[1]) == 2);
 	}
 
