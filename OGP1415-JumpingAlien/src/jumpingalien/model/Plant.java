@@ -193,7 +193,7 @@ public class Plant extends GameObject {
 	 * 			| !isValidDt(dt)
 	 */
 	public void advanceTime(double dt) throws IllegalArgumentException {
-		if ((this.getProgram() == null) || (this.programRunning == true)){
+		if (this.getProgram() == null){
 			if (!this.isValidDt(dt)) {
 				throw new IllegalArgumentException("The given period of time dt is invalid!");
 			}
@@ -202,13 +202,15 @@ public class Plant extends GameObject {
 				double newDt = this.getNewDt(dt);
 				int[] oldPosition = this.getPosition();
 				double[] oldPositionAsDouble = this.getPositionAsDouble();
-				if (Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, 0.50)) {
-					this.timeMovingHorizontally = 0;
-					this.endMoveHorizontally(this.getLastDirection());
-					this.startMoveHorizontally(this.getNextDirection());
-				}
-				else if (!Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, 0.50)) {
-					this.timeMovingHorizontally += newDt;
+				if (this.programRunning == true) {
+					if (Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, 0.50)) {
+						this.timeMovingHorizontally = 0;
+						this.endMoveHorizontally(this.getLastDirection());
+						this.startMoveHorizontally(this.getNextDirection());
+					}
+					else if (!Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, 0.50)) {
+						this.timeMovingHorizontally += newDt;
+					}
 				}
 				if ((this.crossImpassableLeft()) || (this.crossImpassableRight()))  {
 					this.crossImpassableActions(oldPosition);

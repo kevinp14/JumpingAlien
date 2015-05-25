@@ -22,7 +22,6 @@ import jumpingalien.util.Util;
 public class Slime extends GameObject {
 	private School school;
 	private double timeMovingHorizontally;
-	private boolean programRunning;
 
 	/**
 	 * @param 	positionX
@@ -437,7 +436,7 @@ public class Slime extends GameObject {
 	 * 			| !isValidDt(dt)
 	 */
 	public void advanceTime(double dt) throws IllegalArgumentException {
-		if ((this.getProgram() == null) || (this.programRunning == true)){
+		if (this.getProgram() == null){
 			if (!this.isValidDt(dt)) {
 				throw new IllegalArgumentException("The given period of time dt is invalid!");
 			}
@@ -447,14 +446,16 @@ public class Slime extends GameObject {
 				double newDt = this.getNewDt(dt);
 				int[] oldPosition = this.getPosition();
 				double[] oldPositionAsDouble = this.getPositionAsDouble();
-				if (Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, movingTime)) {
-					this.timeMovingHorizontally = 0;
-					this.endMoveHorizontally(this.getLastDirection());
-					this.startMoveHorizontally(this.getRandomDirection(), this.getNormalHorizontalVelocity(),
-							this.getNormalHorizontalAcceleration());
-				}
-				if (!Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, movingTime)) {
-					this.timeMovingHorizontally += newDt;
+				if (this.programRunning == true) {
+					if (Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, movingTime)) {
+						this.timeMovingHorizontally = 0;
+						this.endMoveHorizontally(this.getLastDirection());
+						this.startMoveHorizontally(this.getRandomDirection(), this.getNormalHorizontalVelocity(),
+								this.getNormalHorizontalAcceleration());
+					}
+					if (!Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, movingTime)) {
+						this.timeMovingHorizontally += newDt;
+					}
 				}
 				if ((this.crossImpassableLeft()) || (this.crossImpassableBottom()) 
 						|| (this.crossImpassableRight())) {
