@@ -2,13 +2,14 @@ package jumpingalien.model.expression;
 
 import jumpingalien.model.GameObject;
 import jumpingalien.model.Program;
+import jumpingalien.model.Shark;
 import jumpingalien.part3.programs.SourceLocation;
 
 /**
  * A class to check if a game object is of type Shark.
  * 
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
  * @version 1.0
  */
 public class IsShark implements Expression {
@@ -39,10 +40,7 @@ public class IsShark implements Expression {
 	@Override
 	public Object evaluate(Program program) {
 		GameObject gameObject = (GameObject) this.expr.evaluate(program);
-		if (gameObject != null) {
-			return (gameObject.getWorld().getSharks().contains(gameObject));
-		}
-		return false;
+		return (gameObject instanceof Shark);
 	}
 	
 	/**
@@ -55,7 +53,7 @@ public class IsShark implements Expression {
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
 		GameObject gameObject = (GameObject) object;
-		return (gameObject.getWorld().getSharks().contains(gameObject));
+		return (gameObject instanceof Shark);
 	}
 
 	/**
