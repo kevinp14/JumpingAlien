@@ -436,24 +436,16 @@ public class Slime extends GameObject {
 	 * 			| !isValidDt(dt)
 	 */
 	public void advanceTime(double dt) throws IllegalArgumentException {
+		if (!this.isValidDt(dt)) {
+			throw new IllegalArgumentException("The given period of time dt is invalid!");
+		}
 		if (this.getProgram() == null){
-			if (!this.isValidDt(dt)) {
-				throw new IllegalArgumentException("The given period of time dt is invalid!");
-			}
 			double sumDt = 0;
 			double movingTime = this.getRandomMovingTime();
 			while (!Util.fuzzyGreaterThanOrEqualTo(sumDt, dt)) {
 				double newDt = this.getNewDt(dt);
 				int[] oldPosition = this.getPosition();
 				double[] oldPositionAsDouble = this.getPositionAsDouble();
-				if ((this.crossImpassableLeft()) || (this.crossImpassableBottom()) 
-						|| (this.crossImpassableRight())) {
-					this.crossImpassableActions(oldPosition);
-				}
-				if ((this.isInWater()) || (this.isInMagma())) {
-					this.isInFluidActions(dt);
-				}
-				this.collidesWithActions(newDt, oldPosition);
 				if (Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, movingTime)) {
 					this.timeMovingHorizontally = 0;
 					this.endMoveHorizontally(this.getLastDirection());
@@ -462,6 +454,17 @@ public class Slime extends GameObject {
 				}
 				if (!Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, movingTime)) {
 					this.timeMovingHorizontally += newDt;
+				}
+				if ((this.crossImpassableLeft()) || (this.crossImpassableBottom()) 
+						|| (this.crossImpassableRight())) {
+					this.crossImpassableActions(oldPosition);
+				}
+				if ((this.isInWater()) || (this.isInMagma())) {
+					this.isInFluidActions(dt);
+				}
+				this.collidesWithActions(newDt, oldPosition);
+				if ((this.isInWater()) || (this.isInMagma())) {
+					this.isInFluidActions(newDt);
 				}
 				if ((!this.crossImpassableBottom()) && (!this.crossImpassableLeft())
 						&& (!this.crossImpassableTop()) && (!this.crossImpassableRight())) {
@@ -474,10 +477,7 @@ public class Slime extends GameObject {
 				sumDt += newDt;
 			}
 		}
-		if (this.programRunning) {
-			if (!this.isValidDt(dt)) {
-				throw new IllegalArgumentException("The given period of time dt is invalid!");
-			}
+		if (this.programRunning){
 			double sumDt = 0;
 			while (!Util.fuzzyGreaterThanOrEqualTo(sumDt, dt)) {
 				double newDt = this.getNewDt(dt);
@@ -491,6 +491,9 @@ public class Slime extends GameObject {
 					this.isInFluidActions(dt);
 				}
 				this.collidesWithActions(newDt, oldPosition);
+				if ((this.isInWater()) || (this.isInMagma())) {
+					this.isInFluidActions(newDt);
+				}
 				if ((!this.crossImpassableBottom()) && (!this.crossImpassableLeft())
 						&& (!this.crossImpassableTop()) && (!this.crossImpassableRight())) {
 					if (!this.touchImpassableBottom()) {
