@@ -9,7 +9,7 @@ import jumpingalien.part3.programs.SourceLocation;
  * A class to check if a game object is of type Mazub.
  * 
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
  * @version 1.0
  */
 public class IsMazub implements Expression {
@@ -39,11 +39,7 @@ public class IsMazub implements Expression {
 	@Override
 	public Object evaluate(Program program) {
 		GameObject gameObject = (GameObject) this.expr.evaluate(program);
-		Mazub mazub = gameObject.getWorld().getMazub();
-		if ((mazub != null) && (gameObject != null)) {
-			return (mazub == gameObject);
-		}
-		return false;
+		return (gameObject instanceof Mazub);
 	}
 
 	/**
@@ -57,11 +53,7 @@ public class IsMazub implements Expression {
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
 		GameObject gameObject = (GameObject) object;
-		Mazub mazub = gameObject.getWorld().getMazub();
-		if ((mazub != null) && (gameObject != null)) {
-			return (mazub == gameObject);
-		}
-		return false;
+		return (gameObject instanceof Mazub);
 	}
 	
 	/**
