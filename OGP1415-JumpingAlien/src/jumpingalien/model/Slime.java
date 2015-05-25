@@ -446,7 +446,7 @@ public class Slime extends GameObject {
 				double newDt = this.getNewDt(dt);
 				int[] oldPosition = this.getPosition();
 				double[] oldPositionAsDouble = this.getPositionAsDouble();
-				if (this.programRunning == true) {
+				if (this.programRunning != true) {
 					if (Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, movingTime)) {
 						this.timeMovingHorizontally = 0;
 						this.endMoveHorizontally(this.getLastDirection());

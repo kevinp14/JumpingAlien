@@ -202,7 +202,7 @@ public class Plant extends GameObject {
 				double newDt = this.getNewDt(dt);
 				int[] oldPosition = this.getPosition();
 				double[] oldPositionAsDouble = this.getPositionAsDouble();
-				if (this.programRunning == true) {
+				if (this.programRunning != true) {
 					if (Util.fuzzyGreaterThanOrEqualTo(this.timeMovingHorizontally, 0.50)) {
 						this.timeMovingHorizontally = 0;
 						this.endMoveHorizontally(this.getLastDirection());

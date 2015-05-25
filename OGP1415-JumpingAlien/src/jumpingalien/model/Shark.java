@@ -578,7 +578,7 @@ public class Shark extends GameObject {
 				double newDt = this.getNewDt(dt);
 				int[] oldPosition = this.getPosition();
 				double[] oldPositionAsDouble = this.getPositionAsDouble();
-				if (this.programRunning == true) {
+				if (this.programRunning != true) {
 					this.move(movingTime, newDt);
 					if ((this.isRising()) && (!this.isSubmergedInWater()) && (this.timesNotJumped < 4)) {
 						this.startJump();
