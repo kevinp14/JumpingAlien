@@ -1,6 +1,7 @@
 package jumpingalien.model.expression;
 //TODO commentaar
 import jumpingalien.model.Buzam;
+import jumpingalien.model.GameObject;
 import jumpingalien.model.Mazub;
 import jumpingalien.model.Plant;
 import jumpingalien.model.Program;
@@ -24,9 +25,10 @@ public class SearchObject implements Expression {
 	@Override
 	public Object evaluate(Program program) {
 		Direction direction = (Direction) this.expr.evaluate(program);
-		World world = program.getGameObject().getWorld();
-		int[] position = program.getGameObject().getPosition();
-		int[] maxPosition = program.getGameObject().getMaxPosition();
+		GameObject gameObject = program.getGameObject();
+		World world = gameObject.getWorld();
+		int[] position = gameObject.getPosition();
+		int[] maxPosition = gameObject.getMaxPosition();
 		int tileX = position[0] / world.getTileLength();
 		int tileY = position[1] / world.getTileLength();
 		if (direction == Direction.DOWN){
@@ -72,9 +74,10 @@ public class SearchObject implements Expression {
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
 		Direction direction = (Direction) this.expr.evaluate(program);
-		World world = program.getGameObject().getWorld();
-		int[] position = program.getGameObject().getPosition();
-		int[] maxPosition = program.getGameObject().getMaxPosition();
+		GameObject gameObject = (GameObject) object;
+		World world = gameObject.getWorld();
+		int[] position = gameObject.getPosition();
+		int[] maxPosition = gameObject.getMaxPosition();
 		int tileX = position[0] / world.getTileLength();
 		int tileY = position[1] / world.getTileLength();
 		if (direction == Direction.DOWN){
