@@ -86,7 +86,7 @@ public class Tests{
 	public void testGetHeight(){
 		program.setGameObject(mazub);
 		GetHeight getHeight = (GetHeight) programFactory.createGetHeight(selfExpr, null);
-		int height = facade.getSize(mazub)[1];
+		double height = (double)facade.getSize(mazub)[1];
 		assertEquals(height, getHeight.evaluate(program));
 	}
 	
@@ -94,7 +94,7 @@ public class Tests{
 	public void testGetHP(){
 		program.setGameObject(mazub);
 		GetHP getHP = (GetHP) programFactory.createGetHitPoints(selfExpr, null);
-		int hp = facade.getNbHitPoints(mazub);
+		double hp = (double)facade.getNbHitPoints(mazub);
 		assertEquals(hp, getHP.evaluate(program));
 	}
 	
@@ -102,7 +102,7 @@ public class Tests{
 	public void testGetWidth(){
 		program.setGameObject(mazub);
 		GetWidth getWidth = (GetWidth) programFactory.createGetWidth(selfExpr, null);
-		int width = facade.getSize(mazub)[0];
+		double width = (double)facade.getSize(mazub)[0];
 		assertEquals(width, getWidth.evaluate(program));
 	}
 	
@@ -111,8 +111,8 @@ public class Tests{
 		program.setGameObject(mazub);
 		GetX getX = (GetX) programFactory.createGetX(selfExpr, null);
 		GetY getY = (GetY) programFactory.createGetY(selfExpr, null);
-		int x = facade.getLocation(mazub)[0];
-		int y = facade.getLocation(mazub)[1];
+		double x = (double)facade.getLocation(mazub)[0];
+		double y = (double)facade.getLocation(mazub)[1];
 		assertEquals(x, getX.evaluate(program));
 		assertEquals(y, getY.evaluate(program));
 	}
@@ -199,8 +199,7 @@ public class Tests{
 		IsSlime isSlime = (IsSlime) programFactory.createIsSlime(selfExpr, null);
 		assert((boolean)isSlime.evaluate(program));
 	}
-	
-	//TODO test foreach
+
 	//STATEMENTS
 	
 	@Test
@@ -299,35 +298,6 @@ public class Tests{
 		whileS.execute(program, null);
 		assert(!mazub.isMovingHorizontally());
 	}
-	
-//	//TODO is nog iets mis mee..
-//	//printS test
-//	private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-//
-//	@Before
-//	public void setUpStreams() {
-//	    System.setOut(new PrintStream(outContent));
-//	}
-//
-//	@After
-//	public void cleanUpStreams() {
-//	    System.setOut(null);
-//	}
-//	
-//	@Test
-//	public void testPrintSAndReadVariable() {
-//		BooleanType testType = (BooleanType) programFactory.getBoolType();
-//		testVariables.put("testnaam", testType);
-//		Program localProgram = (Program) programFactory.createProgram(testStatement, testVariables);
-//		localProgram.setObjectByName("testnaam", testType, "itworked");
-//		ReadVariable value = (ReadVariable) programFactory.createReadVariable("testnaam", testType, 
-//				null);
-//		PrintS print = (PrintS) programFactory.createPrint(value, null);
-//		print.execute(localProgram, null);
-//	    assertEquals("itworked\n", outContent.toString());
-//	}
-//	//einde
-	
 	
 	//TYPES
 	
