@@ -2,13 +2,14 @@ package jumpingalien.model.expression;
 
 import jumpingalien.model.GameObject;
 import jumpingalien.model.Program;
+import jumpingalien.model.Slime;
 import jumpingalien.part3.programs.SourceLocation;
 
 /**
  * A class to check if a game object is of type Slime.
  * 
  * @author	Kevin Peeters (Tweede fase ingenieurswetenschappen)
- * 			Jasper Mariën (Tweede fase ingenieurswetenschappen)
+ * 			Jasper MariÃ«n (Tweede fase ingenieurswetenschappen)
  * @version 1.0
  */
 public class IsSlime implements Expression {
@@ -39,10 +40,7 @@ public class IsSlime implements Expression {
 	@Override
 	public Object evaluate(Program program) {
 		GameObject gameObject = (GameObject) this.expr.evaluate(program);
-		if (gameObject != null) {
-			return (gameObject.getWorld().getSlimes().contains(gameObject));
-		}
-		return false;
+		return (gameObject instanceof Slime);
 	}
 	
 	/**
@@ -57,10 +55,7 @@ public class IsSlime implements Expression {
 	@Override
 	public Object evaluateForGivenObject(Program program, Object object) {
 		GameObject gameObject = (GameObject) object;
-		if (gameObject != null) {
-			return (gameObject.getWorld().getSlimes().contains(gameObject));
-		}
-		return false;
+		return (gameObject instanceof Slime);
 	}
 
 	/**
